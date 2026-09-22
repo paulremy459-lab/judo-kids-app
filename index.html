@@ -266,11 +266,8 @@ input[type="color"]{
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-// ==================== SUPABASE INIT ====================
-const SUPABASE_URL = 'https://klbftabestrvyvmqcjca.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+// ==================== INIT VARS ====================
+let supabaseClient = null;
 let currentUserId = null;
 let subscribers = [];
 let shipments = [];
@@ -331,7 +328,7 @@ async function loginSupabase(){
     return;
   }
   
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
     password
   });
@@ -351,7 +348,7 @@ async function loginSupabase(){
 }
 
 function logoutSupabase(){
-  supabase.auth.signOut();
+  supabaseClient.auth.signOut();
   currentUserId = null;
   $('authScreen').style.display = 'flex';
   $('root').style.display = 'none';
@@ -849,7 +846,7 @@ function viewSubscriberProfile(id){
 async function markSentFromProfile(shipId){
   if(!confirm('Marquer cet envoi comme envoyé?')) return;
   
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('shipments')
     .update({ sent_at: new Date().toISOString() })
     .eq('id', shipId);
@@ -864,7 +861,7 @@ async function markSentFromProfile(shipId){
 async function unmarkSentFromProfile(shipId){
   if(!confirm('Annuler le statut "envoyé" pour cet envoi?')) return;
   
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('shipments')
     .update({ sent_at: null })
     .eq('id', shipId);
@@ -909,7 +906,7 @@ function renderEnvois(){
 }
 
 async function markSent(id){
-  await supabase
+  await supabaseClient
     .from('shipments')
     .update({ sent_at: new Date().toISOString() })
     .eq('id', id);
@@ -919,7 +916,7 @@ async function markSent(id){
 }
 
 async function unmarkSent(id){
-  await supabase
+  await supabaseClient
     .from('shipments')
     .update({ sent_at: null })
     .eq('id', id);
@@ -937,18 +934,42 @@ function renderSettings(){
     </div>`;
 }
 
-// ==================== INIT ====================
-window.addEventListener('load', async () => {
-  // Vérifier si déjà connecté
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if(session){
-    currentUserId = session.user.id;
-    $('authScreen').style.display = 'none';
-    $('root').style.display = 'grid';
-    await loadData();
-    renderDash();
+// ==================== INIT SUPABASE ====================
+function initSupabase(){
+  if(!window.supabase){
+    console.error('Supabase library not loaded yet, retrying...');
+    setTimeout(initSupabase, 100);
+    return;
   }
+  
+  const SUPABASE_URL = 'https://klbftabestrvyvmqcjca.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
+  
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('✅ Supabase initialisé');
+  
+  checkSession();
+}
+
+async function checkSession(){
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    
+    if(session){
+      currentUserId = session.user.id;
+      $('authScreen').style.display = 'none';
+      $('root').style.display = 'grid';
+      await loadData();
+      renderDash();
+    }
+  } catch(err){
+    console.error('Erreur session:', err);
+  }
+}
+
+// ==================== PAGE LOAD ====================
+window.addEventListener('load', () => {
+  initSupabase();
 });
 </script>
 </body>
