@@ -359,7 +359,7 @@ function logoutSupabase(){
 // ==================== DATA LOADING ====================
 async function loadData(){
   // Charger les abonnés
-  const { data: subs, error: subError } = await supabase
+  const { data: subs, error: subError } = await supabaseClient
     .from('subscribers')
     .select('*')
     .eq('user_id', currentUserId);
@@ -369,7 +369,7 @@ async function loadData(){
   }
   
   // Charger les envois
-  const { data: ships, error: shipError } = await supabase
+  const { data: ships, error: shipError } = await supabaseClient
     .from('shipments')
     .select('*')
     .eq('user_id', currentUserId);
@@ -416,7 +416,7 @@ async function saveSubscriber(e){
   const firstMag = getMagazineForSubscription(subDate);
   
   // Insérer l'abonné
-  const { data: sub, error: subError } = await supabase
+  const { data: sub, error: subError } = await supabaseClient
     .from('subscribers')
     .insert({
       user_id: currentUserId,
@@ -480,7 +480,7 @@ async function saveSubscriber(e){
     }
     
     if(shipsToInsert.length > 0){
-      const { error: shipError } = await supabase
+      const { error: shipError } = await supabaseClient
         .from('shipments')
         .insert(shipsToInsert);
       
@@ -523,7 +523,7 @@ async function updateSubscriber(e){
   const subDate = $('edit_sub_date').value;
   const subDuration = parseInt($('edit_sub_duration').value);
   
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from('subscribers')
     .update({
       first_name: fname,
@@ -551,13 +551,13 @@ async function deleteSubscriber(id){
   if(!confirm('Supprimer cet abonné et tous ses envois?')) return;
   
   // Supprimer les envois
-  await supabase
+  await supabaseClient
     .from('shipments')
     .delete()
     .eq('subscriber_id', id);
   
   // Supprimer l'abonné
-  await supabase
+  await supabaseClient
     .from('subscribers')
     .delete()
     .eq('id', id);
@@ -639,7 +639,7 @@ async function confirmRenewal(e){
     }
     
     if(shipsToInsert.length > 0){
-      await supabase
+      await supabaseClient
         .from('shipments')
         .insert(shipsToInsert);
     }
