@@ -2,984 +2,336 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#050B18">
-<title>Judo Kids — Gestion des Envois</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Judo Kids - Gestion des Envois</title>
 <style>
-:root{
-  --navy-900:#040A15;
-  --navy-700:#0B1B33;
-  --accent:#7C5CFF;
-  --accent-soft:#AF52DE;
-  --accent-deep:#5D3FA6;
-  --success:#32D74B;
-  --warning:#FFD426;
-  --danger:#FF453A;
-  --ink:#F2F6FF;
-  --ink-2:rgba(242,246,255,.66);
-  --ink-3:rgba(242,246,255,.42);
-  --glass:rgba(255,255,255,.055);
-  --glass-2:rgba(255,255,255,.085);
-  --glass-hi:rgba(255,255,255,.14);
-  --stroke:rgba(255,255,255,.10);
-  --stroke-2:rgba(255,255,255,.18);
-  --g-hi:rgba(255,255,255,.11);
-  --g-mid:rgba(255,255,255,.045);
-  --g-lo:rgba(255,255,255,.018);
-  --g-edge:rgba(255,255,255,.15);
-  --r-sm:14px;--r-md:20px;--r-lg:26px;
-  --shadow-md:0 12px 34px rgba(0,0,0,.38);
-  --blur:42px;
+:root {
+  --navy-900: #040A15;
+  --accent: #7C5CFF;
+  --accent-soft: #AF52DE;
+  --success: #32D74B;
+  --danger: #FF453A;
+  --ink: #F2F6FF;
+  --ink-2: rgba(242,246,255,.66);
+  --ink-3: rgba(242,246,255,.42);
+  --glass: rgba(255,255,255,.055);
+  --glass-2: rgba(255,255,255,.085);
+  --glass-hi: rgba(255,255,255,.14);
+  --stroke: rgba(255,255,255,.10);
+  --stroke-2: rgba(255,255,255,.18);
+  --r-sm: 14px;
+  --r-md: 20px;
+  --r-lg: 26px;
+  --shadow-md: 0 12px 34px rgba(0,0,0,.38);
 }
 
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%;font-family:system-ui,sans-serif;background:var(--navy-900);color:var(--ink);overflow:hidden}
-body{-webkit-font-smoothing:antialiased}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; font-family: system-ui, sans-serif; background: var(--navy-900); color: var(--ink); overflow: hidden; }
 
-#authScreen{display:flex;align-items:center;justify-content:center;height:100%;width:100%;position:fixed;top:0;left:0;background:var(--navy-900);z-index:10000;flex-direction:column;gap:20px}
-#authScreen.hidden{display:none}
+.auth-screen { display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; flex-direction: column; gap: 20px; }
+.auth-screen.hidden { display: none; }
 
-#root{display:grid;grid-template-columns:280px 1fr;gap:20px;padding:20px;height:100%;overflow:hidden}
-#root.hidden{display:none}
+.login-box { background: var(--glass-2); border: 1px solid var(--stroke); border-radius: var(--r-md); padding: 28px; width: 90%; max-width: 400px; box-shadow: var(--shadow-md); }
+.login-box h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.login-box p { font-size: 13px; color: var(--ink-3); margin-bottom: 20px; }
 
-aside{display:flex;flex-direction:column;gap:20px;overflow:auto}
-.logo{display:flex;align-items:center;gap:12px;padding:16px;background:var(--glass);border-radius:var(--r-md)}
-.logo .ico{width:40px;height:40px;border-radius:var(--r-sm);background:linear-gradient(145deg,var(--accent),var(--accent-deep));display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px}
-.logo h1{font-size:16px;font-weight:700}
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 10px 12px; background: rgba(0,0,0,.2); border: 1px solid var(--stroke); border-radius: var(--r-sm); color: var(--ink); font-size: 14px; font-family: inherit; }
+.form-group input:focus { outline: none; border-color: var(--accent); }
 
-.nav-sec{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink-3);padding:12px 0 4px}
-.nav-btn{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r-sm);background:transparent;color:var(--ink-2);border:1px solid transparent;cursor:pointer;width:100%;text-align:left}
-.nav-btn:hover{background:var(--glass-2)}
-.nav-btn.on{background:var(--glass-hi);border-color:var(--stroke-2);color:var(--ink)}
-.nav-cnt{margin-left:auto;font-size:11px;background:var(--accent);color:#fff;border-radius:999px;padding:2px 8px;font-weight:700}
+.btn { width: 100%; padding: 11px; background: linear-gradient(145deg, var(--accent), var(--accent-soft)); border: none; border-radius: var(--r-sm); color: #fff; font-weight: 700; cursor: pointer; font-size: 14px; }
+.btn:hover { opacity: 0.9; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-main{display:flex;flex-direction:column;gap:18px;overflow:auto}
-.head h1{font-size:26px;font-weight:700}
-.head p{font-size:13px;color:var(--ink-3)}
-.head{display:flex;justify-content:space-between;align-items:start}
+.error-msg { color: var(--danger); font-size: 12px; margin-top: 8px; display: none; }
 
-.glass{background:linear-gradient(158deg,var(--g-hi) 0%,var(--g-lo) 42%,var(--g-mid) 100%);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));border:1px solid var(--g-edge);border-radius:var(--r-lg);box-shadow:var(--shadow-md);padding:20px}
+.app-root { display: grid; grid-template-columns: 280px 1fr; gap: 20px; padding: 20px; height: 100%; overflow: hidden; }
+.app-root.hidden { display: none; }
 
-.grid{display:grid;gap:16px}
-.g-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+aside { display: flex; flex-direction: column; gap: 20px; overflow: auto; }
+.logo { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--glass); border-radius: var(--r-md); }
+.logo-ico { width: 40px; height: 40px; border-radius: var(--r-sm); background: linear-gradient(145deg, var(--accent), #5D3FA6); display: grid; place-items: center; color: #fff; font-weight: 700; font-size: 18px; }
+.logo h1 { font-size: 16px; font-weight: 700; }
 
-.kpi{display:flex;flex-direction:column;gap:10px}
-.kpi .lab{font-size:12px;color:var(--ink-3)}
-.kpi .val{font-size:32px;font-weight:700}
-.kpi .sub{font-size:11px;color:var(--ink-3)}
+.nav-sec { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--ink-3); padding: 12px 0 4px; }
+.nav-btn { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: var(--r-sm); background: transparent; color: var(--ink-2); border: 1px solid transparent; cursor: pointer; width: 100%; text-align: left; font-weight: 580; }
+.nav-btn:hover { background: var(--glass-2); }
+.nav-btn.on { background: var(--glass-hi); border-color: var(--stroke-2); color: var(--ink); }
 
-.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
-.tbl th{text-align:left;font-size:11px;font-weight:620;color:var(--ink-2);padding:10px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--stroke)}
-.tbl td{padding:11px 10px;border-top:1px solid var(--stroke)}
-.tbl tbody tr:hover{background:var(--glass-2)}
-.tbl .nm{font-weight:580;cursor:pointer;color:var(--accent)}
+main { display: flex; flex-direction: column; gap: 18px; overflow: auto; }
+.head h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.head p { font-size: 13px; color: var(--ink-3); }
 
-.btn{padding:9px 15px;border-radius:var(--r-sm);border:1px solid var(--stroke);background:var(--glass-2);color:var(--ink);cursor:pointer;font-weight:580}
-.btn:hover{background:var(--glass-hi)}
-.btn.pri{background:linear-gradient(145deg,var(--accent),var(--accent-soft));border:none;color:#fff}
-.btn.sm{padding:6px 11px;font-size:12px}
+.glass { background: linear-gradient(158deg, rgba(255,255,255,.11) 0%, rgba(255,255,255,.018) 42%, rgba(255,255,255,.045) 100%); backdrop-filter: blur(42px); border: 1px solid rgba(255,255,255,.15); border-radius: var(--r-lg); box-shadow: var(--shadow-md); padding: 20px; }
 
-.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(50,215,75,.15);color:var(--success);border:1px solid rgba(50,215,75,.25)}
-.pill.o{background:rgba(255,212,38,.15);color:var(--warning);border-color:rgba(255,212,38,.25)}
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.kpi { display: flex; flex-direction: column; gap: 10px; }
+.kpi .lab { font-size: 12px; color: var(--ink-3); }
+.kpi .val { font-size: 32px; font-weight: 700; }
 
-.search-box{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-md);margin-bottom:16px}
-.search-box input{flex:1;background:transparent;border:none;color:var(--ink);font-size:14px;outline:none}
-.search-box input::placeholder{color:var(--ink-3)}
+.tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+.tbl th { text-align: left; font-size: 11px; font-weight: 620; color: var(--ink-2); padding: 10px; background: rgba(0,0,0,.2); border-bottom: 1px solid var(--stroke); }
+.tbl td { padding: 11px 10px; border-top: 1px solid var(--stroke); }
+.tbl tbody tr:hover { background: var(--glass-2); }
 
-.action-btn{padding:6px 10px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink-2);cursor:pointer;font-size:12px;font-weight:600;transition:.2s}
-.action-btn:hover{background:var(--glass-hi);color:var(--ink)}
-.action-btn.danger{color:var(--danger)}
-.action-btn.danger:hover{background:rgba(255,69,58,.15)}
-.action-btn.copy{color:var(--accent)}
-.action-btn.copy:hover{background:rgba(124,92,255,.15)}
+.btn-small { padding: 6px 11px; border-radius: var(--r-sm); border: 1px solid var(--stroke); background: var(--glass-2); color: var(--ink); cursor: pointer; font-weight: 580; font-size: 12px; }
+.btn-small:hover { background: var(--glass-hi); }
 
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s}
-.modal.open{opacity:1;pointer-events:auto}
-.modal-box{background:var(--navy-700);border:1px solid var(--stroke-2);border-radius:var(--r-lg);padding:28px;width:90%;max-width:600px;box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:80vh;overflow-y:auto}
-.modal-box h2{margin-bottom:16px;font-size:16px;font-weight:700}
+.pill { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: rgba(50,215,75,.15); color: var(--success); border: 1px solid rgba(50,215,75,.25); }
+.pill.pending { background: rgba(255,212,38,.15); color: #FFD426; border-color: rgba(255,212,38,.25); }
 
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--ink-2)}
-.form-group input, .form-group select, .form-group textarea{width:100%;padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px;font-family:inherit}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus{outline:none;border-color:var(--accent)}
+.search-box { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--glass-2); border: 1px solid var(--stroke); border-radius: var(--r-md); margin-bottom: 16px; }
+.search-box input { flex: 1; background: transparent; border: none; color: var(--ink); font-size: 14px; outline: none; }
+.search-box input::placeholder { color: var(--ink-3); }
 
-.form-actions{display:flex;gap:12px}
-.form-actions button{flex:1}
-
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--glass-hi);border:1px solid var(--stroke-2);padding:12px 20px;border-radius:var(--r-sm);z-index:9998;animation:slideUp .3s ease}
-@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-.shipment-row{cursor:pointer}
-.progress-bar{height:10px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden}
-.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));transition:width .4s}
-
-.copy-field{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:8px 12px;background:rgba(0,0,0,.2);border-radius:var(--r-sm);margin-bottom:8px}
-.copy-field .val{flex:1;font-size:13px}
-.copy-field .copy-btn{padding:4px 8px;font-size:10px}
-
-.color-picker{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
-.color-opt{padding:12px;border-radius:var(--r-sm);cursor:pointer;border:2px solid transparent;text-align:center;font-size:11px}
-.color-opt.selected{border-color:var(--accent)}
-
-.hidden{display:none}
+.loading { text-align: center; padding: 40px; color: var(--ink-3); }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="authScreen">
-  <div style="text-align:center;margin-bottom:20px">
-    <div style="width:60px;height:60px;background:linear-gradient(145deg,var(--accent),var(--accent-deep));border-radius:var(--r-md);display:grid;place-items:center;margin:0 auto;color:#fff;font-size:32px;font-weight:700">🥋</div>
-    <h1 style="font-size:22px;margin-top:12px">L'Esprit du Judo</h1>
-    <p style="color:var(--ink-3);font-size:13px;margin-top:4px">Gestion des Envois</p>
+<div class="auth-screen" id="authScreen">
+  <div class="login-box">
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="width: 60px; height: 60px; background: linear-gradient(145deg, var(--accent), #5D3FA6); border-radius: var(--r-md); display: grid; place-items: center; margin: 0 auto; color: #fff; font-size: 32px; font-weight: 700;">🥋</div>
+      <h1 style="margin-top: 12px;">L'Esprit du Judo</h1>
+      <p style="color: var(--ink-3); font-size: 13px; margin-top: 4px;">Gestion des Envois</p>
+    </div>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="paul@sen-no-sen.com" required autofocus>
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="password" required>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <button type="submit" class="btn" id="submitBtn">Se connecter</button>
+    </form>
   </div>
-  <form onsubmit="handleLogin(event)" style="width:100%;max-width:320px">
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="loginEmail" placeholder="paul@sen-no-sen.com" required>
-    </div>
-    <div class="form-group">
-      <label>Mot de passe</label>
-      <input type="password" id="loginPassword" required>
-    </div>
-    <div id="loginError" style="display:none;color:var(--danger);font-size:12px;margin-bottom:12px"></div>
-    <button type="submit" class="btn pri" style="width:100%">Se connecter</button>
-  </form>
 </div>
 
-<!-- APP -->
-<div id="root" class="hidden">
+<div class="app-root hidden" id="appRoot">
   <aside>
     <div class="logo">
-      <div class="ico">🥋</div>
-      <div><h1>Judo Kids</h1></div>
+      <div class="logo-ico">🥋</div>
+      <h1>Judo Kids</h1>
     </div>
-    <div style="flex:1">
+    <div style="flex: 1;">
       <div class="nav-sec">MENU</div>
       <button class="nav-btn on" onclick="switchView('dash')">📊 Dashboard</button>
       <button class="nav-btn" onclick="switchView('abonnes')">👥 Abonnés</button>
       <button class="nav-btn" onclick="switchView('envois')">📮 Envois</button>
       <button class="nav-btn" onclick="switchView('settings')">⚙️ Paramètres</button>
     </div>
-    <button class="nav-btn" style="color:var(--danger)" onclick="handleLogout()">🚪 Déconnexion</button>
+    <button class="nav-btn" style="color: var(--danger);" onclick="handleLogout()">🚪 Déconnexion</button>
   </aside>
 
   <main>
-    <div id="content" style="flex:1;overflow:auto"></div>
+    <div id="content" style="flex: 1; overflow: auto;">
+      <div class="loading">Chargement...</div>
+    </div>
   </main>
-</div>
-
-<!-- MODALES -->
-<div id="profileModal" class="modal">
-  <div class="modal-box">
-    <div id="profileContent"></div>
-  </div>
-</div>
-
-<div id="renewModal" class="modal">
-  <div class="modal-box">
-    <h2>Renouveler l'abonnement</h2>
-    <form onsubmit="handleRenewal(event)">
-      <div class="form-group">
-        <label>Nouvelle date de départ*</label>
-        <input type="date" id="renew_date" required>
-      </div>
-      <div class="form-group">
-        <label>Durée du nouvel abonnement*</label>
-        <select id="renew_duration" required>
-          <option value="">-- Sélectionner --</option>
-          <option value="1">1 an (6 envois)</option>
-          <option value="2">2 ans (12 envois)</option>
-          <option value="3">3 ans (18 envois)</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn" onclick="closeModal('renewModal')">Annuler</button>
-        <button type="submit" class="btn pri">Renouveler</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div id="addModal" class="modal">
-  <div class="modal-box">
-    <h2>Ajouter un Abonné</h2>
-    <form onsubmit="handleAddSubscriber(event)">
-      <div class="form-group">
-        <label>Prénom*</label>
-        <input type="text" id="add_fname" required>
-      </div>
-      <div class="form-group">
-        <label>Nom*</label>
-        <input type="text" id="add_lname" required>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="add_email">
-      </div>
-      <div class="form-group">
-        <label>Téléphone</label>
-        <input type="tel" id="add_phone">
-      </div>
-      <div class="form-group">
-        <label>Adresse</label>
-        <textarea id="add_addr" style="resize:vertical;min-height:60px"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Date d'abonnement*</label>
-        <input type="date" id="add_date" required>
-      </div>
-      <div class="form-group">
-        <label>Durée d'abonnement*</label>
-        <select id="add_duration" required>
-          <option value="">-- Sélectionner --</option>
-          <option value="1">1 an (6 envois)</option>
-          <option value="2">2 ans (12 envois)</option>
-          <option value="3">3 ans (18 envois)</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn" onclick="closeModal('addModal')">Annuler</button>
-        <button type="submit" class="btn pri">Ajouter</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<div id="editModal" class="modal">
-  <div class="modal-box">
-    <h2>Modifier un Abonné</h2>
-    <form onsubmit="handleEditSubscriber(event)">
-      <div class="form-group">
-        <label>Prénom*</label>
-        <input type="text" id="edit_fname" required>
-      </div>
-      <div class="form-group">
-        <label>Nom*</label>
-        <input type="text" id="edit_lname" required>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="edit_email">
-      </div>
-      <div class="form-group">
-        <label>Téléphone</label>
-        <input type="tel" id="edit_phone">
-      </div>
-      <div class="form-group">
-        <label>Adresse</label>
-        <textarea id="edit_addr" style="resize:vertical;min-height:60px"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Date d'abonnement*</label>
-        <input type="date" id="edit_date" required>
-      </div>
-      <div class="form-group">
-        <label>Durée d'abonnement*</label>
-        <select id="edit_duration" required>
-          <option value="">-- Sélectionner --</option>
-          <option value="1">1 an (6 envois)</option>
-          <option value="2">2 ans (12 envois)</option>
-          <option value="3">3 ans (18 envois)</option>
-        </select>
-      </div>
-      <div class="form-actions">
-        <button type="button" class="btn" onclick="closeModal('editModal')">Annuler</button>
-        <button type="submit" class="btn pri">Mettre à jour</button>
-      </div>
-    </form>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const $ = id => document.getElementById(id);
-const esc = t => (t+'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const uid = () => crypto.getRandomValues(new Uint8Array(16)).reduce((s,c) => s + c.toString(16).padStart(2,'0'),'');
-const toast = msg => { const e=document.createElement('div'); e.className='toast'; e.textContent=msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); };
+const SB_URL = 'https://klbftabestrvyvmqcjca.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
 
-let sb;
-let S = { user: null, db: { subscribers: [], shipments: [] }, view: 'dash', editingId: null, renewingId: null, settings: { accentColor: '#7C5CFF', accentSoft: '#AF52DE', parution_dates: ['2026-09-01', '2026-11-01', '2027-01-01', '2027-03-01', '2027-05-01', '2027-07-01', '2027-09-01', '2027-11-01', '2028-01-01', '2028-03-01', '2028-05-01', '2028-07-01', '2028-09-01', '2028-11-01', '2029-01-01', '2029-03-01', '2029-05-01', '2029-07-01'] } };
+let sb = null;
+let state = { user: null, subs: [], ships: [] };
 
 const SCHEDULE = [
-  {shipment:1, mag:4, release:'2026-09-01', deadline:'2026-10-15'},
-  {shipment:2, mag:5, release:'2026-11-01', deadline:'2026-12-15'},
-  {shipment:3, mag:6, release:'2027-01-01', deadline:'2027-02-15'},
-  {shipment:4, mag:7, release:'2027-03-01', deadline:'2027-04-15'},
-  {shipment:5, mag:8, release:'2027-05-01', deadline:'2027-06-15'},
-  {shipment:6, mag:9, release:'2027-07-01', deadline:'2027-08-15'},
-  {shipment:7, mag:10, release:'2027-09-01', deadline:'2027-10-15'},
-  {shipment:8, mag:11, release:'2027-11-01', deadline:'2027-12-15'},
-  {shipment:9, mag:12, release:'2028-01-01', deadline:'2028-02-15'},
-  {shipment:10, mag:13, release:'2028-03-01', deadline:'2028-04-15'},
-  {shipment:11, mag:14, release:'2028-05-01', deadline:'2028-06-15'},
-  {shipment:12, mag:15, release:'2028-07-01', deadline:'2028-08-15'},
-  {shipment:13, mag:16, release:'2028-09-01', deadline:'2028-10-15'},
-  {shipment:14, mag:17, release:'2028-11-01', deadline:'2028-12-15'},
-  {shipment:15, mag:18, release:'2029-01-01', deadline:'2029-02-15'},
-  {shipment:16, mag:19, release:'2029-03-01', deadline:'2029-04-15'},
-  {shipment:17, mag:20, release:'2029-05-01', deadline:'2029-06-15'},
-  {shipment:18, mag:21, release:'2029-07-01', deadline:'2029-08-15'},
+  {mag:4, release:'2026-09-01'}, {mag:5, release:'2026-11-01'}, {mag:6, release:'2027-01-01'}, {mag:7, release:'2027-03-01'},
+  {mag:8, release:'2027-05-01'}, {mag:9, release:'2027-07-01'}, {mag:10, release:'2027-09-01'}, {mag:11, release:'2027-11-01'},
+  {mag:12, release:'2028-01-01'}, {mag:13, release:'2028-03-01'}, {mag:14, release:'2028-05-01'}, {mag:15, release:'2028-07-01'},
+  {mag:16, release:'2028-09-01'}, {mag:17, release:'2028-11-01'}, {mag:18, release:'2029-01-01'}, {mag:19, release:'2029-03-01'},
+  {mag:20, release:'2029-05-01'}, {mag:21, release:'2029-07-01'}
 ];
 
-function getMagazineForSubscription(subDate) {
-  const subDateObj = new Date(subDate);
-  for (let i = 0; i < SCHEDULE.length; i++) {
-    const deadlineDate = new Date(SCHEDULE[i].deadline);
-    if (subDateObj <= deadlineDate) return SCHEDULE[i].mag;
+function init() {
+  try {
+    sb = window.supabase.createClient(SB_URL, SB_KEY);
+    console.log('✅ Supabase initialized');
+  } catch(e) {
+    alert('Erreur: ' + e.message);
   }
-  return SCHEDULE[SCHEDULE.length - 1].mag + 1;
-}
-
-function initClient() {
-  const URL = 'https://klbftabestrvyvmqcjca.supabase.co';
-  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
-  
-  const memstore = {};
-  const stg = {
-    getItem: k => { try { return localStorage.getItem(k); } catch(e) { return memstore[k]||null; } },
-    setItem: (k,v) => { try { localStorage.setItem(k,v); } catch(e) { memstore[k]=v; } },
-    removeItem: k => { try { localStorage.removeItem(k); } catch(e) { delete memstore[k]; } }
-  };
-  
-  sb = supabase.createClient(URL, KEY, { auth: { storage: stg, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
-  
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_OUT') {
-      S.user = null;
-      $('#root').classList.add('hidden');
-      $('#authScreen').classList.remove('hidden');
-    }
-  });
 }
 
 async function handleLogin(e) {
   e.preventDefault();
-  const email = $('#loginEmail').value.trim().toLowerCase();
-  const pass = $('#loginPassword').value;
-  if (!email || !pass) return showLoginError('Remplissez tous les champs');
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const pass = document.getElementById('password').value;
+  const btn = document.getElementById('submitBtn');
+  const err = document.getElementById('errorMsg');
   
-  const btn = e.target.querySelector('button');
+  if (!email || !pass) {
+    err.textContent = 'Email et mot de passe requis';
+    err.style.display = 'block';
+    return;
+  }
+  
   btn.disabled = true;
-  btn.textContent = 'Connexion…';
+  btn.textContent = 'Connexion...';
+  err.style.display = 'none';
   
   try {
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
     if (error) throw error;
-    const ok = await openSession();
-    if (ok) toast('Connecté! 🥋');
-  } catch (err) {
-    showLoginError(err.message.includes('Invalid') ? 'Email ou mot de passe incorrect' : err.message);
-  } finally {
+    
+    state.user = data.user;
+    console.log('✅ Login:', data.user.email);
+    
+    await loadData();
+    
+    document.getElementById('authScreen').classList.add('hidden');
+    document.getElementById('appRoot').classList.remove('hidden');
+    
+    renderDash();
+  } catch(e) {
+    err.textContent = 'Erreur: ' + (e.message || e);
+    err.style.display = 'block';
     btn.disabled = false;
     btn.textContent = 'Se connecter';
   }
 }
 
-function showLoginError(msg) {
-  const el = $('#loginError');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-async function openSession() {
+async function loadData() {
   try {
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) return false;
-    
-    let { data: prof } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
-    if (prof && prof.actif === false) {
-      await sb.auth.signOut();
-      showLoginError('Compte désactivé');
-      return false;
-    }
-    
-    S.user = { id: user.id, email: user.email, name: prof?.nom || user.email };
-    S.db = await API.loadAll();
-    
-    $('#authScreen').classList.add('hidden');
-    $('#root').classList.remove('hidden');
-    renderDash();
-    
-    return true;
-  } catch (err) {
-    console.error('openSession:', err);
-    showLoginError('Erreur chargement données');
-    return false;
-  }
-}
-
-async function handleLogout() {
-  if (!confirm('Déconnexion ?')) return;
-  await sb.auth.signOut();
-  S.user = null;
-  S.db = null;
-  $('#root').classList.add('hidden');
-  $('#authScreen').classList.remove('hidden');
-}
-
-const API = {
-  async loadAll() {
-    const uid = S.user.id;
+    const uid = state.user.id;
     const [{ data: subs }, { data: ships }] = await Promise.all([
-      sb.from('subscribers').select('*').eq('user_id', uid).order('created_at'),
+      sb.from('subscribers').select('*').eq('user_id', uid),
       sb.from('shipments').select('*').eq('user_id', uid).order('scheduled_date')
     ]);
-    return { subscribers: subs || [], shipments: ships || [] };
-  },
-
-  async saveSubscriber(data) {
-    const recId = uid();
-    const { error } = await sb.from('subscribers').insert({
-      id: recId,
-      user_id: S.user.id,
-      first_name: data.fname,
-      last_name: data.lname,
-      email: data.email || null,
-      phone: data.phone || null,
-      address: data.addr || null,
-      subscription_date: data.date,
-      subscription_duration: data.duration
-    });
-    
-    if (error) throw error;
-    
-    const startMag = getMagazineForSubscription(data.date);
-    const subDate = new Date(data.date);
-    const endDate = new Date(subDate);
-    endDate.setFullYear(endDate.getFullYear() + parseInt(data.duration));
-    
-    const ships = [];
-    let shipNum = 1;
-    for (let sched of SCHEDULE) {
-      if (shipNum > parseInt(data.duration) * 6) break;
-      if (sched.mag < startMag) continue;
-      const sendDate = new Date(sched.release);
-      if (sendDate > endDate) break;
-      
-      ships.push({
-        id: uid(),
-        user_id: S.user.id,
-        subscriber_id: recId,
-        shipment_number: shipNum,
-        magazine_number: sched.mag,
-        poster_number: shipNum,
-        sticker_pair_start: (shipNum - 1) * 2 + 1,
-        sticker_pair_end: shipNum * 2,
-        scheduled_date: sched.release,
-        sent_at: null
-      });
-      shipNum++;
-    }
-    
-    if (ships.length > 0) {
-      const { error: e2 } = await sb.from('shipments').insert(ships);
-      if (e2) throw e2;
-    }
-    
-    S.db = await this.loadAll();
-  },
-
-  async updateSubscriber(id, data) {
-    const { error } = await sb.from('subscribers').update({
-      first_name: data.fname,
-      last_name: data.lname,
-      email: data.email || null,
-      phone: data.phone || null,
-      address: data.addr || null,
-      subscription_date: data.date,
-      subscription_duration: data.duration
-    }).eq('id', id);
-    
-    if (error) throw error;
-    S.db = await this.loadAll();
-  },
-
-  async deleteSubscriber(id) {
-    const { error: e1 } = await sb.from('shipments').delete().eq('subscriber_id', id);
-    if (e1) throw e1;
-    const { error: e2 } = await sb.from('subscribers').delete().eq('id', id);
-    if (e2) throw e2;
-    S.db = await this.loadAll();
-  },
-
-  async markSent(shipId) {
-    const { error } = await sb.from('shipments').update({ sent_at: new Date().toISOString() }).eq('id', shipId);
-    if (error) throw error;
-    S.db = await this.loadAll();
-  },
-
-  async unmarkSent(shipId) {
-    const { error } = await sb.from('shipments').update({ sent_at: null }).eq('id', shipId);
-    if (error) throw error;
-    S.db = await this.loadAll();
-  },
-
-  async renewSubscription(id, data) {
-    const { error: e1 } = await sb.from('subscribers').update({
-      subscription_date: data.date,
-      subscription_duration: data.duration
-    }).eq('id', id);
-    
-    if (e1) throw e1;
-
-    const { error: e2 } = await sb.from('shipments').delete().eq('subscriber_id', id).is('sent_at', null);
-    if (e2) throw e2;
-
-    const existingShips = S.db.shipments.filter(s => s.subscriber_id === id && s.sent_at);
-    const maxShipNum = existingShips.length > 0 
-      ? Math.max(...existingShips.map(s => s.shipment_number))
-      : 0;
-
-    const newDate = new Date(data.date);
-    const endDate = new Date(newDate);
-    endDate.setFullYear(endDate.getFullYear() + data.duration);
-    
-    const startMag = getMagazineForSubscription(data.date);
-    
-    const ships = [];
-    let shipNum = maxShipNum + 1;
-    for (let sched of SCHEDULE) {
-      if (shipNum > maxShipNum + parseInt(data.duration) * 6) break;
-      if (sched.mag < startMag) continue;
-      const sendDate = new Date(sched.release);
-      if (sendDate > endDate) break;
-
-      ships.push({
-        id: uid(),
-        user_id: S.user.id,
-        subscriber_id: id,
-        shipment_number: shipNum,
-        magazine_number: sched.mag,
-        poster_number: shipNum,
-        sticker_pair_start: (shipNum - 1) * 2 + 1,
-        sticker_pair_end: shipNum * 2,
-        scheduled_date: sched.release,
-        sent_at: null
-      });
-      shipNum++;
-    }
-
-    if (ships.length > 0) {
-      const { error: e3 } = await sb.from('shipments').insert(ships);
-      if (e3) throw e3;
-    }
-
-    S.db = await this.loadAll();
+    state.subs = subs || [];
+    state.ships = ships || [];
+    console.log('✅ Data:', state.subs.length, 'subs,', state.ships.length, 'ships');
+  } catch(e) {
+    alert('Erreur loadData: ' + e.message);
   }
-};
+}
 
-// RENDERERS
 function renderDash() {
-  const subs = S.db.subscribers.length;
-  const ships = S.db.shipments.length;
-  const sent = S.db.shipments.filter(s => s.sent_at).length;
-  
-  $('#content').innerHTML = `
-    <div class="head"><h1>📊 Dashboard</h1><p>Vue d'ensemble</p></div>
-    <div class="grid g-4">
+  const sent = state.ships.filter(s => s.sent_at).length;
+  document.getElementById('content').innerHTML = `
+    <div style="margin-bottom: 24px;">
+      <h1>📊 Dashboard</h1>
+      <p>Vue d'ensemble</p>
+    </div>
+    <div class="grid">
       <div class="glass kpi">
         <div class="lab">👥 Abonnés</div>
-        <div class="val">${subs}</div>
-        <div class="sub">Actuellement actifs</div>
+        <div class="val">${state.subs.length}</div>
       </div>
       <div class="glass kpi">
         <div class="lab">📮 En attente</div>
-        <div class="val">${ships - sent}</div>
-        <div class="sub">À envoyer</div>
+        <div class="val">${state.ships.length - sent}</div>
       </div>
       <div class="glass kpi">
         <div class="lab">✅ Envoyés</div>
         <div class="val">${sent}</div>
-        <div class="sub">Complétés</div>
       </div>
     </div>
   `;
-  switchViewButton('dash');
+  updateNav('dash');
 }
 
 function renderAbonnes() {
-  $('#content').innerHTML = `
-    <div class="head">
-      <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-        <div><h1>👥 Abonnés</h1><p>${S.db.subscribers.length} abonnés</p></div>
-        <button class="btn pri" onclick="openModal('addModal')">+ Ajouter</button>
-      </div>
-    </div>
-    <div class="search-box">
-      <span>🔍</span>
-      <input type="text" id="searchAbonnes" placeholder="Rechercher..." onkeyup="filterAbonnes()">
+  document.getElementById('content').innerHTML = `
+    <div style="margin-bottom: 16px;">
+      <h1>👥 Abonnés (${state.subs.length})</h1>
     </div>
     <div class="glass">
       <table class="tbl">
-        <thead><tr><th>Nom</th><th>Email</th><th>Tél</th><th>Date abo</th><th>Actions</th></tr></thead>
-        <tbody id="aboTable">${renderAbonnesRows()}</tbody>
+        <thead><tr><th>Nom</th><th>Email</th><th>Depuis</th></tr></thead>
+        <tbody>
+          ${state.subs.map(s => `<tr>
+            <td>${s.first_name} ${s.last_name}</td>
+            <td style="color: var(--ink-3); font-size: 12px;">${s.email || '—'}</td>
+            <td style="font-size: 12px;">${s.subscription_date}</td>
+          </tr>`).join('')}
+        </tbody>
       </table>
     </div>
   `;
-  switchViewButton('abonnes');
-}
-
-function renderAbonnesRows() {
-  const search = ($('searchAbonnes')?.value || '').toLowerCase();
-  return S.db.subscribers
-    .filter(s => !search || s.first_name.toLowerCase().includes(search) || s.last_name.toLowerCase().includes(search) || (s.email && s.email.toLowerCase().includes(search)))
-    .map(s => `
-      <tr>
-        <td class="nm" onclick="viewProfile('${s.id}')">${esc(s.first_name + ' ' + s.last_name)}</td>
-        <td style="color:var(--ink-3);font-size:11.5px">${esc(s.email || '—')}</td>
-        <td style="color:var(--ink-3);font-size:11.5px">${esc(s.phone || '—')}</td>
-        <td style="color:var(--ink-3);font-size:11.5px">${s.subscription_date}</td>
-        <td style="display:flex;gap:6px">
-          <button class="action-btn" onclick="editSub('${s.id}')">✏️</button>
-          <button class="action-btn danger" onclick="deleteSub('${s.id}')">🗑️</button>
-        </td>
-      </tr>
-    `).join('');
-}
-
-function filterAbonnes() {
-  const tbody = $('aboTable');
-  if (tbody) tbody.innerHTML = renderAbonnesRows();
+  updateNav('abonnes');
 }
 
 function renderEnvois() {
-  const byMonth = {};
-  S.db.shipments.forEach(s => {
-    const key = s.scheduled_date.slice(0, 7);
-    if (!byMonth[key]) byMonth[key] = [];
-    byMonth[key].push(s);
-  });
-  
-  const selectedMonth = window.selectedMonth || 'all';
-  const monthKeys = Object.keys(byMonth).sort();
-  const today = new Date();
-  
-  let html = `
-    <div class="head">
-      <div style="display:flex;align-items:center;gap:12px;width:100%">
-        <h1>📮 Envois</h1>
-        <select id="monthFilter" onchange="window.selectedMonth = this.value; renderEnvois()" style="padding:10px 14px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink)">
-          <option value="all" ${selectedMonth === 'all' ? 'selected' : ''}>📋 Tous les envois</option>
-          ${monthKeys.map(m => `<option value="${m}" ${m === selectedMonth ? 'selected' : ''}>${new Date(m + '-01').toLocaleDateString('fr-FR', {month:'long', year:'numeric'})}</option>`).join('')}
-        </select>
-      </div>
+  document.getElementById('content').innerHTML = `
+    <div style="margin-bottom: 16px;">
+      <h1>📮 Envois (${state.ships.length})</h1>
     </div>
-    <div class="search-box">
-      <span>🔍</span>
-      <input type="text" id="envoisSearch" placeholder="Chercher un abonné..." onkeyup="filterEnvois()">
+    <div class="glass">
+      <table class="tbl">
+        <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Date</th><th>Statut</th></tr></thead>
+        <tbody>
+          ${state.ships.slice(0, 20).map(s => {
+            const sub = state.subs.find(x => x.id === s.subscriber_id);
+            return `<tr>
+              <td>${sub?.first_name} ${sub?.last_name}</td>
+              <td>#${s.magazine_number}</td>
+              <td>#${s.poster_number}</td>
+              <td>#${s.sticker_pair_start}-${s.sticker_pair_end}</td>
+              <td style="font-size: 12px;">${s.scheduled_date}</td>
+              <td><span class="pill ${s.sent_at ? '' : 'pending'}">${s.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
     </div>
   `;
-  
-  if (selectedMonth === 'all') {
-    monthKeys.forEach(month => {
-      const m = new Date(month + '-01').toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
-      const monthDate = new Date(month + '-01');
-      const deleteDate = new Date(monthDate);
-      deleteDate.setDate(deleteDate.getDate() + 5);
-      const isExpired = today > deleteDate;
-      
-      if (!isExpired) {
-        html += `<div class="glass" style="margin-bottom:16px">
-          <div style="font-weight:700;margin-bottom:12px">${m}</div>
-          <table class="tbl">
-            <thead><tr><th>Abonné</th><th>Mag</th><th>Date</th><th>Poster</th><th>Stickers</th><th>Statut</th><th></th></tr></thead>
-            <tbody class="envois-tbody">${byMonth[month].map(ship => {
-              const sub = S.db.subscribers.find(x => x.id === ship.subscriber_id);
-              return `<tr class="shipment-row" data-sub="${(sub?.first_name || '') + (sub?.last_name || '')}">
-                <td class="nm" onclick="viewProfile('${ship.subscriber_id}')">${esc(sub?.first_name + ' ' + sub?.last_name)}</td>
-                <td>#${ship.magazine_number}</td>
-                <td>${new Date(ship.scheduled_date).toLocaleDateString('fr-FR')}</td>
-                <td>#${ship.poster_number}</td>
-                <td>#${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
-                <td><span class="pill ${ship.sent_at ? '' : 'o'}">${ship.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
-                <td>${ship.sent_at ? `<button class="action-btn" onclick="API.unmarkSent('${ship.id}').then(() => renderEnvois())">✗</button>` : `<button class="action-btn" onclick="API.markSent('${ship.id}').then(() => renderEnvois())">✓</button>`}</td>
-              </tr>`;
-            }).join('')}</tbody>
-          </table>
-        </div>`;
-      }
-    });
-  } else if (byMonth[selectedMonth]) {
-    const m = new Date(selectedMonth + '-01').toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
-    html += `<div class="glass">
-      <div style="font-weight:700;margin-bottom:12px">${m}</div>
-      <table class="tbl">
-        <thead><tr><th>Abonné</th><th>Mag</th><th>Date</th><th>Poster</th><th>Stickers</th><th>Statut</th><th></th></tr></thead>
-        <tbody class="envois-tbody">${byMonth[selectedMonth].map(ship => {
-          const sub = S.db.subscribers.find(x => x.id === ship.subscriber_id);
-          return `<tr class="shipment-row" data-sub="${(sub?.first_name || '') + (sub?.last_name || '')}">
-            <td class="nm" onclick="viewProfile('${ship.subscriber_id}')">${esc(sub?.first_name + ' ' + sub?.last_name)}</td>
-            <td>#${ship.magazine_number}</td>
-            <td>${new Date(ship.scheduled_date).toLocaleDateString('fr-FR')}</td>
-            <td>#${ship.poster_number}</td>
-            <td>#${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
-            <td><span class="pill ${ship.sent_at ? '' : 'o'}">${ship.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
-            <td>${ship.sent_at ? `<button class="action-btn" onclick="API.unmarkSent('${ship.id}').then(() => renderEnvois())">✗</button>` : `<button class="action-btn" onclick="API.markSent('${ship.id}').then(() => renderEnvois())">✓</button>`}</td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>
-    </div>`;
-  }
-  
-  $('#content').innerHTML = html;
-  switchViewButton('envois');
-}
-
-function filterEnvois() {
-  const query = ($('envoisSearch')?.value || '').toLowerCase();
-  document.querySelectorAll('.shipment-row').forEach(row => {
-    const sub = row.dataset.sub.toLowerCase();
-    row.style.display = sub.includes(query) ? '' : 'none';
-  });
+  updateNav('envois');
 }
 
 function renderSettings() {
-  $('#content').innerHTML = `
-    <div class="head"><h1>⚙️ Paramètres</h1><p>Configuration</p></div>
-    
-    <div class="glass">
-      <h2 style="margin-bottom:16px">🎨 Couleurs</h2>
-      <div class="form-group">
-        <label>Couleur d'accent principale</label>
-        <input type="color" id="color_accent" value="${S.settings.accentColor}" onchange="updateColor('accent', this.value)">
-      </div>
-      <div class="form-group">
-        <label>Couleur accent soft</label>
-        <input type="color" id="color_soft" value="${S.settings.accentSoft}" onchange="updateColor('soft', this.value)">
-      </div>
+  document.getElementById('content').innerHTML = `
+    <div style="margin-bottom: 16px;">
+      <h1>⚙️ Paramètres</h1>
     </div>
-    
     <div class="glass">
-      <h2 style="margin-bottom:16px">📅 Dates de parution</h2>
-      <p style="color:var(--ink-3);font-size:12px;margin-bottom:12px">Les 18 dates de parution des magazines (bimestriel)</p>
-      ${S.settings.parution_dates.map((d, i) => `
-        <div class="form-group">
-          <label>Magazine #${i + 4}</label>
-          <input type="date" value="${d}" onchange="updateParutionDate(${i}, this.value)">
-        </div>
-      `).join('')}
-    </div>
-    
-    <div class="glass">
-      <h2 style="margin-bottom:16px">👤 Compte</h2>
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div>
-          <div class="lab">Utilisateur</div>
-          <div style="font-weight:600">${esc(S.user.name)}</div>
-        </div>
-        <div>
-          <div class="lab">Email</div>
-          <div style="font-weight:600">${esc(S.user.email)}</div>
-        </div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--stroke)">
-          <button class="btn" style="color:var(--danger)" onclick="handleLogout()">Déconnexion</button>
-        </div>
-      </div>
+      <div style="color: var(--ink-3); font-size: 12px; margin-bottom: 8px;">Utilisateur</div>
+      <div style="font-weight: 700; margin-bottom: 16px;">${state.user?.email}</div>
+      <button class="btn-small" onclick="handleLogout()" style="color: var(--danger);">Déconnexion</button>
     </div>
   `;
-  switchViewButton('settings');
-}
-
-function updateColor(type, value) {
-  S.settings[type === 'accent' ? 'accentColor' : 'accentSoft'] = value;
-  document.documentElement.style.setProperty(type === 'accent' ? '--accent' : '--accent-soft', value);
-  localStorage.setItem('jk_settings', JSON.stringify(S.settings));
-}
-
-function updateParutionDate(idx, newDate) {
-  S.settings.parution_dates[idx] = newDate;
-  localStorage.setItem('jk_settings', JSON.stringify(S.settings));
-  toast('Date mise à jour');
-}
-
-function viewProfile(id) {
-  const sub = S.db.subscribers.find(s => s.id === id);
-  if (!sub) return;
-  
-  const subs = S.db.shipments.filter(s => s.subscriber_id === id).sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
-  const sent = subs.filter(s => s.sent_at).length;
-  
-  const copyBtn = (text) => `<button class="action-btn copy" onclick="copyToClipboard('${text.replace(/'/g, "\\'")}')">📋</button>`;
-  
-  let html = `
-    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px">
-      <button class="btn" onclick="closeModal('profileModal')">← Fermer</button>
-      <div style="flex:1;margin:0 20px">
-        <h2>${esc(sub.first_name + ' ' + sub.last_name)}</h2>
-        <p style="color:var(--ink-3)">Abonné depuis le ${sub.subscription_date}</p>
-      </div>
-      <button class="btn pri" onclick="openRenewModal('${id}')">🔄 Renouveler</button>
-    </div>
-    
-    <div class="glass" style="margin-bottom:16px">
-      <div style="font-weight:700;margin-bottom:12px">📋 Informations</div>
-      ${sub.email ? `<div class="copy-field"><span class="val">${esc(sub.email)}</span>${copyBtn(sub.email)}</div>` : ''}
-      ${sub.phone ? `<div class="copy-field"><span class="val">${esc(sub.phone)}</span>${copyBtn(sub.phone)}</div>` : ''}
-      ${sub.address ? `<div class="copy-field"><span class="val">${esc(sub.address)}</span>${copyBtn(sub.address)}</div>` : ''}
-      <div><div class="lab">Durée</div>${sub.subscription_duration} an(s)</div>
-    </div>
-    
-    <div class="glass">
-      <div style="font-weight:700;margin-bottom:12px">📚 Envois (${sent}/${subs.length})</div>
-      <table class="tbl">
-        <thead><tr><th>Mag</th><th>Date</th><th>Poster</th><th>Stickers</th><th>Statut</th></tr></thead>
-        <tbody>${subs.map(s => `<tr>
-          <td>#${s.magazine_number}</td>
-          <td>${new Date(s.scheduled_date).toLocaleDateString('fr-FR')}</td>
-          <td>#${s.poster_number}</td>
-          <td>#${s.sticker_pair_start}-${s.sticker_pair_end}</td>
-          <td><span class="pill ${s.sent_at ? '' : 'o'}">${s.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
-        </tr>`).join('')}</tbody>
-      </table>
-    </div>
-  `;
-  
-  $('#profileContent').innerHTML = html;
-  openModal('profileModal');
-}
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => toast('Copié! 📋'));
-}
-
-function editSub(id) {
-  const sub = S.db.subscribers.find(s => s.id === id);
-  if (!sub) return;
-  
-  S.editingId = id;
-  $('#edit_fname').value = sub.first_name || '';
-  $('#edit_lname').value = sub.last_name || '';
-  $('#edit_email').value = sub.email || '';
-  $('#edit_phone').value = sub.phone || '';
-  $('#edit_addr').value = sub.address || '';
-  $('#edit_date').value = sub.subscription_date || '';
-  $('#edit_duration').value = sub.subscription_duration || '';
-  openModal('editModal');
-}
-
-async function handleEditSubscriber(e) {
-  e.preventDefault();
-  const data = {
-    fname: $('#edit_fname').value.trim(),
-    lname: $('#edit_lname').value.trim(),
-    email: $('#edit_email').value.trim(),
-    phone: $('#edit_phone').value.trim(),
-    addr: $('#edit_addr').value.trim(),
-    date: $('#edit_date').value,
-    duration: $('#edit_duration').value
-  };
-  
-  if (!data.fname || !data.lname || !data.date || !data.duration) return toast('Champs requis manquants');
-  
-  try {
-    await API.updateSubscriber(S.editingId, data);
-    toast('Abonné mis à jour! ✅');
-    closeModal('editModal');
-    renderAbonnes();
-  } catch (err) {
-    toast('Erreur: ' + err.message);
-  }
-}
-
-async function deleteSub(id) {
-  if (!confirm('Supprimer cet abonné et tous ses envois ?')) return;
-  try {
-    await API.deleteSubscriber(id);
-    toast('Abonné supprimé');
-    renderAbonnes();
-  } catch (err) {
-    toast('Erreur: ' + err.message);
-  }
-}
-
-async function handleAddSubscriber(e) {
-  e.preventDefault();
-  const data = {
-    fname: $('#add_fname').value.trim(),
-    lname: $('#add_lname').value.trim(),
-    email: $('#add_email').value.trim(),
-    phone: $('#add_phone').value.trim(),
-    addr: $('#add_addr').value.trim(),
-    date: $('#add_date').value,
-    duration: $('#add_duration').value
-  };
-  
-  if (!data.fname || !data.lname || !data.date || !data.duration) return toast('Champs requis manquants');
-  
-  try {
-    await API.saveSubscriber(data);
-    toast('Abonné ajouté! 🎉');
-    closeModal('addModal');
-    renderAbonnes();
-  } catch (err) {
-    toast('Erreur: ' + err.message);
-  }
-}
-
-function openRenewModal(id) {
-  S.renewingId = id;
-  openModal('renewModal');
-}
-
-async function handleRenewal(e) {
-  e.preventDefault();
-  const sub = S.db.subscribers.find(s => s.id === S.renewingId);
-  if (!sub) return toast('Abonné non trouvé');
-  
-  const data = {
-    date: $('#renew_date').value,
-    duration: $('#renew_duration').value
-  };
-  
-  if (!data.date || !data.duration) return toast('Remplissez tous les champs');
-  
-  try {
-    await API.renewSubscription(S.renewingId, data);
-    toast('Abonnement renouvelé! 🎉');
-    closeModal('renewModal');
-    renderAbonnes();
-  } catch (err) {
-    toast('Erreur: ' + err.message);
-  }
-}
-
-function openModal(id) {
-  $(id).classList.add('open');
-}
-
-function closeModal(id) {
-  $(id).classList.remove('open');
+  updateNav('settings');
 }
 
 function switchView(v) {
-  S.view = v;
   if (v === 'dash') renderDash();
   else if (v === 'abonnes') renderAbonnes();
   else if (v === 'envois') renderEnvois();
   else renderSettings();
 }
 
-function switchViewButton(v) {
+function updateNav(v) {
   document.querySelectorAll('.nav-btn').forEach((b, i) => {
     b.classList.toggle('on', (i === {dash:0, abonnes:1, envois:2, settings:3}[v]));
   });
 }
 
-// STARTUP
-(async () => {
-  const saved = localStorage.getItem('jk_settings');
-  if (saved) S.settings = JSON.parse(saved);
-  
-  initClient();
+async function handleLogout() {
+  await sb.auth.signOut();
+  state = { user: null, subs: [], ships: [] };
+  document.getElementById('appRoot').classList.add('hidden');
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.querySelector('form').reset();
+}
+
+window.addEventListener('load', async () => {
+  init();
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
-    const ok = await openSession();
-    if (!ok) return;
-  } else {
-    $('#authScreen').classList.remove('hidden');
+    state.user = session.user;
+    await loadData();
+    document.getElementById('authScreen').classList.add('hidden');
+    document.getElementById('appRoot').classList.remove('hidden');
+    renderDash();
   }
-})();
+});
 </script>
 </body>
 </html>
