@@ -277,14 +277,12 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 let sb = null;
 
-// Init Supabase
+// Init Supabase (pas de session obligatoire)
 (async () => {
   if(window.supabase) {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const {data: {session}} = await sb.auth.getSession();
-    if(session) {
-      await loadFromSupabase();
-    }
+    // Charger les données depuis Supabase au démarrage
+    await loadFromSupabase();
   }
 })();
 
