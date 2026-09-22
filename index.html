@@ -778,14 +778,14 @@ function renderAbonnesRows(){
       s.last_name.toLowerCase().includes(search) || 
       (s.email && s.email.toLowerCase().includes(search))
     )
-    .map(s => `<tr onclick="viewSubscriberProfile(${s.id})" style="cursor:pointer">
+    .map(s => `<tr onclick="viewSubscriberProfile('${s.id}')" style="cursor:pointer">
       <td class="nm" style="text-decoration:underline">${s.first_name} ${s.last_name}</td>
       <td style="color:var(--ink-3);font-size:11.5px">${s.email || '—'}</td>
       <td style="color:var(--ink-3);font-size:11.5px">${s.phone || '—'}</td>
       <td style="color:var(--ink-3);font-size:11.5px">${s.subscription_date || '—'}</td>
       <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
-        <button class="action-btn" onclick="event.stopPropagation(); editSubscriber(${s.id})">✎ Modifier</button>
-        <button class="action-btn danger" onclick="event.stopPropagation(); deleteSubscriber(${s.id})">✕ Supprimer</button>
+        <button class="action-btn" onclick="event.stopPropagation(); editSubscriber('${s.id}')">✎ Modifier</button>
+        <button class="action-btn danger" onclick="event.stopPropagation(); deleteSubscriber('${s.id}')">✕ Supprimer</button>
       </td>
     </tr>`).join('');
 }
@@ -808,7 +808,7 @@ function viewSubscriberProfile(id){
           <h1>${sub.first_name} ${sub.last_name}</h1>
           <p>Abonné depuis le ${new Date(sub.subscription_date).toLocaleDateString('fr-FR')}</p>
         </div>
-        <button class="btn pri" onclick="renewSubscription(${sub.id})" style="white-space:nowrap">🔄 Renouveler</button>
+        <button class="btn pri" onclick="renewSubscription('${sub.id}')" style="white-space:nowrap">🔄 Renouveler</button>
       </div>
     </div>
     
@@ -869,14 +869,14 @@ function viewSubscriberProfile(id){
           <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
           <td>${new Date(ship.scheduled_date).toLocaleDateString('fr-FR')}</td>
           <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at ? '✅ Envoyé '+new Date(ship.sent_at).toLocaleDateString('fr-FR') : '⏳ En attente'}</span></td>
-          <td style="text-align:right">${ship.sent_at?`<button class="action-btn" style="color:var(--warning)" onclick="unmarkSentFromProfile(${ship.id})">✕</button>`:`<button class="action-btn" onclick="markSentFromProfile(${ship.id})">✓</button>`}</td>
+          <td style="text-align:right">${ship.sent_at?`<button class="action-btn" style="color:var(--warning)" onclick="unmarkSentFromProfile('${ship.id}')">✕</button>`:`<button class="action-btn" onclick="markSentFromProfile('${ship.id}')">✓</button>`}</td>
         </tr>`).join('')}</tbody>
       </table>
     </div>
     
     <div style="display:flex;gap:12px">
-      <button class="btn pri" onclick="editSubscriber(${id})">✎ Modifier les infos</button>
-      <button class="btn" style="background:rgba(255,69,58,.15);color:var(--danger)" onclick="if(confirm('Supprimer cet abonné et tous ses envois?')){deleteSubscriber(${id});renderAbonnes()}">✕ Supprimer l'abonné</button>
+      <button class="btn pri" onclick="editSubscriber('${id}')">✎ Modifier les infos</button>
+      <button class="btn" style="background:rgba(255,69,58,.15);color:var(--danger)" onclick="if(confirm('Supprimer cet abonné et tous ses envois?')){deleteSubscriber('${id}');renderAbonnes()}">✕ Supprimer l'abonné</button>
     </div>`;
 }
 
@@ -933,7 +933,7 @@ function renderEnvois(){
             <td>#${ship.poster_number}</td>
             <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
             <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
-            <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent(${ship.id})" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent(${ship.id})">✓</button>`}</td>
+            <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
           </tr>`;
         }).join('')}</tbody>
       </table>
