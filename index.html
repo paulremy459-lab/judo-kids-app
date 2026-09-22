@@ -491,9 +491,9 @@ const API = {
         subscriber_id: recId,
         shipment_number: shipNum,
         magazine_number: sched.mag,
-        poster_number: shipNum,
-        sticker_pair_start: shipNum,
-        sticker_pair_end: shipNum,
+        poster_number: shipNum,  // ⬆️ Monte: 1, 2, 3, 4...
+        sticker_pair_start: (shipNum - 1) * 2 + 1,  // ⬆️ 1, 3, 5, 7...
+        sticker_pair_end: shipNum * 2,              // ⬆️ 2, 4, 6, 8...
         scheduled_date: sched.release,
         sent_at: null
       });
@@ -556,6 +556,12 @@ const API = {
     const { error: e2 } = await sb.from('shipments').delete().eq('subscriber_id', id).is('sent_at', null);
     if (e2) throw e2;
 
+    // Trouver le max shipment_number existant pour continuer le comptage
+    const existingShips = S.db.shipments.filter(s => s.subscriber_id === id && s.sent_at);
+    const maxShipNum = existingShips.length > 0 
+      ? Math.max(...existingShips.map(s => s.shipment_number))
+      : 0;
+
     // Créer les nouveaux envois selon le calendrier
     const newDate = new Date(data.date);
     const endDate = new Date(newDate);
@@ -564,7 +570,7 @@ const API = {
     const startMag = getMagazineForSubscription(data.date);
     
     const ships = [];
-    let shipNum = 1;
+    let shipNum = maxShipNum + 1;  // ✅ CONTINUE le comptage global!
     for (let sched of SCHEDULE) {
       if (sched.mag < startMag) continue;
       const sendDate = new Date(sched.release);
@@ -576,9 +582,9 @@ const API = {
         subscriber_id: id,
         shipment_number: shipNum,
         magazine_number: sched.mag,
-        poster_number: shipNum,
-        sticker_pair_start: shipNum,
-        sticker_pair_end: shipNum,
+        poster_number: shipNum,  // ✅ Continue aussi (7, 8, 9...)
+        sticker_pair_start: (shipNum - 1) * 2 + 1,  // ✅ 13, 15, 17...
+        sticker_pair_end: shipNum * 2,              // ✅ 14, 16, 18...
         scheduled_date: sched.release,
         sent_at: null
       });
