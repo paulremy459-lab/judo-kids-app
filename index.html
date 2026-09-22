@@ -91,14 +91,9 @@ input[type="color"]{
   cursor:pointer;
 }
 
-select {
-  position: relative;
-  z-index: 10;
-}
-
 .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal.open{opacity:1;pointer-events:auto}
-.modal-box{background:var(--navy-700);border:1px solid var(--stroke-2);border-radius:var(--r-lg);padding:28px;width:90%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:80vh;overflow-y:auto;overflow-x:visible;position:relative;z-index:10000}
+.modal-box{background:var(--navy-700);border:1px solid var(--stroke-2);border-radius:var(--r-lg);padding:28px;width:90%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:80vh;overflow-y:auto}
 .copy-field{display:flex;align-items:center;gap:10px;padding:12px;background:var(--glass-2);border-radius:var(--r-sm);border:1px solid var(--stroke)}
 .copy-field .label{font-size:12px;color:var(--ink-3);font-weight:600;width:100px;flex-shrink:0}
 .copy-field .value{flex:1;color:var(--ink);font-size:13px;word-break:break-all}
@@ -106,7 +101,6 @@ select {
 .copy-field .copy-btn:hover{background:var(--accent);color:white;border-color:var(--accent)}
 .modal-box h2{font-size:18px;margin-bottom:16px}
 .form-group{margin-bottom:16px;display:flex;flex-direction:column;gap:6px}
-.form-group:last-of-type{margin-bottom:40px}
 .form-group label{font-size:12px;font-weight:600;color:var(--ink-3)}
 .form-group input{padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px}
 .form-group input:focus{outline:none;border-color:var(--accent);background:var(--glass-hi)}
@@ -114,27 +108,8 @@ select {
 .form-actions button{flex:1;padding:12px;border-radius:var(--r-sm);border:1px solid var(--stroke);background:var(--glass-2);color:var(--ink);cursor:pointer;font-weight:580}
 .form-actions button.pri{background:linear-gradient(145deg,var(--accent),var(--accent-soft));border:none;color:#fff}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const SUPABASE_URL = 'https://wojlwjplzlxkvqxmehdu.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indvamx3anBsemx4a3ZxeG1laGR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNjUwOTcsImV4cCI6MjEwNTY0MTA5N30.Ik7iEpdpSzCyGgMuPpy0oIokaWIWE9E7aE5t-9ePiMA';
-let sb = null;
-</script>
 
 <body>
-<div id="loginScreen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#040A15;display:flex;align-items:center;justify-content:center;z-index:99999">
-  <div style="background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);border-radius:26px;padding:40px;width:90%;max-width:400px">
-    <h2 style="font-size:24px;font-weight:700;margin-bottom:10px;color:#F2F6FF">🥋 Judo Kids</h2>
-    <p style="font-size:13px;color:rgba(242,246,255,.66);margin-bottom:30px">Gestion des envois</p>
-    <form onsubmit="doLogin(event)" style="display:flex;flex-direction:column;gap:14px">
-      <input type="email" id="loginEmail" placeholder="Email" required style="padding:12px 14px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.10);border-radius:14px;color:#F2F6FF;font-size:14px;outline:none" />
-      <input type="password" id="loginPassword" placeholder="Mot de passe" required style="padding:12px 14px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.10);border-radius:14px;color:#F2F6FF;font-size:14px;outline:none" />
-      <button type="submit" style="padding:12px;background:linear-gradient(145deg,#7C5CFF,#AF52DE);border:none;border-radius:14px;color:#fff;font-weight:600;cursor:pointer;margin-top:10px">Connexion</button>
-    </form>
-    <div id="loginError" style="color:#FF453A;font-size:12px;margin-top:14px;text-align:center;display:none"></div>
-  </div>
-</div>
-
 <div id="root">
   <aside>
     <div class="logo">
@@ -171,8 +146,25 @@ let sb = null;
         <input type="email" id="email">
       </div>
       <div class="form-group">
+        <label>Téléphone</label>
+        <input type="tel" id="phone">
+      </div>
+      <div class="form-group">
         <label>Adresse</label>
         <input type="text" id="addr">
+      </div>
+      <div class="form-group">
+        <label>Date d'abonnement*</label>
+        <input type="date" id="sub_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée d'abonnement*</label>
+        <select id="sub_duration" required style="padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px">
+          <option value="">-- Sélectionner --</option>
+          <option value="1">1 an (6 envois)</option>
+          <option value="2">2 ans (12 envois)</option>
+          <option value="3">3 ans (18 envois)</option>
+        </select>
       </div>
       <div class="form-actions">
         <button type="button" onclick="closeModal('addModal')">Annuler</button>
@@ -199,8 +191,25 @@ let sb = null;
         <input type="email" id="edit_email">
       </div>
       <div class="form-group">
+        <label>Téléphone</label>
+        <input type="tel" id="edit_phone">
+      </div>
+      <div class="form-group">
         <label>Adresse</label>
         <input type="text" id="edit_addr">
+      </div>
+      <div class="form-group">
+        <label>Date d'abonnement*</label>
+        <input type="date" id="edit_sub_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée d'abonnement*</label>
+        <select id="edit_sub_duration" required style="padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px">
+          <option value="">-- Sélectionner --</option>
+          <option value="1">1 an (6 envois)</option>
+          <option value="2">2 ans (12 envois)</option>
+          <option value="3">3 ans (18 envois)</option>
+        </select>
       </div>
       <div class="form-actions">
         <button type="button" onclick="closeModal('editModal')">Annuler</button>
@@ -355,86 +364,122 @@ function closeModal(id){
   $('#'+id).classList.remove('open');
 }
 
-// Sauvegarder un abonné à Supabase
-async function saveSubscriberToSupabase(subData, shipmentsList) {
-  if(!sb) return;
-  try {
-    // Insérer l'abonné (Supabase génère l'ID)
-    const {data: insertedSub, error: subError} = await sb
-      .from('subscribers')
-      .insert([subData])
-      .select();
-    
-    if(subError) throw subError;
-    const newId = insertedSub[0].id;
-    
-    // Mettre à jour les envois avec le vrai ID Supabase
-    const shipsToInsert = shipmentsList.map(s => ({
-      ...s,
-      subscriber_id: newId
-    }));
-    
-    const {error: shipError} = await sb
-      .from('shipments')
-      .insert(shipsToInsert);
-    
-    if(shipError) throw shipError;
-    
-    console.log('✅ Abonné sauvegardé à Supabase');
-    return newId;
-  } catch(e) {
-    console.error('❌ Erreur Supabase:', e.message);
-    return null;
-  }
-}
-
-async function saveSubscriber(e){
+function saveSubscriber(e){
   e.preventDefault();
   const fname = $('#fname').value;
   const lname = $('#lname').value;
   const email = $('#email').value || null;
+  const phone = $('#phone').value || null;
   const addr = $('#addr').value || '';
+  const subDate = $('#sub_date').value;
+  const subDuration = parseInt($('#sub_duration').value);
+  const subDateObj = new Date(subDate);
   
-
+  // Calculer le magazine de premier envoi selon la date et les deadlines
+  const firstMag = getMagazineForSubscription(subDate);
   
-  // Créer le sub SANS ID (Supabase va le générer)
-  const subToInsert = {
+  const sub = {
+    id: nextSubId++,
     first_name: fname,
     last_name: lname,
     email,
-    address: addr
+    phone,
+    address: addr,
+    subscription_date: subDate,
+    subscription_duration: subDuration
   };
   
-  // Insérer à Supabase EN PREMIER pour obtenir l'ID généré
-  let subId;
-  if(sb) {
-    try {
-      const {data: insertedSubs, error} = await sb
-        .from('subscribers')
-        .insert([subToInsert])
-        .select();
-      
-      if(error) throw error;
-      subId = insertedSubs[0].id;
-      console.log('✅ Abonné sauvegardé dans Supabase (ID:', subId, ')');
-    } catch(e) {
-      console.error('❌ Erreur Supabase:', e.message);
-      alert('Erreur de sauvegarde: ' + e.message);
-      return;
+  subscribers.push(sub);
+  
+  // Trouver le SCHEDULE correspondant au premier magazine auquel on a droit
+  let firstScheduleIdx = -1;
+  for(let i = 0; i < SCHEDULE.length; i++){
+    if(SCHEDULE[i].mag_if_sub_before_deadline === firstMag){
+      firstScheduleIdx = i;
+      break;
     }
-  } else {
-    subId = nextSubId++;
   }
   
-  // Créer l'objet local avec l'ID Supabase
-  const sub = {...subToInsert, id: subId};
-  subscribers.push(sub);
+  if(firstScheduleIdx >= 0){
+    const endDate = new Date(subDateObj);
+    endDate.setFullYear(endDate.getFullYear() + subDuration);
+    
+    let shipmentNum = 1;
+    const maxShipments = 6 * subDuration;  // 6 envois par an
+    
+    // PREMIER ENVOI: date de sortie du magazine OU date d'abonnement, prendre la plus grande
+    const releaseDate = new Date(SCHEDULE[firstScheduleIdx].release_date);
+    const firstShipmentDate = subDateObj >= releaseDate ? subDate : SCHEDULE[firstScheduleIdx].release_date;
+    
+    shipments.push({
+      id: nextShipId++,
+      subscriber_id: sub.id,
+      shipment_number: shipmentNum,
+      magazine_number: SCHEDULE[firstScheduleIdx].mag_if_sub_before_deadline,
+      poster_number: shipmentNum,
+      sticker_pair: shipmentNum,
+      scheduled_date: firstShipmentDate,  // ← Max(date d'abonnement, date de sortie)
+      sent_at: null
+    });
+    shipmentNum++;
+    
+    // ENVOIS SUIVANTS: dates de sortie (1er du mois)
+    for(let i = firstScheduleIdx + 1; i < SCHEDULE.length && shipmentNum <= maxShipments; i++){
+      const sendDate = new Date(SCHEDULE[i].release_date);
+      
+      if(sendDate <= endDate){
+        shipments.push({
+          id: nextShipId++,
+          subscriber_id: sub.id,
+          shipment_number: shipmentNum,
+          magazine_number: SCHEDULE[i].mag_if_sub_before_deadline,
+          poster_number: shipmentNum,
+          sticker_pair: shipmentNum,
+          scheduled_date: SCHEDULE[i].release_date,  // ← Date de sortie (1er du mois)
+          sent_at: null
+        });
+        shipmentNum++;
+      }
+    }
+  }
   
   $('#fname').value = '';
   $('#lname').value = '';
   $('#email').value = '';
+  $('#phone').value = '';
   $('#addr').value = '';
+  $('#sub_date').value = '';
+  $('#sub_duration').value = '';
   closeModal('addModal');
+  
+  // Synchroniser avec Google Sheets
+  syncToGoogleSheets({
+    action: 'addSubscriber',
+    id: sub.id,
+    first_name: sub.first_name,
+    last_name: sub.last_name,
+    email: sub.email,
+    phone: sub.phone,
+    address: sub.address,
+    subscription_date: sub.subscription_date,
+    subscription_duration: sub.subscription_duration
+  });
+  
+  // Synchroniser les envois
+  const subShipments = shipments.filter(s => s.subscriber_id === sub.id);
+  subShipments.forEach(ship => {
+    syncToGoogleSheets({
+      action: 'addShipment',
+      id: ship.id,
+      subscriber_id: ship.subscriber_id,
+      shipment_number: ship.shipment_number,
+      magazine_number: ship.magazine_number,
+      poster_number: ship.poster_number,
+      sticker_pair: ship.sticker_pair,
+      scheduled_date: ship.scheduled_date,
+      sent_at: ship.sent_at
+    });
+  });
   
   const pending = shipments.filter(s=>!s.sent_at).length;
   $('#cntAbo').textContent = subscribers.length;
@@ -448,7 +493,10 @@ function editSubscriber(id){
   $('#edit_fname').value = sub.first_name;
   $('#edit_lname').value = sub.last_name;
   $('#edit_email').value = sub.email || '';
+  $('#edit_phone').value = sub.phone || '';
   $('#edit_addr').value = sub.address || '';
+  $('#edit_sub_date').value = sub.subscription_date || '';
+  $('#edit_sub_duration').value = sub.subscription_duration || '1';
   openModal('editModal');
 }
 
@@ -458,41 +506,18 @@ function updateSubscriber(e){
   sub.first_name = $('#edit_fname').value;
   sub.last_name = $('#edit_lname').value;
   sub.email = $('#edit_email').value || null;
+  sub.phone = $('#edit_phone').value || null;
   sub.address = $('#edit_addr').value || '';
-  
-  // Sauvegarder les modifications à Supabase en arrière-plan
-  if(sb) {
-    (async () => {
-      try {
-        await sb.from('subscribers').update(sub).eq('id', editingSubId);
-        console.log('✅ Abonné mis à jour');
-      } catch(e) {
-        console.error('❌ Erreur update:', e.message);
-      }
-    })();
-  }
+  sub.subscription_date = $('#edit_sub_date').value;
+  sub.subscription_duration = parseInt($('#edit_sub_duration').value);
   
   const newSubDate = $('#edit_sub_date').value;
   const newSubDateObj = new Date(newSubDate);
   const newSubDuration = parseInt($('#edit_sub_duration').value);
   const firstMag = getMagazineForSubscription(newSubDate);
   
-  // Supprimer les anciens envois
-  const oldShips = shipments.filter(s=>s.subscriber_id===editingSubId);
+  // Supprimer les anciens envois de cet abonné
   shipments = shipments.filter(s=>s.subscriber_id!==editingSubId);
-  
-  // Supprimer à Supabase aussi
-  if(sb && oldShips.length > 0) {
-    (async () => {
-      try {
-        const shipIds = oldShips.map(s => s.id);
-        await sb.from('shipments').delete().in('id', shipIds);
-        console.log('✅ Anciens envois supprimés');
-      } catch(e) {
-        console.error('❌ Erreur delete ships:', e.message);
-      }
-    })();
-  }
   
   // Trouver le SCHEDULE correspondant au premier magazine
   let firstScheduleIdx = -1;
@@ -503,8 +528,6 @@ function updateSubscriber(e){
     }
   }
   
-  // Créer les nouveaux envois
-  const newShips = [];
   if(firstScheduleIdx >= 0){
     const endDate = new Date(newSubDateObj);
     endDate.setFullYear(endDate.getFullYear() + newSubDuration);
@@ -548,29 +571,6 @@ function updateSubscriber(e){
     }
   }
   
-  // Insérer les nouveaux envois à Supabase
-  const modifiedShipments = shipments.filter(s => s.subscriber_id === editingSubId);
-  if(sb && modifiedShipments.length > 0) {
-    const shipsForSupabase = modifiedShipments.map(s => ({
-      subscriber_id: s.subscriber_id,
-      shipment_number: s.shipment_number,
-      magazine_number: s.magazine_number,
-      poster_number: s.poster_number,
-      sticker_pair: s.sticker_pair,
-      scheduled_date: s.scheduled_date,
-      sent_at: s.sent_at
-    }));
-    
-    (async () => {
-      try {
-        await sb.from('shipments').insert(shipsForSupabase);
-        console.log('✅ Nouveaux envois sauvegardés');
-      } catch(e) {
-        console.error('❌ Erreur insert nouveaux ships:', e.message);
-      }
-    })();
-  }
-  
   // Synchroniser avec Google Sheets
   syncToGoogleSheets({
     action: 'updateSubscriber',
@@ -578,12 +578,15 @@ function updateSubscriber(e){
     first_name: sub.first_name,
     last_name: sub.last_name,
     email: sub.email,
-    address: sub.address
+    phone: sub.phone,
+    address: sub.address,
+    subscription_date: sub.subscription_date,
+    subscription_duration: sub.subscription_duration
   });
   
   // Synchroniser les envois modifiés
-  const modifiedShipments2 = shipments.filter(s => s.subscriber_id === editingSubId);
-  modifiedShipments2.forEach(ship => {
+  const modifiedShipments = shipments.filter(s => s.subscriber_id === editingSubId);
+  modifiedShipments.forEach(ship => {
     syncToGoogleSheets({
       action: 'addShipment',
       id: ship.id,
@@ -591,8 +594,7 @@ function updateSubscriber(e){
       shipment_number: ship.shipment_number,
       magazine_number: ship.magazine_number,
       poster_number: ship.poster_number,
-      sticker_pair_start: ship.sticker_pair_start,
-      sticker_pair_end: ship.sticker_pair_end,
+      sticker_pair: ship.sticker_pair,
       scheduled_date: ship.scheduled_date,
       sent_at: ship.sent_at
     });
@@ -604,23 +606,9 @@ function updateSubscriber(e){
 }
 
 function deleteSubscriber(id){
-
   if(!confirm('Supprimer cet abonné et tous ses envois?')) return;
   
   const sub = subscribers.find(s=>s.id===id);
-  
-  // Supprimer à Supabase
-  if(sb) {
-    (async () => {
-      try {
-        // Les shipments se suppriment en cascade grâce aux FK
-        await sb.from('subscribers').delete().eq('id', id);
-        console.log('✅ Abonné supprimé');
-      } catch(e) {
-        console.error('❌ Erreur delete:', e.message);
-      }
-    })();
-  }
   
   // Synchroniser la suppression avec Google Sheets
   syncToGoogleSheets({
@@ -637,7 +625,6 @@ function deleteSubscriber(id){
 let renewingSubId = null;
 
 function renewSubscription(id){
-
   renewingSubId = id;
   const sub = subscribers.find(s=>s.id===id);
   
@@ -743,8 +730,7 @@ function confirmRenewal(e){
       shipment_number: ship.shipment_number,
       magazine_number: ship.magazine_number,
       poster_number: ship.poster_number,
-      sticker_pair_start: ship.sticker_pair_start,
-      sticker_pair_end: ship.sticker_pair_end,
+      sticker_pair: ship.sticker_pair,
       scheduled_date: ship.scheduled_date,
       sent_at: ship.sent_at
     });
@@ -859,7 +845,7 @@ function renderAbonnes(){
     </div>
     <div class="glass">
       <table class="tbl">
-        <thead><tr><th>Nom</th><th>Email</th><th>Adresse</th><th style="text-align:right">Actions</th></tr></thead>
+        <thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Date d'abonnement</th><th style="text-align:right">Actions</th></tr></thead>
         <tbody id="aboTable">${renderAbonnesRows()}</tbody>
       </table>
     </div>`;
@@ -874,13 +860,14 @@ function renderAbonnesRows(){
       s.last_name.toLowerCase().includes(search) || 
       (s.email && s.email.toLowerCase().includes(search))
     )
-    .map(s=>`<tr onclick="viewSubscriberProfile('${s.id}')" style="cursor:pointer">
+    .map(s=>`<tr onclick="viewSubscriberProfile(${s.id})" style="cursor:pointer">
       <td class="nm" style="text-decoration:underline">${s.first_name} ${s.last_name}</td>
       <td style="color:var(--ink-3);font-size:11.5px">${s.email||'—'}</td>
-      <td style="color:var(--ink-3);font-size:11.5px">${s.address||'—'}</td>
+      <td style="color:var(--ink-3);font-size:11.5px">${s.phone||'—'}</td>
+      <td style="color:var(--ink-3);font-size:11.5px">${s.subscription_date || '—'}</td>
       <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
-        <button class="action-btn" onclick="event.stopPropagation(); editSubscriber('${s.id}')">✎ Modifier</button>
-        <button class="action-btn danger" onclick="event.stopPropagation(); deleteSubscriber('${s.id}')">✕ Supprimer</button>
+        <button class="action-btn" onclick="event.stopPropagation(); editSubscriber(${s.id})">✎ Modifier</button>
+        <button class="action-btn danger" onclick="event.stopPropagation(); deleteSubscriber(${s.id})">✕ Supprimer</button>
       </td>
     </tr>`).join('');
 }
@@ -902,8 +889,9 @@ function viewSubscriberProfile(id){
         <button class="btn" onclick="renderAbonnes()">← Retour</button>
         <div style="flex:1">
           <h1>${sub.first_name} ${sub.last_name}</h1>
-          <p>Abonnés et envois en cours</p>
+          <p>Abonné depuis le ${new Date(sub.subscription_date).toLocaleDateString('fr-FR')}</p>
         </div>
+        <button class="btn pri" onclick="renewSubscription(${sub.id})" style="white-space:nowrap">🔄 Renouveler</button>
       </div>
     </div>
     
@@ -916,8 +904,16 @@ function viewSubscriberProfile(id){
             <div style="margin-top:4px">${sub.email || '—'}</div>
           </div>
           <div>
+            <div style="color:var(--ink-3);font-size:11px">Téléphone</div>
+            <div style="margin-top:4px">${sub.phone || '—'}</div>
+          </div>
+          <div>
             <div style="color:var(--ink-3);font-size:11px">Adresse</div>
             <div style="margin-top:4px">${sub.address || '—'}</div>
+          </div>
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Abonnement</div>
+            <div style="margin-top:4px">${new Date(sub.subscription_date).toLocaleDateString('fr-FR')} → ${new Date(new Date(sub.subscription_date).setFullYear(new Date(sub.subscription_date).getFullYear()+1)).toLocaleDateString('fr-FR')}</div>
           </div>
         </div>
       </div>
@@ -953,10 +949,10 @@ function viewSubscriberProfile(id){
           <td>${ship.shipment_number}</td>
           <td>#${ship.magazine_number}</td>
           <td>#${ship.poster_number}</td>
-          <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+          <td>${ship.sticker_pair*2-1}-${ship.sticker_pair*2}</td>
           <td>${new Date(ship.scheduled_date).toLocaleDateString('fr-FR')}</td>
           <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at ? '✅ Envoyé '+new Date(ship.sent_at).toLocaleDateString('fr-FR') : '⏳ En attente'}</span></td>
-          <td style="text-align:right">${ship.sent_at?`<button class="action-btn" style="color:var(--warning)" onclick="unmarkSentFromProfile('${ship.id}')">✕</button>`:`<button class="action-btn" onclick="markSentFromProfile('${ship.id}')">✓</button>`}</td>
+          <td style="text-align:right">${ship.sent_at?`<button class="action-btn" style="color:var(--warning)" onclick="unmarkSentFromProfile(${ship.id})">✕</button>`:`<button class="action-btn" onclick="markSentFromProfile(${ship.id})">✓</button>`}</td>
         </tr>`).join('')}</tbody>
       </table>
     </div>
@@ -968,22 +964,10 @@ function viewSubscriberProfile(id){
 }
 
 function markSentFromProfile(shipId){
-
   if(!confirm('Marquer cet envoi comme envoyé?')) return;
   const ship = shipments.find(s=>s.id===shipId);
   ship.sent_at = new Date().toISOString();
   const subId = ship.subscriber_id;
-  
-  // Sauvegarder à Supabase
-  if(sb) {
-    (async () => {
-      try {
-        await sb.from('shipments').update({sent_at: ship.sent_at}).eq('id', shipId);
-      } catch(e) {
-        console.error('❌ Erreur update:', e.message);
-      }
-    })();
-  }
   
   syncToGoogleSheets({
     action: 'updateShipment',
@@ -996,22 +980,10 @@ function markSentFromProfile(shipId){
 }
 
 function unmarkSentFromProfile(shipId){
-
   if(!confirm('Annuler le statut "envoyé" pour cet envoi?')) return;
   const ship = shipments.find(s=>s.id===shipId);
   ship.sent_at = null;
   const subId = ship.subscriber_id;
-  
-  // Sauvegarder à Supabase
-  if(sb) {
-    (async () => {
-      try {
-        await sb.from('shipments').update({sent_at: null}).eq('id', shipId);
-      } catch(e) {
-        console.error('❌ Erreur update:', e.message);
-      }
-    })();
-  }
   
   syncToGoogleSheets({
     action: 'updateShipment',
@@ -1087,12 +1059,12 @@ function renderEnvois(){
           <tbody>${byMonth[month].map(ship=>{
             const sub = subscribers.find(x=>x.id===ship.subscriber_id);
             return `<tr class="shipment-row" data-subscriber="${(sub.first_name + ' ' + sub.last_name).toLowerCase()}">
-              <td class="nm" style="cursor:pointer;color:var(--accent)" onclick="openProfileModal('${sub.id}')">${sub.first_name} ${sub.last_name}</td>
+              <td class="nm" style="cursor:pointer;color:var(--accent)" onclick="openProfileModal(${sub.id})">${sub.first_name} ${sub.last_name}</td>
               <td>#${ship.magazine_number}</td>
               <td>#${ship.poster_number}</td>
-              <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+              <td>${ship.sticker_pair*2-1}-${ship.sticker_pair*2}</td>
               <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
-              <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
+              <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent(${ship.id})" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent(${ship.id})">✓</button>`}</td>
             </tr>`;
           }).join('')}</tbody>
         </table>
@@ -1107,12 +1079,12 @@ function renderEnvois(){
         <tbody id="shipmentsTable">${byMonth[selectedMonth].map(ship=>{
           const sub = subscribers.find(x=>x.id===ship.subscriber_id);
           return `<tr class="shipment-row" data-subscriber="${(sub.first_name + ' ' + sub.last_name).toLowerCase()}">
-            <td class="nm" style="cursor:pointer;color:var(--accent)" onclick="openProfileModal('${sub.id}')">${sub.first_name} ${sub.last_name}</td>
+            <td class="nm" style="cursor:pointer;color:var(--accent)" onclick="openProfileModal(${sub.id})">${sub.first_name} ${sub.last_name}</td>
             <td>#${ship.magazine_number}</td>
             <td>#${ship.poster_number}</td>
-            <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+            <td>${ship.sticker_pair*2-1}-${ship.sticker_pair*2}</td>
             <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
-            <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
+            <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent(${ship.id})" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent(${ship.id})">✓</button>`}</td>
           </tr>`;
         }).join('')}</tbody>
       </table>
@@ -1134,22 +1106,9 @@ function filterShipments(){
 }
 
 function markSent(id){
-
   if(!confirm('Marquer cet envoi comme envoyé?')) return;
   const ship = shipments.find(s=>s.id===id);
   ship.sent_at = new Date().toISOString();
-  
-  // Sauvegarder à Supabase
-  if(sb) {
-    (async () => {
-      try {
-        await sb.from('shipments').update({sent_at: ship.sent_at}).eq('id', id);
-        console.log('✅ Envoi marqué comme envoyé');
-      } catch(e) {
-        console.error('❌ Erreur update:', e.message);
-      }
-    })();
-  }
   
   syncToGoogleSheets({
     action: 'updateShipment',
@@ -1162,22 +1121,9 @@ function markSent(id){
 }
 
 function unmarkSent(id){
-
   if(!confirm('Annuler le statut "envoyé" pour cet envoi?')) return;
   const ship = shipments.find(s=>s.id===id);
   ship.sent_at = null;
-  
-  // Sauvegarder à Supabase
-  if(sb) {
-    (async () => {
-      try {
-        await sb.from('shipments').update({sent_at: null}).eq('id', id);
-        console.log('✅ Statut annulé');
-      } catch(e) {
-        console.error('❌ Erreur update:', e.message);
-      }
-    })();
-  }
   
   syncToGoogleSheets({
     action: 'updateShipment',
@@ -1190,7 +1136,6 @@ function unmarkSent(id){
 }
 
 function openProfileModal(subId){
-
   const sub = subscribers.find(s=>s.id===subId);
   if(!sub) return;
   
@@ -1295,16 +1240,6 @@ function renderSettings(){
   updateCounts();
   $('#content').innerHTML = `
     <div class="head"><h1>⚙️ Paramètres</h1><p>Configuration de l'application</p></div>
-    
-    <div class="glass" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div>
-          <div style="font-size:13px;font-weight:700">👤 Compte</div>
-          <div style="font-size:12px;color:var(--ink-3);margin-top:4px">paul@sen-no-sen.com</div>
-        </div>
-        <button class="btn" style="background:rgba(255,69,58,.2);border:1px solid rgba(255,69,58,.4);color:#FF453A" onclick="doLogout()">📴 Déconnexion</button>
-      </div>
-    </div>
     
     <div class="glass">
       <div style="margin-bottom:24px">
@@ -1439,83 +1374,8 @@ function exportData(){
 const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 
-// ==== FONCTIONS AUTH SUPABASE ====
-async function doLogin(e) {
-  e.preventDefault();
-  const email = $('#loginEmail').value;
-  const pwd = $('#loginPassword').value;
-  const errDiv = $('#loginError');
-  
-  if(!sb) {
-    errDiv.textContent = 'Erreur Supabase';
-    errDiv.style.display = 'block';
-    return;
-  }
-  
-  try {
-    const {data, error} = await sb.auth.signInWithPassword({email, password: pwd});
-    if(error) throw error;
-    
-    $('#loginScreen').style.display = 'none';
-    await loadDataFromSupabase();
-    renderDash();
-    applyTheme();
-  } catch(e) {
-    errDiv.textContent = e.message || 'Erreur de connexion';
-    errDiv.style.display = 'block';
-  }
-}
-
-async function doLogout() {
-  if(!confirm('Déconnecter?')) return;
-  await sb.auth.signOut();
-  subscribers = [];
-  shipments = [];
-  $('#loginScreen').style.display = 'flex';
-  $('#loginEmail').value = '';
-  $('#loginPassword').value = '';
-  $('#loginError').style.display = 'none';
-  $('#loginEmail').focus();
-}
-
-async function loadDataFromSupabase() {
-  try {
-    const { data: subs, error: subErr } = await sb.from('subscribers').select('*');
-    if(subErr) throw subErr;
-    subscribers = subs || [];
-    
-    const { data: ships, error: shipErr } = await sb.from('shipments').select('*');
-    if(shipErr) throw shipErr;
-    shipments = ships || [];
-    
-    console.log(`✅ ${subscribers.length} abonnés, ${shipments.length} envois chargés`);
-  } catch(e) {
-    console.error('❌ Erreur chargement:', e.message);
-  }
-}
-
-// Initialisation au démarrage
-(async () => {
-  if(window.supabase) {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log('✅ Supabase chargé');
-    
-    const {data: {session}} = await sb.auth.getSession();
-    if(session) {
-      console.log('✅ Session trouvée');
-      $('#loginScreen').style.display = 'none';
-      await loadDataFromSupabase();
-      renderDash();
-      applyTheme();
-    } else {
-      console.log('⚠️ Pas de session - affichage login');
-      $('#loginScreen').style.display = 'flex';
-      $('#loginEmail').focus();
-    }
-  } else {
-    console.error('❌ Supabase CDN pas chargé');
-  }
-})();
+renderDash();
+applyTheme();
 </script>
 </body>
 </html>
