@@ -12,7 +12,6 @@
   --accent:#7C5CFF;
   --accent-soft:#AF52DE;
   --accent-deep:#5D3FA6;
-  --bg-1:#1e1547;--bg-2:#141030;--bg-3:#0a0612;
   --success:#32D74B;
   --warning:#FFD426;
   --danger:#FF453A;
@@ -57,6 +56,7 @@ aside{display:flex;flex-direction:column;gap:20px;overflow:auto}
 main{display:flex;flex-direction:column;gap:18px;overflow:auto}
 .head h1{font-size:26px;font-weight:700}
 .head p{font-size:13px;color:var(--ink-3)}
+.head{display:flex;justify-content:space-between;align-items:start}
 
 .glass{background:linear-gradient(158deg,var(--g-hi) 0%,var(--g-lo) 42%,var(--g-mid) 100%);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));border:1px solid var(--g-edge);border-radius:var(--r-lg);box-shadow:var(--shadow-md);padding:20px}
 
@@ -82,6 +82,10 @@ main{display:flex;flex-direction:column;gap:18px;overflow:auto}
 .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(50,215,75,.15);color:var(--success);border:1px solid rgba(50,215,75,.25)}
 .pill.o{background:rgba(255,212,38,.15);color:var(--warning);border-color:rgba(255,212,38,.25)}
 
+.search-box{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-md);margin-bottom:16px}
+.search-box input{flex:1;background:transparent;border:none;color:var(--ink);font-size:14px;outline:none}
+.search-box input::placeholder{color:var(--ink-3)}
+
 .action-btn{padding:6px 10px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink-2);cursor:pointer;font-size:12px;font-weight:600;transition:.2s}
 .action-btn:hover{background:var(--glass-hi);color:var(--ink)}
 .action-btn.danger{color:var(--danger)}
@@ -94,74 +98,69 @@ main{display:flex;flex-direction:column;gap:18px;overflow:auto}
 
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--ink-2)}
-.form-group input, .form-group select{width:100%;padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px;font-family:inherit}
-.form-group input:focus, .form-group select:focus{outline:none;border-color:var(--accent)}
+.form-group input, .form-group select, .form-group textarea{width:100%;padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px;font-family:inherit}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus{outline:none;border-color:var(--accent)}
 
 .form-actions{display:flex;gap:12px}
 .form-actions button{flex:1}
 
-.auth-box{width:100%;max-width:420px;padding:40px;background:var(--navy-700);border:1px solid var(--stroke-2);border-radius:var(--r-lg);box-shadow:var(--shadow-md)}
-.auth-mark{width:50px;height:50px;margin:0 auto 20px;border-radius:var(--r-md);background:linear-gradient(145deg,var(--accent),var(--accent-deep));display:grid;place-items:center;color:#fff;font-weight:700;font-size:24px}
-.auth-box h2{text-align:center;margin-bottom:24px;font-size:18px;font-weight:700}
-.auth-box .form-group{margin-bottom:14px}
-.auth-box button{width:100%;margin-top:8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--glass-hi);border:1px solid var(--stroke-2);padding:12px 20px;border-radius:var(--r-sm);z-index:9998;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
-#toasts{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:12px;z-index:9998}
-.toast{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--glass-hi);border:1px solid var(--stroke-2);border-radius:var(--r-md);animation:slideIn .2s ease-out}
-.toast.err{border-color:var(--danger)}
-.toast.ok{border-color:var(--success)}
-@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+.shipment-row{cursor:pointer}
+.progress-bar{height:10px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));transition:width .4s}
 </style>
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
 <div id="authScreen">
-  <div class="auth-box">
-    <div class="auth-mark">🥋</div>
-    <h2>Connexion</h2>
-    <form onsubmit="handleLogin(event)">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" required>
-      </div>
-      <div class="form-group">
-        <label>Mot de passe</label>
-        <input type="password" id="loginPassword" required>
-      </div>
-      <div id="loginError" style="color:var(--danger);font-size:12px;margin-bottom:12px;display:none"></div>
-      <button type="submit" class="btn pri">Se connecter</button>
-      <div style="font-size:11px;color:var(--ink-3);margin-top:16px;text-align:center">
-        Démo: paul@sen-no-sen.com / Poloremy45@
-      </div>
-    </form>
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="width:60px;height:60px;background:linear-gradient(145deg,var(--accent),var(--accent-deep));border-radius:var(--r-md);display:grid;place-items:center;margin:0 auto;color:#fff;font-size:32px;font-weight:700">🥋</div>
+    <h1 style="font-size:22px;margin-top:12px">L'Esprit du Judo</h1>
+    <p style="color:var(--ink-3);font-size:13px;margin-top:4px">Gestion des Envois</p>
   </div>
+  <form onsubmit="handleLogin(event)" style="width:100%;max-width:320px">
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="paul@sen-no-sen.com" required>
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="loginPassword" required>
+    </div>
+    <div id="loginError" style="display:none;color:var(--danger);font-size:12px;margin-bottom:12px"></div>
+    <button type="submit" class="btn pri" style="width:100%">Se connecter</button>
+  </form>
 </div>
 
+<!-- MAIN APP -->
 <div id="root" class="hidden">
   <aside>
     <div class="logo">
       <div class="ico">🥋</div>
-      <h1>Judo Kids</h1>
+      <div><h1>Judo Kids</h1></div>
     </div>
-    
-    <div>
-      <div class="nav-sec">Navigation</div>
+    <div style="flex:1">
+      <div class="nav-sec">MENU</div>
       <button class="nav-btn on" onclick="switchView('dash')">📊 Dashboard</button>
-      <button class="nav-btn" onclick="switchView('subscribers')">👥 Abonnés <span class="nav-cnt" id="cntSub">0</span></button>
-      <button class="nav-btn" onclick="switchView('shipments')">📦 Envois <span class="nav-cnt" id="cntShip">0</span></button>
+      <button class="nav-btn" onclick="switchView('abonnes')">👥 Abonnés</button>
+      <button class="nav-btn" onclick="switchView('envois')">📮 Envois</button>
       <button class="nav-btn" onclick="switchView('settings')">⚙️ Paramètres</button>
     </div>
-    
-    <button class="btn" style="margin-top:auto;width:100%" onclick="handleLogout()">🚪 Déconnexion</button>
+    <button class="nav-btn" style="color:var(--danger)" onclick="handleLogout()">🚪 Déconnexion</button>
   </aside>
 
-  <main id="content"></main>
+  <main>
+    <div id="content" style="flex:1;overflow:auto"></div>
+  </main>
 </div>
 
-<!-- MODALES -->
+<!-- ADD SUBSCRIBER MODAL -->
 <div id="addModal" class="modal">
   <div class="modal-box">
-    <h2>➕ Ajouter un abonné</h2>
+    <h2>Ajouter un Abonné</h2>
     <form onsubmit="handleAddSubscriber(event)">
       <div class="form-group">
         <label>Prénom*</label>
@@ -181,7 +180,7 @@ main{display:flex;flex-direction:column;gap:18px;overflow:auto}
       </div>
       <div class="form-group">
         <label>Adresse</label>
-        <input type="text" id="add_addr">
+        <textarea id="add_addr" style="resize:vertical;min-height:60px"></textarea>
       </div>
       <div class="form-group">
         <label>Date d'abonnement*</label>
@@ -197,16 +196,17 @@ main{display:flex;flex-direction:column;gap:18px;overflow:auto}
         </select>
       </div>
       <div class="form-actions">
-        <button type="button" class="btn" onclick="closeModal('addModal')">Annuler</button>
-        <button type="submit" class="btn pri">Créer</button>
+        <button type="button" class="btn" onclick="closeAddModal()">Annuler</button>
+        <button type="submit" class="btn pri">Ajouter</button>
       </div>
     </form>
   </div>
 </div>
 
+<!-- EDIT SUBSCRIBER MODAL -->
 <div id="editModal" class="modal">
   <div class="modal-box">
-    <h2>✏️ Modifier abonné</h2>
+    <h2>Modifier un Abonné</h2>
     <form onsubmit="handleEditSubscriber(event)">
       <div class="form-group">
         <label>Prénom*</label>
@@ -226,98 +226,133 @@ main{display:flex;flex-direction:column;gap:18px;overflow:auto}
       </div>
       <div class="form-group">
         <label>Adresse</label>
-        <input type="text" id="edit_addr">
+        <textarea id="edit_addr" style="resize:vertical;min-height:60px"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Date d'abonnement*</label>
+        <input type="date" id="edit_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée d'abonnement*</label>
+        <select id="edit_duration" required>
+          <option value="">-- Sélectionner --</option>
+          <option value="1">1 an (6 envois)</option>
+          <option value="2">2 ans (12 envois)</option>
+          <option value="3">3 ans (18 envois)</option>
+        </select>
       </div>
       <div class="form-actions">
-        <button type="button" class="btn" onclick="closeModal('editModal')">Annuler</button>
-        <button type="submit" class="btn pri">Sauvegarder</button>
+        <button type="button" class="btn" onclick="closeEditModal()">Annuler</button>
+        <button type="submit" class="btn pri">Mettre à jour</button>
       </div>
     </form>
   </div>
 </div>
 
-<div id="toasts"></div>
+<!-- RENEW SUBSCRIPTION MODAL -->
+<div id="renewModal" class="modal">
+  <div class="modal-box">
+    <h2>Renouveler l'abonnement</h2>
+    <form onsubmit="handleRenewal(event)">
+      <div class="form-group">
+        <label>Nouvelle date de départ*</label>
+        <input type="date" id="renew_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée du nouvel abonnement*</label>
+        <select id="renew_duration" required>
+          <option value="">-- Sélectionner --</option>
+          <option value="1">1 an (6 envois)</option>
+          <option value="2">2 ans (12 envois)</option>
+          <option value="3">3 ans (18 envois)</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" onclick="closeRenewModal()">Annuler</button>
+        <button type="submit" class="btn pri">Créer le renouvellement</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const $ = id => document.getElementById(id);
+const esc = t => (t+'').replace(/[&<>"]/g, c => ({' &':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const uid = () => crypto.getRandomValues(new Uint8Array(16)).reduce((s,c) => s + c.toString(16).padStart(2,'0'),'');
+const toast = msg => { const e=document.createElement('div'); e.className='toast'; e.textContent=msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); };
 
-const SUPABASE_URL = 'https://klbftabestrvyvmqcjca.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
+let sb;
+let S = { user: null, db: { subscribers: [], shipments: [] }, view: 'dash', editingId: null, renewingId: null };
 
-// Fallback localStorage for Safari file://
-const memstore = {};
-const stg = {
-  getItem: k => { try { return localStorage.getItem(k); } catch (e) { return memstore[k] || null; } },
-  setItem: (k, v) => { try { localStorage.setItem(k, v); } catch (e) { memstore[k] = v; } },
-  removeItem: k => { try { localStorage.removeItem(k); } catch (e) { delete memstore[k]; } }
-};
+// CALENDAR COMPLET (18 envois)
+const SCHEDULE = [
+  {shipment:1, mag:4, release:'2026-09-01', deadline:'2026-10-15'},
+  {shipment:2, mag:5, release:'2026-11-01', deadline:'2026-12-15'},
+  {shipment:3, mag:6, release:'2027-01-01', deadline:'2027-02-15'},
+  {shipment:4, mag:7, release:'2027-03-01', deadline:'2027-04-15'},
+  {shipment:5, mag:8, release:'2027-05-01', deadline:'2027-06-15'},
+  {shipment:6, mag:9, release:'2027-07-01', deadline:'2027-08-15'},
+  {shipment:7, mag:10, release:'2027-09-01', deadline:'2027-10-15'},
+  {shipment:8, mag:11, release:'2027-11-01', deadline:'2027-12-15'},
+  {shipment:9, mag:12, release:'2028-01-01', deadline:'2028-02-15'},
+  {shipment:10, mag:13, release:'2028-03-01', deadline:'2028-04-15'},
+  {shipment:11, mag:14, release:'2028-05-01', deadline:'2028-06-15'},
+  {shipment:12, mag:15, release:'2028-07-01', deadline:'2028-08-15'},
+  {shipment:13, mag:16, release:'2028-09-01', deadline:'2028-10-15'},
+  {shipment:14, mag:17, release:'2028-11-01', deadline:'2028-12-15'},
+  {shipment:15, mag:18, release:'2029-01-01', deadline:'2029-02-15'},
+  {shipment:16, mag:19, release:'2029-03-01', deadline:'2029-04-15'},
+  {shipment:17, mag:20, release:'2029-05-01', deadline:'2029-06-15'},
+  {shipment:18, mag:21, release:'2029-07-01', deadline:'2029-08-15'},
+];
 
-let sb = null;
-
-// STATE GLOBAL (Scan Avis pattern)
-const S = {
-  user: null,
-  db: null,
-  view: 'dash'
-};
-
-// UTILITAIRES
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
-const esc = s => String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
-const uid = () => crypto.randomUUID?.() || 'xxxx-xxxx-xxxx-xxxx'.replace(/x/g,()=>(Math.random()*16|0).toString(16));
-
-function toast(msg, type='ok') {
-  const ico = {ok:'✓', er:'⚠', in:'ℹ'}[type]||'ℹ';
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span>${ico}</span><span>${esc(msg)}</span>`;
-  $('#toasts').appendChild(el);
-  setTimeout(() => el.remove(), 3000);
+function getMagazineForSubscription(subDate) {
+  const subDateObj = new Date(subDate);
+  for (let i = 0; i < SCHEDULE.length; i++) {
+    const deadlineDate = new Date(SCHEDULE[i].deadline);
+    if (subDateObj <= deadlineDate) return SCHEDULE[i].mag;
+  }
+  return SCHEDULE[SCHEDULE.length - 1].mag + 1;
 }
 
-function openModal(id) { $(`#${id}`).classList.add('open'); }
-function closeModal(id) { $(`#${id}`).classList.remove('open'); }
-
-// INIT SUPABASE
+// SUPABASE INIT
 function initClient() {
-  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      storage: stg,
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: false
-    }
-  });
-
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT' && S.user) {
+  const URL = 'https://klbftabestrvyvmqcjca.supabase.co';
+  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
+  
+  const memstore = {};
+  const stg = {
+    getItem: k => { try { return localStorage.getItem(k); } catch(e) { return memstore[k]||null; } },
+    setItem: (k,v) => { try { localStorage.setItem(k,v); } catch(e) { memstore[k]=v; } },
+    removeItem: k => { try { localStorage.removeItem(k); } catch(e) { delete memstore[k]; } }
+  };
+  
+  sb = supabase.createClient(URL, KEY, { auth: { storage: stg, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
+  
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_OUT') {
       S.user = null;
-      S.db = null;
       $('#root').classList.add('hidden');
       $('#authScreen').classList.remove('hidden');
-      $('#loginPassword').value = '';
-      $('#loginEmail').value = '';
     }
   });
 }
 
-// AUTHENTIFICATION
+// AUTH
 async function handleLogin(e) {
   e.preventDefault();
   const email = $('#loginEmail').value.trim().toLowerCase();
   const pass = $('#loginPassword').value;
-
   if (!email || !pass) return showLoginError('Remplissez tous les champs');
-
+  
   const btn = e.target.querySelector('button');
   btn.disabled = true;
   btn.textContent = 'Connexion…';
-
+  
   try {
     const { error } = await sb.auth.signInWithPassword({ email, password: pass });
     if (error) throw error;
-
     const ok = await openSession();
     if (ok) toast('Connecté! 🎯');
   } catch (err) {
@@ -338,24 +373,21 @@ async function openSession() {
   try {
     const { data: { user } } = await sb.auth.getUser();
     if (!user) return false;
-
+    
     let { data: prof } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
-
     if (prof && prof.actif === false) {
       await sb.auth.signOut();
       showLoginError('Compte désactivé');
       return false;
     }
-
+    
     S.user = { id: user.id, email: user.email, name: prof?.nom || user.email };
     S.db = await API.loadAll();
-
+    
     $('#authScreen').classList.add('hidden');
     $('#root').classList.remove('hidden');
-    
     renderDash();
-    updateCounts();
-
+    
     return true;
   } catch (err) {
     console.error('openSession:', err);
@@ -371,11 +403,9 @@ async function handleLogout() {
   S.db = null;
   $('#root').classList.add('hidden');
   $('#authScreen').classList.remove('hidden');
-  $('#loginPassword').value = '';
-  $('#loginEmail').value = '';
 }
 
-// API OBJECT (SCAN AVIS PATTERN)
+// API
 const API = {
   async loadAll() {
     const uid = S.user.id;
@@ -399,33 +429,21 @@ const API = {
       subscription_date: data.date,
       subscription_duration: data.duration
     });
-
+    
     if (error) throw error;
-
-    // Créer les 6 envois automatiquement
-    const PLAN = [
-      {mag:4,release:'2026-09-01'},{mag:5,release:'2026-11-01'},{mag:6,release:'2027-01-01'},
-      {mag:7,release:'2027-03-01'},{mag:8,release:'2027-05-01'},{mag:9,release:'2027-07-01'}
-    ];
-
+    
+    const startMag = getMagazineForSubscription(data.date);
     const subDate = new Date(data.date);
     const endDate = new Date(subDate);
-    endDate.setFullYear(endDate.getFullYear() + data.duration);
-
-    let firstMag = 13;
-    for (let i=0; i<PLAN.length; i++) {
-      const d = new Date('2026-09-01');
-      if (subDate <= d) { firstMag = PLAN[i].mag; break; }
-    }
-
+    endDate.setFullYear(endDate.getFullYear() + parseInt(data.duration));
+    
     const ships = [];
     let shipNum = 1;
-    for (let i=0; i<PLAN.length && shipNum<=6; i++) {
-      const sched = PLAN[i];
-      if (sched.mag < firstMag) continue;
+    for (let sched of SCHEDULE) {
+      if (sched.mag < startMag) continue;
       const sendDate = new Date(sched.release);
       if (sendDate > endDate) break;
-
+      
       ships.push({
         id: uid(),
         user_id: S.user.id,
@@ -440,12 +458,12 @@ const API = {
       });
       shipNum++;
     }
-
+    
     if (ships.length > 0) {
       const { error: e2 } = await sb.from('shipments').insert(ships);
       if (e2) throw e2;
     }
-
+    
     S.db = await this.loadAll();
   },
 
@@ -455,23 +473,31 @@ const API = {
       last_name: data.lname,
       email: data.email || null,
       phone: data.phone || null,
-      address: data.addr || null
+      address: data.addr || null,
+      subscription_date: data.date,
+      subscription_duration: data.duration
     }).eq('id', id);
-
+    
     if (error) throw error;
     S.db = await this.loadAll();
   },
 
   async deleteSubscriber(id) {
-    const { error } = await sb.from('subscribers').delete().eq('id', id);
-    if (error) throw error;
+    const { error: e1 } = await sb.from('shipments').delete().eq('subscriber_id', id);
+    if (e1) throw e1;
+    const { error: e2 } = await sb.from('subscribers').delete().eq('id', id);
+    if (e2) throw e2;
     S.db = await this.loadAll();
   },
 
   async markSent(shipId) {
-    const { error } = await sb.from('shipments').update({
-      sent_at: new Date().toISOString()
-    }).eq('id', shipId);
+    const { error } = await sb.from('shipments').update({ sent_at: new Date().toISOString() }).eq('id', shipId);
+    if (error) throw error;
+    S.db = await this.loadAll();
+  },
+
+  async unmarkSent(shipId) {
+    const { error } = await sb.from('shipments').update({ sent_at: null }).eq('id', shipId);
     if (error) throw error;
     S.db = await this.loadAll();
   }
@@ -479,135 +505,242 @@ const API = {
 
 // RENDERERS
 function renderDash() {
-  const subs = S.db.subscribers || [];
-  const ships = S.db.shipments || [];
-  const sent = ships.filter(s => s.sent_at).length;
+  const today = new Date();
+  let currentMag = null;
+  for (let sched of SCHEDULE) {
+    if (new Date(sched.release) <= today) currentMag = sched.mag;
+    else break;
+  }
+  
+  const pending = S.db.shipments.filter(s => !s.sent_at).length;
+  const sent = S.db.shipments.filter(s => s.sent_at).length;
+  const currentPending = S.db.shipments.filter(s => s.magazine_number === currentMag && !s.sent_at).length;
+  const currentSent = S.db.shipments.filter(s => s.magazine_number === currentMag && s.sent_at).length;
+  const prog = currentSent + currentPending > 0 ? Math.round((currentSent / (currentSent + currentPending)) * 100) : 0;
+  
+  $('#content').innerHTML = `
+    <div class="head"><h1>📊 Dashboard</h1><p>Vue d'ensemble</p></div>
+    <div class="grid g-4">
+      <div class="glass kpi">
+        <div class="lab">👥 Abonnés</div>
+        <div class="val">${S.db.subscribers.length}</div>
+        <div class="sub">Actuellement actifs</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">📦 En attente</div>
+        <div class="val">${currentPending}</div>
+        <div class="sub">Mag #${currentMag} à envoyer</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">✅ Envoyés</div>
+        <div class="val">${currentSent}</div>
+        <div class="sub">Mag #${currentMag}</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">🎯 Total</div>
+        <div class="val">${pending}</div>
+        <div class="sub">Tous les magazines</div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:12px">📚 Magazine #${currentMag}</div>
+      <div class="progress-bar">
+        <div class="progress-bar-fill" style="width:${prog}%"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-3);margin-top:8px"><b>${currentSent}/${currentSent+currentPending}</b> abonnés livrés</div>
+    </div>
+  `;
+  switchViewButton('dash');
+}
 
+function renderAbonnes() {
   $('#content').innerHTML = `
     <div class="head">
-      <h1>📊 Dashboard</h1>
-      <p>Vue d'ensemble</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+        <div><h1>👥 Abonnés</h1><p>${S.db.subscribers.length} abonnés enregistrés</p></div>
+        <button class="btn pri" onclick="openAddModal()">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" id="searchAbonnes" placeholder="Rechercher..." onkeyup="filterAbonnes()">
     </div>
     <div class="glass">
-      <div class="grid g-4">
-        <div class="kpi">
-          <div class="lab">Abonnés</div>
-          <div class="val">${subs.length}</div>
-        </div>
-        <div class="kpi">
-          <div class="lab">Envois total</div>
-          <div class="val">${ships.length}</div>
-        </div>
-        <div class="kpi">
-          <div class="lab">Envoyés</div>
-          <div class="val" style="color:var(--success)">${sent}</div>
-        </div>
-        <div class="kpi">
-          <div class="lab">Progression</div>
-          <div class="val" style="color:var(--warning)">${ships.length ? Math.round(sent*100/ships.length) : 0}%</div>
-        </div>
+      <table class="tbl">
+        <thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Date d'abo</th><th>Actions</th></tr></thead>
+        <tbody id="aboTable">${renderAbonnesRows()}</tbody>
+      </table>
+    </div>
+  `;
+  switchViewButton('abonnes');
+}
+
+function renderAbonnesRows() {
+  const search = $('#searchAbonnes')?.value.toLowerCase() || '';
+  return S.db.subscribers
+    .filter(s => !search || s.first_name.toLowerCase().includes(search) || s.last_name.toLowerCase().includes(search) || (s.email && s.email.toLowerCase().includes(search)))
+    .map(s => `
+      <tr onclick="viewProfile(${s.id})" style="cursor:pointer">
+        <td class="nm">${esc(s.first_name + ' ' + s.last_name)}</td>
+        <td style="color:var(--ink-3);font-size:11.5px">${esc(s.email || '—')}</td>
+        <td style="color:var(--ink-3);font-size:11.5px">${esc(s.phone || '—')}</td>
+        <td style="color:var(--ink-3);font-size:11.5px">${s.subscription_date}</td>
+        <td style="display:flex;gap:6px">
+          <button class="action-btn" onclick="event.stopPropagation(); editSub(${s.id})">✏️</button>
+          <button class="action-btn danger" onclick="event.stopPropagation(); deleteSub(${s.id})">🗑️</button>
+        </td>
+      </tr>
+    `).join('');
+}
+
+function filterAbonnes() {
+  const tbody = $('#aboTable');
+  if (tbody) tbody.innerHTML = renderAbonnesRows();
+}
+
+function renderEnvois() {
+  const byMonth = {};
+  S.db.shipments.forEach(s => {
+    const key = s.scheduled_date.slice(0, 7);
+    if (!byMonth[key]) byMonth[key] = [];
+    byMonth[key].push(s);
+  });
+  
+  const selectedMonth = window.selectedMonth || 'all';
+  const monthKeys = Object.keys(byMonth).sort();
+  
+  let html = `
+    <div class="head">
+      <div style="display:flex;align-items:center;gap:12px;width:100%">
+        <h1>📮 Envois</h1>
+        <select id="monthFilter" onchange="window.selectedMonth = this.value; renderEnvois()" style="padding:10px 14px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink)">
+          <option value="all" ${selectedMonth === 'all' ? 'selected' : ''}>📋 Tous les envois</option>
+          ${monthKeys.map(m => `<option value="${m}" ${m === selectedMonth ? 'selected' : ''}>${new Date(m + '-01').toLocaleDateString('fr-FR', {month:'long', year:'numeric'})}</option>`).join('')}
+        </select>
       </div>
     </div>
   `;
-}
-
-function renderSubscribers() {
-  const subs = S.db.subscribers || [];
-
-  let html = `
-    <div class="head">
-      <h1>👥 Abonnés</h1>
-      <p>${subs.length} abonné(s)</p>
-    </div>
-    <button class="btn pri" onclick="openModal('addModal')" style="width:fit-content">➕ Ajouter</button>
-    <div class="glass">
+  
+  if (selectedMonth === 'all') {
+    monthKeys.forEach(month => {
+      const m = new Date(month + '-01').toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
+      html += `<div class="glass" style="margin-bottom:16px">
+        <div style="font-weight:700;margin-bottom:12px">${m}</div>
+        <table class="tbl">
+          <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th>Action</th></tr></thead>
+          <tbody>${byMonth[month].map(ship => {
+            const sub = S.db.subscribers.find(x => x.id === ship.subscriber_id);
+            return `<tr>
+              <td>${esc(sub?.first_name + ' ' + sub?.last_name)}</td>
+              <td>#${ship.magazine_number}</td>
+              <td>#${ship.poster_number}</td>
+              <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+              <td><span class="pill ${ship.sent_at ? '' : 'o'}">${ship.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
+              <td>${ship.sent_at ? `<button class="btn sm" onclick="API.unmarkSent('${ship.id}').then(() => renderEnvois())" style="color:var(--warning)">✕</button>` : `<button class="btn sm" onclick="API.markSent('${ship.id}').then(() => renderEnvois())">✓</button>`}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+    });
+  } else if (byMonth[selectedMonth]) {
+    const m = new Date(selectedMonth + '-01').toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
+    html += `<div class="glass">
+      <div style="font-weight:700;margin-bottom:12px">${m}</div>
       <table class="tbl">
-        <thead><tr>
-          <th>Nom</th><th>Email</th><th>Téléphone</th><th>Date abo</th><th>Durée</th><th>Actions</th>
-        </tr></thead>
-        <tbody>
-  `;
-
-  subs.forEach(s => {
-    html += `<tr>
-      <td class="nm">${esc(s.first_name)} ${esc(s.last_name)}</td>
-      <td style="font-size:12px;color:var(--ink-3)">${esc(s.email||'—')}</td>
-      <td style="font-size:12px;color:var(--ink-3)">${esc(s.phone||'—')}</td>
-      <td style="font-size:12px">${s.subscription_date}</td>
-      <td>${s.subscription_duration} an(s)</td>
-      <td>
-        <button class="action-btn" onclick="editSub('${s.id}')">✏️</button>
-        <button class="action-btn danger" onclick="deleteSub('${s.id}')">✕</button>
-      </td>
-    </tr>`;
-  });
-
-  html += `</tbody></table></div>`;
+        <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody>${byMonth[selectedMonth].map(ship => {
+          const sub = S.db.subscribers.find(x => x.id === ship.subscriber_id);
+          return `<tr>
+            <td>${esc(sub?.first_name + ' ' + sub?.last_name)}</td>
+            <td>#${ship.magazine_number}</td>
+            <td>#${ship.poster_number}</td>
+            <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+            <td><span class="pill ${ship.sent_at ? '' : 'o'}">${ship.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
+            <td>${ship.sent_at ? `<button class="btn sm" onclick="API.unmarkSent('${ship.id}').then(() => renderEnvois())" style="color:var(--warning)">✕</button>` : `<button class="btn sm" onclick="API.markSent('${ship.id}').then(() => renderEnvois())">✓</button>`}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+  }
+  
   $('#content').innerHTML = html;
-}
-
-function renderShipments() {
-  const ships = S.db.shipments || [];
-  const subs = S.db.subscribers || [];
-
-  let html = `<div class="head"><h1>📦 Envois</h1><p>${ships.filter(s=>!s.sent_at).length} en attente</p></div><div class="glass">`;
-
-  ships.forEach(s => {
-    const sub = subs.find(x => x.id === s.subscriber_id);
-    const status = s.sent_at
-      ? `<span class="pill o">✓ ${s.sent_at.slice(0,10)}</span>`
-      : `<button class="action-btn" onclick="markSent('${s.id}')">Marquer</button>`;
-
-    html += `<tr>
-      <td class="nm">${esc(sub?.first_name||'?')} ${esc(sub?.last_name||'?')}</td>
-      <td>Mag #${s.magazine_number}</td>
-      <td>Poster #${s.poster_number}</td>
-      <td>Paire #${s.sticker_pair_start}</td>
-      <td>${s.scheduled_date}</td>
-      <td>${status}</td>
-    </tr>`;
-  });
-
-  html += `</table></div>`;
-  $('#content').innerHTML = `<table class="tbl"><thead><tr><th>Abonné</th><th>Magzine</th><th>Poster</th><th>Stickers</th><th>Date</th><th>Status</th></tr></thead><tbody>${html.slice(html.indexOf('<tr>'))}`;
+  switchViewButton('envois');
 }
 
 function renderSettings() {
   $('#content').innerHTML = `
-    <div class="head"><h1>⚙️ Paramètres</h1></div>
+    <div class="head"><h1>⚙️ Paramètres</h1><p>Compte</p></div>
     <div class="glass">
-      <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:12px">
         <div>
-          <div style="font-weight:700">👤 Compte</div>
-          <div style="font-size:12px;color:var(--ink-3);margin-top:4px">${esc(S.user.email)}</div>
-          <div style="font-size:12px;color:var(--ink-3)">${esc(S.user.name)}</div>
+          <div class="lab">Utilisateur</div>
+          <div style="font-weight:600">${esc(S.user.name)}</div>
         </div>
-        <button class="btn" onclick="handleLogout()">🚪 Déconnexion</button>
+        <div>
+          <div class="lab">Email</div>
+          <div style="font-weight:600">${esc(S.user.email)}</div>
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--stroke)">
+          <button class="btn" style="color:var(--danger)" onclick="handleLogout()">Déconnexion</button>
+        </div>
       </div>
+    </div>
+  `;
+  switchViewButton('settings');
+}
+
+function viewProfile(id) {
+  const sub = S.db.subscribers.find(s => s.id === id);
+  const subs = S.db.shipments.filter(s => s.subscriber_id === id).sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
+  const sent = subs.filter(s => s.sent_at).length;
+  
+  $('#content').innerHTML = `
+    <div class="head">
+      <button class="btn" onclick="renderAbonnes()">← Retour</button>
+      <div>
+        <h1>${esc(sub.first_name + ' ' + sub.last_name)}</h1>
+        <p>Abonné depuis le ${sub.subscription_date}</p>
+      </div>
+      <button class="btn pri" onclick="openRenewModal(${id})">🔄 Renouveler</button>
+    </div>
+    
+    <div class="glass" style="margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:12px">📋 Informations</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+        <div><div class="lab">Email</div>${esc(sub.email || '—')}</div>
+        <div><div class="lab">Téléphone</div>${esc(sub.phone || '—')}</div>
+        <div><div class="lab">Adresse</div>${esc(sub.address || '—')}</div>
+        <div><div class="lab">Durée</div>${sub.subscription_duration} an(s)</div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:12px">📚 Envois (${sent}/${subs.length})</div>
+      <table class="tbl">
+        <thead><tr><th>Mag</th><th>Date</th><th>Poster</th><th>Stickers</th><th>Statut</th></tr></thead>
+        <tbody>${subs.map(s => `<tr>
+          <td>#${s.magazine_number}</td>
+          <td>${new Date(s.scheduled_date).toLocaleDateString('fr-FR')}</td>
+          <td>#${s.poster_number}</td>
+          <td>${s.sticker_pair_start}-${s.sticker_pair_end}</td>
+          <td><span class="pill ${s.sent_at ? '' : 'o'}">${s.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
+        </tr>`).join('')}</tbody>
+      </table>
     </div>
   `;
 }
 
-// UI
-function switchView(v) {
-  S.view = v;
-  $$('.nav-btn').forEach(b => b.classList.remove('on'));
-  event.target.closest('.nav-btn').classList.add('on');
-  if (v === 'dash') renderDash();
-  else if (v === 'subscribers') renderSubscribers();
-  else if (v === 'shipments') renderShipments();
-  else if (v === 'settings') renderSettings();
+// MODALS
+function openAddModal() {
+  ['fname','lname','email','phone','addr','date','duration'].forEach(k => $(`add_${k}`).value = '');
+  $('#addModal').classList.add('open');
 }
 
-function updateCounts() {
-  const subs = S.db.subscribers || [];
-  const ships = S.db.shipments || [];
-  const pending = ships.filter(s => !s.sent_at).length;
-  $('#cntSub').textContent = subs.length;
-  $('#cntShip').textContent = pending;
+function closeAddModal() {
+  $('#addModal').classList.remove('open');
 }
 
-// ACTIONS
 async function handleAddSubscriber(e) {
   e.preventDefault();
   const data = {
@@ -617,43 +750,18 @@ async function handleAddSubscriber(e) {
     phone: $('#add_phone').value.trim(),
     addr: $('#add_addr').value.trim(),
     date: $('#add_date').value,
-    duration: parseInt($('#add_duration').value)
+    duration: $('#add_duration').value
   };
-
-  if (!data.fname || !data.lname) return toast('Remplissez nom et prénom', 'er');
-
+  
+  if (!data.fname || !data.lname || !data.date || !data.duration) return toast('Champs requis manquants');
+  
   try {
     await API.saveSubscriber(data);
-    closeModal('addModal');
-    ['fname','lname','email','phone','addr','date','duration'].forEach(k => $(`#add_${k}`).value = '');
-    updateCounts();
-    renderSubscribers();
-    toast('Abonné créé! 🎉', 'ok');
+    toast('Abonné ajouté! 🎉');
+    closeAddModal();
+    renderAbonnes();
   } catch (err) {
-    toast(err.message, 'er');
-  }
-}
-
-async function deleteSub(id) {
-  if (!confirm('Supprimer?')) return;
-  try {
-    await API.deleteSubscriber(id);
-    updateCounts();
-    renderSubscribers();
-    toast('Abonné supprimé', 'ok');
-  } catch (err) {
-    toast(err.message, 'er');
-  }
-}
-
-async function markSent(shipId) {
-  try {
-    await API.markSent(shipId);
-    updateCounts();
-    renderShipments();
-    toast('Envoi marqué ✓', 'ok');
-  } catch (err) {
-    toast(err.message, 'er');
+    toast('Erreur: ' + err.message);
   }
 }
 
@@ -661,14 +769,20 @@ function editSub(id) {
   const sub = S.db.subscribers.find(s => s.id === id);
   if (!sub) return;
   
-  $('#edit_fname').value = sub.first_name;
-  $('#edit_lname').value = sub.last_name;
+  S.editingId = id;
+  $('#edit_fname').value = sub.first_name || '';
+  $('#edit_lname').value = sub.last_name || '';
   $('#edit_email').value = sub.email || '';
   $('#edit_phone').value = sub.phone || '';
   $('#edit_addr').value = sub.address || '';
-  
-  window.currentEditId = id;
-  openModal('editModal');
+  $('#edit_date').value = sub.subscription_date || '';
+  $('#edit_duration').value = sub.subscription_duration || '';
+  $('#editModal').classList.add('open');
+}
+
+function closeEditModal() {
+  $('#editModal').classList.remove('open');
+  S.editingId = null;
 }
 
 async function handleEditSubscriber(e) {
@@ -678,38 +792,95 @@ async function handleEditSubscriber(e) {
     lname: $('#edit_lname').value.trim(),
     email: $('#edit_email').value.trim(),
     phone: $('#edit_phone').value.trim(),
-    addr: $('#edit_addr').value.trim()
+    addr: $('#edit_addr').value.trim(),
+    date: $('#edit_date').value,
+    duration: $('#edit_duration').value
   };
-
+  
+  if (!data.fname || !data.lname || !data.date || !data.duration) return toast('Champs requis manquants');
+  
   try {
-    await API.updateSubscriber(window.currentEditId, data);
-    closeModal('editModal');
-    updateCounts();
-    renderSubscribers();
-    toast('Abonné modifié', 'ok');
+    await API.updateSubscriber(S.editingId, data);
+    toast('Abonné mis à jour! ✅');
+    closeEditModal();
+    renderAbonnes();
   } catch (err) {
-    toast(err.message, 'er');
+    toast('Erreur: ' + err.message);
   }
+}
+
+async function deleteSub(id) {
+  if (!confirm('Supprimer cet abonné et tous ses envois ?')) return;
+  try {
+    await API.deleteSubscriber(id);
+    toast('Abonné supprimé');
+    renderAbonnes();
+  } catch (err) {
+    toast('Erreur: ' + err.message);
+  }
+}
+
+function openRenewModal(id) {
+  S.renewingId = id;
+  $('#renewModal').classList.add('open');
+}
+
+function closeRenewModal() {
+  $('#renewModal').classList.remove('open');
+  S.renewingId = null;
+}
+
+async function handleRenewal(e) {
+  e.preventDefault();
+  const sub = S.db.subscribers.find(s => s.id === S.renewingId);
+  if (!sub) return toast('Abonné non trouvé');
+  
+  const data = {
+    fname: sub.first_name,
+    lname: sub.last_name,
+    email: sub.email,
+    phone: sub.phone,
+    addr: sub.address,
+    date: $('#renew_date').value,
+    duration: $('#renew_duration').value
+  };
+  
+  try {
+    await API.updateSubscriber(S.renewingId, data);
+    toast('Abonnement renouvelé! 🎉');
+    closeRenewModal();
+    renderAbonnes();
+  } catch (err) {
+    toast('Erreur: ' + err.message);
+  }
+}
+
+// UTILITIES
+function switchView(v) {
+  S.view = v;
+  if (v === 'dash') renderDash();
+  else if (v === 'abonnes') renderAbonnes();
+  else if (v === 'envois') renderEnvois();
+  else renderSettings();
+}
+
+function switchViewButton(v) {
+  document.querySelectorAll('.nav-btn').forEach((b, i) => {
+    b.classList.toggle('on', (i === {dash:0, abonnes:1, envois:2, settings:3}[v]));
+  });
 }
 
 // STARTUP
 (async () => {
-  try {
-    initClient();
-    const { data: { session } } = await sb.auth.getSession();
-    
-    if (session) {
-      const ok = await openSession();
-      if (!ok) $('#authScreen').classList.remove('hidden');
-    } else {
-      $('#authScreen').classList.remove('hidden');
-    }
-  } catch (err) {
-    console.error('Startup:', err);
-    toast('Erreur démarrage', 'er');
+  initClient();
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    const ok = await openSession();
+    if (!ok) return;
+  } else {
+    $('#authScreen').classList.remove('hidden');
   }
 })();
-
 </script>
 </body>
 </html>
