@@ -6,126 +6,178 @@
 <meta name="theme-color" content="#050B18">
 <title>Judo Kids — Gestion des Envois</title>
 <style>
-:root{--navy-900:#040A15;--navy-700:#0B1B33;--accent:#7C5CFF;--accent-soft:#AF52DE;--accent-deep:#5D3FA6;--success:#32D74B;--warning:#FFD426;--danger:#FF453A;--ink:#F2F6FF;--ink-2:rgba(242,246,255,.66);--ink-3:rgba(242,246,255,.42);--glass:rgba(255,255,255,.055);--glass-2:rgba(255,255,255,.085);--glass-hi:rgba(255,255,255,.14);--stroke:rgba(255,255,255,.10);--stroke-2:rgba(255,255,255,.18);--g-hi:rgba(255,255,255,.11);--g-mid:rgba(255,255,255,.045);--g-lo:rgba(255,255,255,.018);--g-edge:rgba(255,255,255,.15);--r-sm:14px;--r-md:20px;--r-lg:26px;--shadow-md:0 12px 34px rgba(0,0,0,.38);--blur:42px;}
+:root{
+  --navy-900:#040A15;
+  --navy-700:#0B1B33;
+  --accent:#7C5CFF;
+  --accent-soft:#AF52DE;
+  --accent-deep:#5D3FA6;
+  --bg-1:#1e1547;--bg-2:#141030;--bg-3:#0a0612;
+  --success:#32D74B;
+  --warning:#FFD426;
+  --danger:#FF453A;
+  --ink:#F2F6FF;
+  --ink-2:rgba(242,246,255,.66);
+  --ink-3:rgba(242,246,255,.42);
+  --glass:rgba(255,255,255,.055);
+  --glass-2:rgba(255,255,255,.085);
+  --glass-hi:rgba(255,255,255,.14);
+  --stroke:rgba(255,255,255,.10);
+  --stroke-2:rgba(255,255,255,.18);
+  --g-hi:rgba(255,255,255,.11);
+  --g-mid:rgba(255,255,255,.045);
+  --g-lo:rgba(255,255,255,.018);
+  --g-edge:rgba(255,255,255,.15);
+  --r-sm:14px;--r-md:20px;--r-lg:26px;
+  --shadow-md:0 12px 34px rgba(0,0,0,.38);
+  --blur:42px;
+}
+
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;font-family:system-ui,sans-serif;background:var(--navy-900);color:var(--ink);overflow:hidden}
 body{-webkit-font-smoothing:antialiased}
-#authScreen{display:flex;align-items:center;justify-content:center;height:100%;width:100%;position:fixed;top:0;left:0;background:var(--navy-900);z-index:10000;flex-direction:column;gap:20px}
-#authScreen.hidden{display:none}
+
 #root{display:grid;grid-template-columns:280px 1fr;gap:20px;padding:20px;height:100%;overflow:hidden}
-#root.hidden{display:none}
+
 aside{display:flex;flex-direction:column;gap:20px;overflow:auto}
 .logo{display:flex;align-items:center;gap:12px;padding:16px;background:var(--glass);border-radius:var(--r-md)}
 .logo .ico{width:40px;height:40px;border-radius:var(--r-sm);background:linear-gradient(145deg,var(--accent),var(--accent-deep));display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px}
 .logo h1{font-size:16px;font-weight:700}
+
 .nav-sec{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink-3);padding:12px 0 4px}
 .nav-btn{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r-sm);background:transparent;color:var(--ink-2);border:1px solid transparent;cursor:pointer;width:100%;text-align:left}
 .nav-btn:hover{background:var(--glass-2)}
 .nav-btn.on{background:var(--glass-hi);border-color:var(--stroke-2);color:var(--ink)}
+.nav-cnt{margin-left:auto;font-size:11px;background:var(--accent);color:#fff;border-radius:999px;padding:2px 8px;font-weight:700}
+
 main{display:flex;flex-direction:column;gap:18px;overflow:auto}
 .head h1{font-size:26px;font-weight:700}
 .head p{font-size:13px;color:var(--ink-3)}
+
 .glass{background:linear-gradient(158deg,var(--g-hi) 0%,var(--g-lo) 42%,var(--g-mid) 100%);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));border:1px solid var(--g-edge);border-radius:var(--r-lg);box-shadow:var(--shadow-md);padding:20px}
+
 .grid{display:grid;gap:16px}
 .g-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+
 .kpi{display:flex;flex-direction:column;gap:10px}
 .kpi .lab{font-size:12px;color:var(--ink-3)}
 .kpi .val{font-size:32px;font-weight:700}
+.kpi .sub{font-size:11px;color:var(--ink-3)}
+
 .tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
 .tbl th{text-align:left;font-size:11px;font-weight:620;color:var(--ink-2);padding:10px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--stroke)}
 .tbl td{padding:11px 10px;border-top:1px solid var(--stroke)}
 .tbl tbody tr:hover{background:var(--glass-2)}
-.tbl .nm{font-weight:580;cursor:pointer;color:var(--accent)}
+.tbl .nm{font-weight:580}
+
 .btn{padding:9px 15px;border-radius:var(--r-sm);border:1px solid var(--stroke);background:var(--glass-2);color:var(--ink);cursor:pointer;font-weight:580}
 .btn:hover{background:var(--glass-hi)}
 .btn.pri{background:linear-gradient(145deg,var(--accent),var(--accent-soft));border:none;color:#fff}
+.btn.sm{padding:6px 11px;font-size:12px}
+
 .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(50,215,75,.15);color:var(--success);border:1px solid rgba(50,215,75,.25)}
 .pill.o{background:rgba(255,212,38,.15);color:var(--warning);border-color:rgba(255,212,38,.25)}
+
 .search-box{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-md);margin-bottom:16px}
 .search-box input{flex:1;background:transparent;border:none;color:var(--ink);font-size:14px;outline:none}
 .search-box input::placeholder{color:var(--ink-3)}
+
 .action-btn{padding:6px 10px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink-2);cursor:pointer;font-size:12px;font-weight:600;transition:.2s}
 .action-btn:hover{background:var(--glass-hi);color:var(--ink)}
 .action-btn.danger{color:var(--danger)}
 .action-btn.danger:hover{background:rgba(255,69,58,.15)}
-.action-btn.copy{color:var(--accent)}
-.action-btn.copy:hover{background:rgba(124,92,255,.15)}
+
+input[type="color"]{
+  cursor:pointer;
+}
+
 .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s}
 .modal.open{opacity:1;pointer-events:auto}
-.modal-box{background:var(--navy-700);border:1px solid var(--stroke-2);border-radius:var(--r-lg);padding:28px;width:90%;max-width:600px;box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:80vh;overflow-y:auto}
-.modal-box h2{margin-bottom:16px;font-size:16px;font-weight:700}
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--ink-2)}
-.form-group input, .form-group select, .form-group textarea{width:100%;padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px;font-family:inherit}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus{outline:none;border-color:var(--accent)}
-.form-actions{display:flex;gap:12px}
-.form-actions button{flex:1}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--glass-hi);border:1px solid var(--stroke-2);padding:12px 20px;border-radius:var(--r-sm);z-index:9998;animation:slideUp .3s ease}
-@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.copy-field{display:flex;align-items:center;gap:8px;justify-content:space-between;padding:8px 12px;background:rgba(0,0,0,.2);border-radius:var(--r-sm);margin-bottom:8px}
-.copy-field .val{flex:1;font-size:13px}
-</style>
-</head>
-<body>
+.modal-box{background:var(--navy-700);border:1px solid var(--stroke-2);border-radius:var(--r-lg);padding:28px;width:90%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.modal-box h2{font-size:18px;margin-bottom:16px}
+.form-group{margin-bottom:16px;display:flex;flex-direction:column;gap:6px}
+.form-group label{font-size:12px;font-weight:600;color:var(--ink-3)}
+.form-group input, .form-group select{padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px}
+.form-group input:focus, .form-group select:focus{outline:none;border-color:var(--accent);background:var(--glass-hi)}
+.form-actions{display:flex;gap:12px;margin-top:24px}
+.form-actions button{flex:1;padding:12px;border-radius:var(--r-sm);border:1px solid var(--stroke);background:var(--glass-2);color:var(--ink);cursor:pointer;font-weight:580}
+.form-actions button.pri{background:linear-gradient(145deg,var(--accent),var(--accent-soft));border:none;color:#fff}
 
+#authScreen{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--navy-900);display:flex;align-items:center;justify-content:center;z-index:10000}
+.auth-box{width:90%;max-width:400px}
+.auth-box h2{font-size:24px;margin-bottom:20px}
+.auth-box .form-group{margin-bottom:16px}
+.auth-box .btn{width:100%;margin-top:8px}
+</style>
+
+<body>
 <div id="authScreen">
-  <div style="text-align:center;margin-bottom:20px">
-    <div style="width:60px;height:60px;background:linear-gradient(145deg,var(--accent),var(--accent-deep));border-radius:var(--r-md);display:grid;place-items:center;margin:0 auto;color:#fff;font-size:32px;font-weight:700">🥋</div>
-    <h1 style="font-size:22px;margin-top:12px">L'Esprit du Judo</h1>
-    <p style="color:var(--ink-3);font-size:13px;margin-top:4px">Gestion des Envois</p>
-  </div>
-  <form onsubmit="handleLogin(event)" style="width:100%;max-width:320px">
+  <div class="auth-box">
+    <h2 style="text-align:center;margin-bottom:24px">🥋 Judo Kids</h2>
     <div class="form-group">
       <label>Email</label>
-      <input type="email" id="loginEmail" placeholder="paul@sen-no-sen.com" required autofocus>
+      <input type="email" id="authEmail" placeholder="paul@sen-no-sen.com">
     </div>
     <div class="form-group">
       <label>Mot de passe</label>
-      <input type="password" id="loginPassword" required>
+      <input type="password" id="authPassword" placeholder="Votre mot de passe">
     </div>
-    <div id="loginError" style="display:none;color:var(--danger);font-size:12px;margin-bottom:12px"></div>
-    <button type="submit" class="btn pri" style="width:100%">Se connecter</button>
-  </form>
-</div>
-
-<div id="root" class="hidden">
-  <aside>
-    <div class="logo">
-      <div class="ico">🥋</div>
-      <h1>Judo Kids</h1>
-    </div>
-    <div style="flex:1">
-      <div class="nav-sec">MENU</div>
-      <button class="nav-btn on" onclick="switchView('dash')">📊 Dashboard</button>
-      <button class="nav-btn" onclick="switchView('abonnes')">👥 Abonnés</button>
-      <button class="nav-btn" onclick="switchView('envois')">📮 Envois</button>
-      <button class="nav-btn" onclick="switchView('settings')">⚙️ Paramètres</button>
-    </div>
-    <button class="nav-btn" style="color:var(--danger)" onclick="handleLogout()">🚪 Déconnexion</button>
-  </aside>
-
-  <main>
-    <div id="content" style="flex:1;overflow:auto"></div>
-  </main>
-</div>
-
-<div id="profileModal" class="modal">
-  <div class="modal-box">
-    <div id="profileContent"></div>
+    <button class="btn pri" onclick="loginSupabase()" style="width:100%;margin-top:16px">Connexion</button>
+    <div id="authMsg" style="margin-top:12px;font-size:13px;color:var(--warning);text-align:center"></div>
   </div>
 </div>
 
-<div id="renewModal" class="modal">
+<div id="root" style="display:none">
+  <aside>
+    <div class="logo">
+      <div class="ico">🥋</div>
+      <div><h1>Judo Kids</h1><div style="font-size:11px;color:var(--ink-3);margin-top:4px;cursor:pointer" onclick="logoutSupabase()">Déconnexion</div></div>
+    </div>
+    
+    <div>
+      <div class="nav-sec">Navigation</div>
+      <button class="nav-btn on" onclick="goView('dashboard')">📊 Dashboard</button>
+      <button class="nav-btn" onclick="goView('abonnes')">👥 Abonnés <span class="nav-cnt" id="cntAbo">—</span></button>
+      <button class="nav-btn" onclick="goView('envois')">📦 Envois <span class="nav-cnt" id="cntEnv">—</span></button>
+      <button class="nav-btn" onclick="goView('settings')">⚙️ Paramètres</button>
+    </div>
+  </aside>
+
+  <main id="content"></main>
+</div>
+
+<!-- MODAL: Ajouter abonné -->
+<div id="addModal" class="modal">
   <div class="modal-box">
-    <h2>Renouveler l'abonnement</h2>
-    <form onsubmit="handleRenewal(event)">
+    <h2>Ajouter un abonné</h2>
+    <form onsubmit="saveSubscriber(event)">
       <div class="form-group">
-        <label>Nouvelle date de départ*</label>
-        <input type="date" id="renew_date" required>
+        <label>Prénom*</label>
+        <input type="text" id="fname" required>
       </div>
       <div class="form-group">
-        <label>Durée du nouvel abonnement*</label>
-        <select id="renew_duration" required>
+        <label>Nom*</label>
+        <input type="text" id="lname" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email">
+      </div>
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="tel" id="phone">
+      </div>
+      <div class="form-group">
+        <label>Adresse</label>
+        <input type="text" id="addr">
+      </div>
+      <div class="form-group">
+        <label>Date d'abonnement*</label>
+        <input type="date" id="sub_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée d'abonnement*</label>
+        <select id="sub_duration" required>
           <option value="">-- Sélectionner --</option>
           <option value="1">1 an (6 envois)</option>
           <option value="2">2 ans (12 envois)</option>
@@ -133,348 +185,769 @@ main{display:flex;flex-direction:column;gap:18px;overflow:auto}
         </select>
       </div>
       <div class="form-actions">
-        <button type="button" class="btn" onclick="closeModal('renewModal')">Annuler</button>
-        <button type="submit" class="btn pri">Renouveler</button>
+        <button type="button" onclick="closeModal('addModal')">Annuler</button>
+        <button type="submit" class="pri">Créer</button>
       </div>
     </form>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const $ = id => document.getElementById(id);
-const esc = t => (t+'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const uid = () => crypto.getRandomValues(new Uint8Array(16)).reduce((s,c) => s + c.toString(16).padStart(2,'0'),'');
-const toast = msg => { const e=document.createElement('div'); e.className='toast'; e.textContent=msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); };
+<!-- MODAL: Éditer abonné -->
+<div id="editModal" class="modal">
+  <div class="modal-box">
+    <h2>Modifier abonné</h2>
+    <form onsubmit="updateSubscriber(event)">
+      <div class="form-group">
+        <label>Prénom*</label>
+        <input type="text" id="edit_fname" required>
+      </div>
+      <div class="form-group">
+        <label>Nom*</label>
+        <input type="text" id="edit_lname" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="edit_email">
+      </div>
+      <div class="form-group">
+        <label>Téléphone</label>
+        <input type="tel" id="edit_phone">
+      </div>
+      <div class="form-group">
+        <label>Adresse</label>
+        <input type="text" id="edit_addr">
+      </div>
+      <div class="form-group">
+        <label>Date d'abonnement*</label>
+        <input type="date" id="edit_sub_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée d'abonnement*</label>
+        <select id="edit_sub_duration" required>
+          <option value="">-- Sélectionner --</option>
+          <option value="1">1 an (6 envois)</option>
+          <option value="2">2 ans (12 envois)</option>
+          <option value="3">3 ans (18 envois)</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('editModal')">Annuler</button>
+        <button type="submit" class="pri">Sauvegarder</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-let sb;
-let S = { user: null, db: { subscribers: [], shipments: [] }, view: 'dash', renewingId: null };
+<!-- MODAL: Renouveler -->
+<div id="renewModal" class="modal">
+  <div class="modal-box">
+    <h2>Renouveler l'abonnement</h2>
+    <form onsubmit="confirmRenewal(event)">
+      <div class="form-group">
+        <label>Nouvelle date de départ*</label>
+        <input type="date" id="renew_sub_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée du nouvel abonnement*</label>
+        <select id="renew_sub_duration" required>
+          <option value="">-- Sélectionner --</option>
+          <option value="1">1 an (6 envois)</option>
+          <option value="2">2 ans (12 envois)</option>
+          <option value="3">3 ans (18 envois)</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('renewModal')">Annuler</button>
+        <button type="submit" class="pri">Créer le renouvellement</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+// ==================== SUPABASE INIT ====================
+const SUPABASE_URL = 'https://klbftabestrvyvmqcjca.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUserId = null;
+let subscribers = [];
+let shipments = [];
+let editingSubId = null;
+let renewingSubId = null;
+
+// ==================== HELPERS ====================
+const $ = id => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
+
+function openModal(id){
+  $(id).classList.add('open');
+}
+
+function closeModal(id){
+  $(id).classList.remove('open');
+}
 
 const SCHEDULE = [
-  {mag:4, release:'2026-09-01', deadline:'2026-10-15'}, {mag:5, release:'2026-11-01', deadline:'2026-12-15'}, {mag:6, release:'2027-01-01', deadline:'2027-02-15'}, {mag:7, release:'2027-03-01', deadline:'2027-04-15'},
-  {mag:8, release:'2027-05-01', deadline:'2027-06-15'}, {mag:9, release:'2027-07-01', deadline:'2027-08-15'}, {mag:10, release:'2027-09-01', deadline:'2027-10-15'}, {mag:11, release:'2027-11-01', deadline:'2027-12-15'},
-  {mag:12, release:'2028-01-01', deadline:'2028-02-15'}, {mag:13, release:'2028-03-01', deadline:'2028-04-15'}, {mag:14, release:'2028-05-01', deadline:'2028-06-15'}, {mag:15, release:'2028-07-01', deadline:'2028-08-15'},
-  {mag:16, release:'2028-09-01', deadline:'2028-10-15'}, {mag:17, release:'2028-11-01', deadline:'2028-12-15'}, {mag:18, release:'2029-01-01', deadline:'2029-02-15'}, {mag:19, release:'2029-03-01', deadline:'2029-04-15'},
-  {mag:20, release:'2029-05-01', deadline:'2029-06-15'}, {mag:21, release:'2029-07-01', deadline:'2029-08-15'}
+  {shipment:1, mag:4, release:'2026-09-01', deadline:'2026-10-15'},
+  {shipment:2, mag:5, release:'2026-11-01', deadline:'2026-12-15'},
+  {shipment:3, mag:6, release:'2027-01-01', deadline:'2027-02-15'},
+  {shipment:4, mag:7, release:'2027-03-01', deadline:'2027-04-15'},
+  {shipment:5, mag:8, release:'2027-05-01', deadline:'2027-06-15'},
+  {shipment:6, mag:9, release:'2027-07-01', deadline:'2027-08-15'},
+  {shipment:7, mag:10, release:'2027-09-01', deadline:'2027-10-15'},
+  {shipment:8, mag:11, release:'2027-11-01', deadline:'2027-12-15'},
+  {shipment:9, mag:12, release:'2028-01-01', deadline:'2028-02-15'},
+  {shipment:10, mag:13, release:'2028-03-01', deadline:'2028-04-15'},
+  {shipment:11, mag:14, release:'2028-05-01', deadline:'2028-06-15'},
+  {shipment:12, mag:15, release:'2028-07-01', deadline:'2028-08-15'},
+  {shipment:13, mag:16, release:'2028-09-01', deadline:'2028-10-15'},
+  {shipment:14, mag:17, release:'2028-11-01', deadline:'2028-12-15'},
+  {shipment:15, mag:18, release:'2029-01-01', deadline:'2029-02-15'},
+  {shipment:16, mag:19, release:'2029-03-01', deadline:'2029-04-15'},
+  {shipment:17, mag:20, release:'2029-05-01', deadline:'2029-06-15'},
+  {shipment:18, mag:21, release:'2029-07-01', deadline:'2029-08-15'},
 ];
 
-function getMagazineForSubscription(subDate) {
+function getMagazineForSubscription(subDate){
   const subDateObj = new Date(subDate);
-  for (let i = 0; i < SCHEDULE.length; i++) {
+  for(let i = 0; i < SCHEDULE.length; i++){
     const deadlineDate = new Date(SCHEDULE[i].deadline);
-    if (subDateObj <= deadlineDate) return SCHEDULE[i].mag;
+    if(subDateObj <= deadlineDate){
+      return SCHEDULE[i].mag;
+    }
   }
   return SCHEDULE[SCHEDULE.length - 1].mag + 1;
 }
 
-function initClient() {
-  const URL = 'https://klbftabestrvyvmqcjca.supabase.co';
-  const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
-  const memstore = {};
-  const stg = {
-    getItem: k => { try { return localStorage.getItem(k); } catch(e) { return memstore[k]||null; } },
-    setItem: (k,v) => { try { localStorage.setItem(k,v); } catch(e) { memstore[k]=v; } },
-    removeItem: k => { try { localStorage.removeItem(k); } catch(e) { delete memstore[k]; } }
-  };
-  sb = window.supabase.createClient(URL, KEY, { auth: { storage: stg, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false } });
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-      S.user = null;
-      $('root').classList.add('hidden');
-      $('authScreen').classList.remove('hidden');
-    }
+// ==================== AUTH ====================
+async function loginSupabase(){
+  const email = $('authEmail').value;
+  const password = $('authPassword').value;
+  
+  if(!email || !password){
+    $('authMsg').textContent = 'Veuillez remplir tous les champs';
+    return;
+  }
+  
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
   });
+  
+  if(error){
+    $('authMsg').textContent = 'Erreur: ' + error.message;
+    return;
+  }
+  
+  currentUserId = data.session.user.id;
+  $('authScreen').style.display = 'none';
+  $('root').style.display = 'grid';
+  
+  // Charger les données
+  await loadData();
+  renderDash();
 }
 
-async function handleLogin(e) {
+function logoutSupabase(){
+  supabase.auth.signOut();
+  currentUserId = null;
+  $('authScreen').style.display = 'flex';
+  $('root').style.display = 'none';
+  $('authEmail').value = '';
+  $('authPassword').value = '';
+}
+
+// ==================== DATA LOADING ====================
+async function loadData(){
+  // Charger les abonnés
+  const { data: subs, error: subError } = await supabase
+    .from('subscribers')
+    .select('*')
+    .eq('user_id', currentUserId);
+  
+  if(!subError && subs){
+    subscribers = subs;
+  }
+  
+  // Charger les envois
+  const { data: ships, error: shipError } = await supabase
+    .from('shipments')
+    .select('*')
+    .eq('user_id', currentUserId);
+  
+  if(!shipError && ships){
+    shipments = ships;
+  }
+  
+  updateCounts();
+}
+
+async function updateCounts(){
+  const today = new Date();
+  let currentMag = SCHEDULE[SCHEDULE.length - 1].mag;
+  
+  for(let sched of SCHEDULE){
+    if(new Date(sched.release) <= today){
+      currentMag = sched.mag;
+    } else {
+      break;
+    }
+  }
+  
+  const pendingCurrentMag = shipments.filter(s =>
+    s.magazine_number === currentMag && !s.sent_at
+  ).length;
+  
+  $('cntAbo').textContent = subscribers.length;
+  $('cntEnv').textContent = pendingCurrentMag;
+}
+
+// ==================== SAVE SUBSCRIBER ====================
+async function saveSubscriber(e){
   e.preventDefault();
-  const email = $('loginEmail').value.trim().toLowerCase();
-  const pass = $('loginPassword').value;
-  if (!email || !pass) return showLoginError('Remplissez tous les champs');
-  const btn = e.target.querySelector('button');
-  btn.disabled = true;
-  btn.textContent = 'Connexion…';
-  try {
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) throw error;
-    const ok = await openSession();
-    if (ok) toast('Connecté! 🥋');
-  } catch (err) {
-    showLoginError(err.message.includes('Invalid') ? 'Email ou mot de passe incorrect' : err.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Se connecter';
+  
+  const fname = $('fname').value;
+  const lname = $('lname').value;
+  const email = $('email').value || null;
+  const phone = $('phone').value || null;
+  const addr = $('addr').value || '';
+  const subDate = $('sub_date').value;
+  const subDuration = parseInt($('sub_duration').value);
+  
+  const firstMag = getMagazineForSubscription(subDate);
+  
+  // Insérer l'abonné
+  const { data: sub, error: subError } = await supabase
+    .from('subscribers')
+    .insert({
+      user_id: currentUserId,
+      first_name: fname,
+      last_name: lname,
+      email,
+      phone,
+      address: addr,
+      subscription_date: subDate,
+      subscription_duration: subDuration
+    })
+    .select()
+    .single();
+  
+  if(subError){
+    alert('Erreur: ' + subError.message);
+    return;
   }
-}
-
-function showLoginError(msg) {
-  const el = $('loginError');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-async function openSession() {
-  try {
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) return false;
-    S.user = { id: user.id, email: user.email };
-    S.db = await API.loadAll();
-    $('authScreen').classList.add('hidden');
-    $('root').classList.remove('hidden');
-    renderDash();
-    return true;
-  } catch (err) {
-    showLoginError('Erreur chargement données');
-    return false;
+  
+  // Créer les envois
+  const endDate = new Date(subDate);
+  endDate.setFullYear(endDate.getFullYear() + subDuration);
+  
+  let shipmentNum = 1;
+  let posterNum = 1;
+  let stickerStart = 1;
+  let magazineNum = firstMag;
+  
+  // Trouver le premier envoi
+  let firstScheduleIdx = -1;
+  for(let i = 0; i < SCHEDULE.length; i++){
+    if(SCHEDULE[i].mag === firstMag){
+      firstScheduleIdx = i;
+      break;
+    }
   }
-}
-
-async function handleLogout() {
-  if (!confirm('Déconnexion ?')) return;
-  await sb.auth.signOut();
-  S.user = null;
-  S.db = null;
-  $('root').classList.add('hidden');
-  $('authScreen').classList.remove('hidden');
-}
-
-const API = {
-  async loadAll() {
-    const uid = S.user.id;
-    const [{ data: subs }, { data: ships }] = await Promise.all([
-      sb.from('subscribers').select('*').eq('user_id', uid).order('created_at'),
-      sb.from('shipments').select('*').eq('user_id', uid).order('scheduled_date')
-    ]);
-    return { subscribers: subs || [], shipments: ships || [] };
-  },
-
-  async saveSubscriber(data) {
-    const recId = uid();
-    const { error } = await sb.from('subscribers').insert({
-      id: recId, user_id: S.user.id, first_name: data.fname, last_name: data.lname,
-      email: data.email || null, phone: data.phone || null, address: data.addr || null,
-      subscription_date: data.date, subscription_duration: data.duration
-    });
-    if (error) throw error;
-    const startMag = getMagazineForSubscription(data.date);
-    const subDate = new Date(data.date);
-    const endDate = new Date(subDate);
-    endDate.setFullYear(endDate.getFullYear() + parseInt(data.duration));
-    const ships = [];
-    let shipNum = 1;
-    for (let sched of SCHEDULE) {
-      if (shipNum > parseInt(data.duration) * 6) break;
-      if (sched.mag < startMag) continue;
-      const sendDate = new Date(sched.release);
-      if (sendDate > endDate) break;
-      ships.push({
-        id: uid(), user_id: S.user.id, subscriber_id: recId, shipment_number: shipNum,
-        magazine_number: sched.mag, poster_number: shipNum,
-        sticker_pair_start: (shipNum - 1) * 2 + 1, sticker_pair_end: shipNum * 2,
-        scheduled_date: sched.release, sent_at: null
-      });
-      shipNum++;
+  
+  if(firstScheduleIdx >= 0){
+    const shipsToInsert = [];
+    
+    for(let i = firstScheduleIdx; i < SCHEDULE.length && shipmentNum <= subDuration * 6; i++){
+      const schedDate = new Date(SCHEDULE[i].release);
+      if(schedDate <= endDate){
+        shipsToInsert.push({
+          user_id: currentUserId,
+          subscriber_id: sub.id,
+          shipment_number: shipmentNum,
+          magazine_number: magazineNum,
+          poster_number: posterNum,
+          sticker_pair_start: stickerStart,
+          sticker_pair_end: stickerStart + 1,
+          scheduled_date: SCHEDULE[i].release,
+          sent_at: null
+        });
+        
+        shipmentNum++;
+        posterNum++;
+        stickerStart += 2;
+        magazineNum++;
+      }
     }
-    if (ships.length > 0) {
-      const { error: e2 } = await sb.from('shipments').insert(ships);
-      if (e2) throw e2;
+    
+    if(shipsToInsert.length > 0){
+      const { error: shipError } = await supabase
+        .from('shipments')
+        .insert(shipsToInsert);
+      
+      if(shipError){
+        alert('Erreur envois: ' + shipError.message);
+        return;
+      }
     }
-    S.db = await this.loadAll();
-  },
-
-  async renewSubscription(id, data) {
-    const { error: e1 } = await sb.from('subscribers').update({
-      subscription_date: data.date, subscription_duration: data.duration
-    }).eq('id', id);
-    if (e1) throw e1;
-    const { error: e2 } = await sb.from('shipments').delete().eq('subscriber_id', id).is('sent_at', null);
-    if (e2) throw e2;
-    const existingShips = S.db.shipments.filter(s => s.subscriber_id === id && s.sent_at);
-    const maxShipNum = existingShips.length > 0 ? Math.max(...existingShips.map(s => s.shipment_number)) : 0;
-    const newDate = new Date(data.date);
-    const endDate = new Date(newDate);
-    endDate.setFullYear(endDate.getFullYear() + data.duration);
-    const startMag = getMagazineForSubscription(data.date);
-    const ships = [];
-    let shipNum = maxShipNum + 1;
-    for (let sched of SCHEDULE) {
-      if (shipNum > maxShipNum + parseInt(data.duration) * 6) break;
-      if (sched.mag < startMag) continue;
-      const sendDate = new Date(sched.release);
-      if (sendDate > endDate) break;
-      ships.push({
-        id: uid(), user_id: S.user.id, subscriber_id: id, shipment_number: shipNum,
-        magazine_number: sched.mag, poster_number: shipNum,
-        sticker_pair_start: (shipNum - 1) * 2 + 1, sticker_pair_end: shipNum * 2,
-        scheduled_date: sched.release, sent_at: null
-      });
-      shipNum++;
-    }
-    if (ships.length > 0) {
-      const { error: e3 } = await sb.from('shipments').insert(ships);
-      if (e3) throw e3;
-    }
-    S.db = await this.loadAll();
   }
-};
-
-function renderDash() {
-  const subs = S.db.subscribers.length;
-  const ships = S.db.shipments.length;
-  const sent = S.db.shipments.filter(s => s.sent_at).length;
-  $('content').innerHTML = `
-    <div class="head"><h1>📊 Dashboard</h1><p>Vue d'ensemble</p></div>
-    <div class="grid g-4">
-      <div class="glass kpi"><div class="lab">👥 Abonnés</div><div class="val">${subs}</div></div>
-      <div class="glass kpi"><div class="lab">📮 En attente</div><div class="val">${ships - sent}</div></div>
-      <div class="glass kpi"><div class="lab">✅ Envoyés</div><div class="val">${sent}</div></div>
-    </div>
-  `;
-  updateNav('dash');
+  
+  closeModal('addModal');
+  await loadData();
+  renderAbonnes();
 }
 
-function renderAbonnes() {
-  $('content').innerHTML = `
-    <div class="head"><h1>👥 Abonnés (${S.db.subscribers.length})</h1></div>
-    <div class="glass">
-      <table class="tbl">
-        <thead><tr><th>Nom</th><th>Email</th><th>Depuis</th><th>Actions</th></tr></thead>
-        <tbody>
-          ${S.db.subscribers.map(s => `<tr>
-            <td class="nm" onclick="viewProfile('${s.id}')">${esc(s.first_name + ' ' + s.last_name)}</td>
-            <td style="color:var(--ink-3);font-size:12px">${esc(s.email || '—')}</td>
-            <td style="font-size:12px">${s.subscription_date}</td>
-            <td></td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-  updateNav('abonnes');
+// ==================== UPDATE SUBSCRIBER ====================
+async function editSubscriber(id){
+  editingSubId = id;
+  const sub = subscribers.find(s => s.id === id);
+  
+  $('edit_fname').value = sub.first_name;
+  $('edit_lname').value = sub.last_name;
+  $('edit_email').value = sub.email || '';
+  $('edit_phone').value = sub.phone || '';
+  $('edit_addr').value = sub.address || '';
+  $('edit_sub_date').value = sub.subscription_date;
+  $('edit_sub_duration').value = sub.subscription_duration;
+  
+  openModal('editModal');
 }
 
-function renderEnvois() {
-  $('content').innerHTML = `
-    <div class="head"><h1>📮 Envois (${S.db.shipments.length})</h1></div>
-    <div class="glass">
-      <table class="tbl">
-        <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Date</th><th>Statut</th></tr></thead>
-        <tbody>
-          ${S.db.shipments.map(s => {
-            const sub = S.db.subscribers.find(x => x.id === s.subscriber_id);
-            return `<tr>
-              <td class="nm" onclick="viewProfile('${s.subscriber_id}')">${esc(sub?.first_name + ' ' + sub?.last_name)}</td>
-              <td>#${s.magazine_number}</td>
-              <td>#${s.poster_number}</td>
-              <td>#${s.sticker_pair_start}-${s.sticker_pair_end}</td>
-              <td>${s.scheduled_date}</td>
-              <td><span class="pill ${s.sent_at ? '' : 'o'}">${s.sent_at ? '✅ Envoyé' : '⏳ Attente'}</span></td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-  updateNav('envois');
+async function updateSubscriber(e){
+  e.preventDefault();
+  
+  const fname = $('edit_fname').value;
+  const lname = $('edit_lname').value;
+  const email = $('edit_email').value || null;
+  const phone = $('edit_phone').value || null;
+  const addr = $('edit_addr').value || '';
+  const subDate = $('edit_sub_date').value;
+  const subDuration = parseInt($('edit_sub_duration').value);
+  
+  const { error } = await supabase
+    .from('subscribers')
+    .update({
+      first_name: fname,
+      last_name: lname,
+      email,
+      phone,
+      address: addr,
+      subscription_date: subDate,
+      subscription_duration: subDuration
+    })
+    .eq('id', editingSubId);
+  
+  if(error){
+    alert('Erreur: ' + error.message);
+    return;
+  }
+  
+  closeModal('editModal');
+  await loadData();
+  renderAbonnes();
 }
 
-function renderSettings() {
-  $('content').innerHTML = `
-    <div class="head"><h1>⚙️ Paramètres</h1></div>
-    <div class="glass">
-      <div style="display:flex;flex-direction:column;gap:12px">
-        <div><div style="font-size:11px;color:var(--ink-3)">Utilisateur</div><div style="font-weight:700">${esc(S.user.email)}</div></div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--stroke)">
-          <button class="btn" style="color:var(--danger);cursor:pointer" onclick="handleLogout()">Déconnexion</button>
-        </div>
-      </div>
-    </div>
-  `;
-  updateNav('settings');
+// ==================== DELETE SUBSCRIBER ====================
+async function deleteSubscriber(id){
+  if(!confirm('Supprimer cet abonné et tous ses envois?')) return;
+  
+  // Supprimer les envois
+  await supabase
+    .from('shipments')
+    .delete()
+    .eq('subscriber_id', id);
+  
+  // Supprimer l'abonné
+  await supabase
+    .from('subscribers')
+    .delete()
+    .eq('id', id);
+  
+  await loadData();
+  renderAbonnes();
 }
 
-function viewProfile(id) {
-  const sub = S.db.subscribers.find(s => s.id === id);
-  if (!sub) return;
-  const subs = S.db.shipments.filter(s => s.subscriber_id === id).sort((a, b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
-  const sent = subs.filter(s => s.sent_at).length;
-  $('profileContent').innerHTML = `
-    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:20px">
-      <button class="btn" onclick="closeModal('profileModal')">← Fermer</button>
-      <div style="flex:1;text-align:center"><h2>${esc(sub.first_name + ' ' + sub.last_name)}</h2><p style="color:var(--ink-3);font-size:12px">Abonné depuis ${sub.subscription_date}</p></div>
-      <button class="btn pri" onclick="openRenewModal('${id}')">🔄 Renouveler</button>
-    </div>
-    <div class="glass" style="margin-bottom:16px">
-      <div style="font-weight:700;margin-bottom:12px">📋 Informations</div>
-      ${sub.email ? `<div class="copy-field"><span class="val">${esc(sub.email)}</span><button class="action-btn copy" onclick="copyToClipboard('${sub.email.replace(/'/g, "\\'")}')"">📋</button></div>` : ''}
-      ${sub.phone ? `<div class="copy-field"><span class="val">${esc(sub.phone)}</span><button class="action-btn copy" onclick="copyToClipboard('${sub.phone.replace(/'/g, "\\'")}')"">📋</button></div>` : ''}
-      ${sub.address ? `<div class="copy-field"><span class="val">${esc(sub.address)}</span><button class="action-btn copy" onclick="copyToClipboard('${sub.address.replace(/'/g, "\\'")}')"">📋</button></div>` : ''}
-    </div>
-    <div class="glass">
-      <div style="font-weight:700;margin-bottom:12px">📚 Envois (${sent}/${subs.length})</div>
-      <table class="tbl">
-        <thead><tr><th>Mag</th><th>Poster</th><th>Stickers</th><th>Date</th><th>Statut</th></tr></thead>
-        <tbody>${subs.map(s => `<tr><td>#${s.magazine_number}</td><td>#${s.poster_number}</td><td>#${s.sticker_pair_start}-${s.sticker_pair_end}</td><td>${s.scheduled_date}</td><td><span class="pill ${s.sent_at ? '' : 'o'}">${s.sent_at ? '✅' : '⏳'}</span></td></tr>`).join('')}</tbody>
-      </table>
-    </div>
-  `;
-  openModal('profileModal');
-}
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => toast('Copié! 📋'));
-}
-
-function openRenewModal(id) {
-  S.renewingId = id;
+// ==================== RENEWAL ====================
+function renewSubscription(id){
+  renewingSubId = id;
+  const sub = subscribers.find(s => s.id === id);
+  
+  const prevSubDate = new Date(sub.subscription_date);
+  const renewalDate = new Date(prevSubDate);
+  renewalDate.setFullYear(renewalDate.getFullYear() + sub.subscription_duration);
+  
+  $('renew_sub_date').value = renewalDate.toISOString().split('T')[0];
+  $('renew_sub_duration').value = '1';
+  
   openModal('renewModal');
 }
 
-async function handleRenewal(e) {
+async function confirmRenewal(e){
   e.preventDefault();
-  const sub = S.db.subscribers.find(s => s.id === S.renewingId);
-  if (!sub) return toast('Abonné non trouvé');
-  const data = { date: $('renew_date').value, duration: $('renew_duration').value };
-  if (!data.date || !data.duration) return toast('Remplissez tous les champs');
-  try {
-    await API.renewSubscription(S.renewingId, data);
-    toast('Abonnement renouvelé! 🎉');
-    closeModal('renewModal');
-    closeModal('profileModal');
-    renderAbonnes();
-  } catch (err) {
-    toast('Erreur: ' + err.message);
+  
+  const renewalDate = $('renew_sub_date').value;
+  const renewalDuration = parseInt($('renew_sub_duration').value);
+  
+  const lastShipment = shipments
+    .filter(s => s.subscriber_id === renewingSubId)
+    .sort((a, b) => b.shipment_number - a.shipment_number)[0];
+  
+  const lastMagNum = lastShipment ? lastShipment.magazine_number : 9;
+  const lastPosterNum = lastShipment ? lastShipment.poster_number : 6;
+  const lastStickerEnd = lastShipment ? lastShipment.sticker_pair_end : 12;
+  
+  const firstNewMag = lastMagNum + 1;
+  let firstNewScheduleIdx = -1;
+  
+  for(let i = 0; i < SCHEDULE.length; i++){
+    if(SCHEDULE[i].mag === firstNewMag){
+      firstNewScheduleIdx = i;
+      break;
+    }
+  }
+  
+  if(firstNewScheduleIdx >= 0){
+    const endDate = new Date(renewalDate);
+    endDate.setFullYear(endDate.getFullYear() + renewalDuration);
+    
+    let shipmentNum = 1;
+    let posterNum = lastPosterNum + 1;
+    let stickerStart = lastStickerEnd + 1;
+    let magazineNum = firstNewMag;
+    
+    const shipsToInsert = [];
+    
+    for(let i = firstNewScheduleIdx; i < SCHEDULE.length && shipmentNum <= renewalDuration * 6; i++){
+      const schedDate = new Date(SCHEDULE[i].release);
+      if(schedDate <= endDate){
+        shipsToInsert.push({
+          user_id: currentUserId,
+          subscriber_id: renewingSubId,
+          shipment_number: (lastShipment ? lastShipment.shipment_number : 0) + shipmentNum,
+          magazine_number: magazineNum,
+          poster_number: posterNum,
+          sticker_pair_start: stickerStart,
+          sticker_pair_end: stickerStart + 1,
+          scheduled_date: SCHEDULE[i].release,
+          sent_at: null
+        });
+        
+        shipmentNum++;
+        posterNum++;
+        stickerStart += 2;
+        magazineNum++;
+      }
+    }
+    
+    if(shipsToInsert.length > 0){
+      await supabase
+        .from('shipments')
+        .insert(shipsToInsert);
+    }
+  }
+  
+  closeModal('renewModal');
+  await loadData();
+  viewSubscriberProfile(renewingSubId);
+}
+
+// ==================== VIEWS ====================
+function goView(v){
+  $$('.nav-btn').forEach(b => b.classList.remove('on'));
+  event.target.closest('.nav-btn').classList.add('on');
+  
+  if(v === 'dashboard') renderDash();
+  else if(v === 'abonnes') renderAbonnes();
+  else if(v === 'envois') renderEnvois();
+  else if(v === 'settings') renderSettings();
+}
+
+function renderDash(){
+  const today = new Date();
+  let currentMag = SCHEDULE[SCHEDULE.length - 1].mag;
+  
+  for(let sched of SCHEDULE){
+    if(new Date(sched.release) <= today){
+      currentMag = sched.mag;
+    } else {
+      break;
+    }
+  }
+  
+  const pending = shipments.filter(s => !s.sent_at).length;
+  const sent = shipments.filter(s => s.sent_at).length;
+  const currentPending = shipments.filter(s => s.magazine_number === currentMag && !s.sent_at).length;
+  const currentSent = shipments.filter(s => s.magazine_number === currentMag && s.sent_at).length;
+  
+  $('content').innerHTML = `
+    <div class="head"><h1>📊 Dashboard</h1><p>Vue d'ensemble de vos envois</p></div>
+    <div class="grid g-4">
+      <div class="glass kpi">
+        <div class="lab">👥 Abonnés</div>
+        <div class="val">${subscribers.length}</div>
+        <div class="sub">Actuellement actifs</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">📦 En attente</div>
+        <div class="val">${currentPending}</div>
+        <div class="sub">Mag #${currentMag} à envoyer</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">✅ Envoyés</div>
+        <div class="val">${currentSent}</div>
+        <div class="sub">Mag #${currentMag}</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">🎯 Total</div>
+        <div class="val">${pending}</div>
+        <div class="sub">Tous les magazines</div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:12px">📚 Magazine #${currentMag}</div>
+      <div style="height:10px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden">
+        <div style="width:${currentSent + currentPending > 0 ? Math.round((currentSent/(currentSent+currentPending))*100) : 0}%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));transition:width .4s"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-3);margin-top:8px"><b>${currentSent}/${currentSent+currentPending}</b> abonnés livrés</div>
+    </div>`;
+}
+
+function renderAbonnes(){
+  $('content').innerHTML = `
+    <div class="head">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><h1>👥 Abonnés</h1><p>${subscribers.length} abonnés enregistrés</p></div>
+        <button class="btn pri" onclick="openModal('addModal')">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="Rechercher par nom, email..." onkeyup="filterAbonnes()">
+    </div>
+    <div class="glass">
+      <table class="tbl">
+        <thead><tr><th>Nom</th><th>Email</th><th>Téléphone</th><th>Date d'abonnement</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="aboTable">${renderAbonnesRows()}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderAbonnesRows(){
+  const search = $('searchInput')?.value.toLowerCase() || '';
+  return subscribers
+    .filter(s => 
+      search === '' || 
+      s.first_name.toLowerCase().includes(search) || 
+      s.last_name.toLowerCase().includes(search) || 
+      (s.email && s.email.toLowerCase().includes(search))
+    )
+    .map(s => `<tr onclick="viewSubscriberProfile(${s.id})" style="cursor:pointer">
+      <td class="nm" style="text-decoration:underline">${s.first_name} ${s.last_name}</td>
+      <td style="color:var(--ink-3);font-size:11.5px">${s.email || '—'}</td>
+      <td style="color:var(--ink-3);font-size:11.5px">${s.phone || '—'}</td>
+      <td style="color:var(--ink-3);font-size:11.5px">${s.subscription_date || '—'}</td>
+      <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
+        <button class="action-btn" onclick="event.stopPropagation(); editSubscriber(${s.id})">✎ Modifier</button>
+        <button class="action-btn danger" onclick="event.stopPropagation(); deleteSubscriber(${s.id})">✕ Supprimer</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterAbonnes(){
+  const tbody = $('aboTable');
+  if(tbody) tbody.innerHTML = renderAbonnesRows();
+}
+
+function viewSubscriberProfile(id){
+  const sub = subscribers.find(s => s.id === id);
+  const subs = shipments.filter(s => s.subscriber_id === id).sort((a,b) => new Date(a.scheduled_date) - new Date(b.scheduled_date));
+  const sent = subs.filter(s => s.sent_at).length;
+  
+  $('content').innerHTML = `
+    <div class="head">
+      <div style="display:flex;align-items:center;gap:16px">
+        <button class="btn" onclick="renderAbonnes()">← Retour</button>
+        <div style="flex:1">
+          <h1>${sub.first_name} ${sub.last_name}</h1>
+          <p>Abonné depuis le ${new Date(sub.subscription_date).toLocaleDateString('fr-FR')}</p>
+        </div>
+        <button class="btn pri" onclick="renewSubscription(${sub.id})" style="white-space:nowrap">🔄 Renouveler</button>
+      </div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="glass">
+        <div style="font-weight:700;margin-bottom:12px">📋 Informations</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Email</div>
+            <div style="margin-top:4px">${sub.email || '—'}</div>
+          </div>
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Téléphone</div>
+            <div style="margin-top:4px">${sub.phone || '—'}</div>
+          </div>
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Adresse</div>
+            <div style="margin-top:4px">${sub.address || '—'}</div>
+          </div>
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Abonnement</div>
+            <div style="margin-top:4px">${new Date(sub.subscription_date).toLocaleDateString('fr-FR')} → ${new Date(new Date(sub.subscription_date).setFullYear(new Date(sub.subscription_date).getFullYear()+sub.subscription_duration)).toLocaleDateString('fr-FR')}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass">
+        <div style="font-weight:700;margin-bottom:12px">📊 Progression</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Envois reçus</div>
+            <div style="font-size:28px;font-weight:700;color:var(--success);margin-top:4px">${sent}/${subs.length}</div>
+          </div>
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">En attente</div>
+            <div style="font-size:28px;font-weight:700;color:var(--warning);margin-top:4px">${subs.length - sent}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:12px">📦 Historique des envois</div>
+      <table class="tbl" style="font-size:12px">
+        <thead><tr>
+          <th>#</th>
+          <th>Magazine</th>
+          <th>Poster</th>
+          <th>Stickers</th>
+          <th>Date prévue</th>
+          <th>Statut</th>
+          <th style="text-align:right">Action</th>
+        </tr></thead>
+        <tbody>${subs.map((ship,idx) => `<tr>
+          <td>${ship.shipment_number}</td>
+          <td>#${ship.magazine_number}</td>
+          <td>#${ship.poster_number}</td>
+          <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+          <td>${new Date(ship.scheduled_date).toLocaleDateString('fr-FR')}</td>
+          <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at ? '✅ Envoyé '+new Date(ship.sent_at).toLocaleDateString('fr-FR') : '⏳ En attente'}</span></td>
+          <td style="text-align:right">${ship.sent_at?`<button class="action-btn" style="color:var(--warning)" onclick="unmarkSentFromProfile(${ship.id})">✕</button>`:`<button class="action-btn" onclick="markSentFromProfile(${ship.id})">✓</button>`}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+    
+    <div style="display:flex;gap:12px">
+      <button class="btn pri" onclick="editSubscriber(${id})">✎ Modifier les infos</button>
+      <button class="btn" style="background:rgba(255,69,58,.15);color:var(--danger)" onclick="if(confirm('Supprimer cet abonné et tous ses envois?')){deleteSubscriber(${id});renderAbonnes()}">✕ Supprimer l'abonné</button>
+    </div>`;
+}
+
+async function markSentFromProfile(shipId){
+  if(!confirm('Marquer cet envoi comme envoyé?')) return;
+  
+  const { error } = await supabase
+    .from('shipments')
+    .update({ sent_at: new Date().toISOString() })
+    .eq('id', shipId);
+  
+  if(!error){
+    const ship = shipments.find(s => s.id === shipId);
+    viewSubscriberProfile(ship.subscriber_id);
+    await loadData();
   }
 }
 
-function switchView(v) {
-  S.view = v;
-  if (v === 'dash') renderDash();
-  else if (v === 'abonnes') renderAbonnes();
-  else if (v === 'envois') renderEnvois();
-  else renderSettings();
+async function unmarkSentFromProfile(shipId){
+  if(!confirm('Annuler le statut "envoyé" pour cet envoi?')) return;
+  
+  const { error } = await supabase
+    .from('shipments')
+    .update({ sent_at: null })
+    .eq('id', shipId);
+  
+  if(!error){
+    const ship = shipments.find(s => s.id === shipId);
+    viewSubscriberProfile(ship.subscriber_id);
+    await loadData();
+  }
 }
 
-function updateNav(v) {
-  document.querySelectorAll('.nav-btn').forEach((b, i) => {
-    b.classList.toggle('on', (i === {dash:0, abonnes:1, envois:2, settings:3}[v]));
+function renderEnvois(){
+  const byMonth = {};
+  shipments.forEach(s => {
+    const key = s.scheduled_date.slice(0, 7);
+    if(!byMonth[key]) byMonth[key] = [];
+    byMonth[key].push(s);
   });
+  
+  let html = `<div class="head"><h1>📦 Envois</h1><p>Historique par mois</p></div>`;
+  Object.keys(byMonth).sort().forEach(month => {
+    const m = new Date(month + '-01').toLocaleDateString('fr-FR', {month: 'long', year: 'numeric'});
+    html += `<div class="glass" style="margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:12px">${m}</div>
+      <table class="tbl">
+        <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th style="text-align:right">Action</th></tr></thead>
+        <tbody>${byMonth[month].map(ship => {
+          const sub = subscribers.find(x => x.id === ship.subscriber_id);
+          return `<tr>
+            <td class="nm">${sub.first_name} ${sub.last_name}</td>
+            <td>#${ship.magazine_number}</td>
+            <td>#${ship.poster_number}</td>
+            <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+            <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
+            <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent(${ship.id})" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent(${ship.id})">✓</button>`}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+  });
+  $('content').innerHTML = html;
 }
 
-function openModal(id) {
-  $(id).classList.add('open');
+async function markSent(id){
+  await supabase
+    .from('shipments')
+    .update({ sent_at: new Date().toISOString() })
+    .eq('id', id);
+  
+  await loadData();
+  renderEnvois();
 }
 
-function closeModal(id) {
-  $(id).classList.remove('open');
+async function unmarkSent(id){
+  await supabase
+    .from('shipments')
+    .update({ sent_at: null })
+    .eq('id', id);
+  
+  await loadData();
+  renderEnvois();
 }
 
+function renderSettings(){
+  $('content').innerHTML = `
+    <div class="head"><h1>⚙️ Paramètres</h1><p>Configuration de l'application</p></div>
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:16px">À venir...</div>
+      <p style="color:var(--ink-3);font-size:13px">Les paramètres de personnalisation seront disponibles bientôt.</p>
+    </div>`;
+}
+
+// ==================== INIT ====================
 window.addEventListener('load', async () => {
-  initClient();
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    const ok = await openSession();
-    if (!ok) return;
+  // Vérifier si déjà connecté
+  const { data: { session } } = await supabase.auth.getSession();
+  
+  if(session){
+    currentUserId = session.user.id;
+    $('authScreen').style.display = 'none';
+    $('root').style.display = 'grid';
+    await loadData();
+    renderDash();
   }
 });
 </script>
