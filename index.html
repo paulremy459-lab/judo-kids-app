@@ -239,6 +239,42 @@ input[type="color"]{
 </div>
 
 <!-- MODAL: Renouveler -->
+<div id="quickSubModal" class="modal">
+  <div class="modal-box" style="max-width:500px">
+    <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <h2 id="quickSubName" style="margin-bottom:4px">Nom Prénom</h2>
+        <p style="font-size:12px;color:var(--ink-3)" id="quickSubDate">Date d'abonnement</p>
+      </div>
+      <button onclick="closeModal('quickSubModal')" style="background:none;border:none;color:var(--ink-3);cursor:pointer;font-size:18px">✕</button>
+    </div>
+    
+    <div class="glass" style="margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:12px">📋 Informations</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+        <div>
+          <div style="color:var(--ink-3);font-size:11px">Email</div>
+          <div style="margin-top:2px" id="quickSubEmail">—</div>
+        </div>
+        <div>
+          <div style="color:var(--ink-3);font-size:11px">Téléphone</div>
+          <div style="margin-top:2px" id="quickSubPhone">—</div>
+        </div>
+        <div>
+          <div style="color:var(--ink-3);font-size:11px">Adresse</div>
+          <div style="margin-top:2px" id="quickSubAddr">—</div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="display:flex;gap:12px">
+      <button class="btn" onclick="closeModal('quickSubModal')">Fermer</button>
+      <button class="btn pri" id="quickSubViewBtn" onclick="closeModal('quickSubModal')">Voir la fiche complète</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Renouveler -->
 <div id="renewModal" class="modal">
   <div class="modal-box">
     <h2>Renouveler l'abonnement</h2>
@@ -354,6 +390,31 @@ function logoutSupabase(){
   $('root').style.display = 'none';
   $('authEmail').value = '';
   $('authPassword').value = '';
+}
+
+// ==================== QUICK SUBSCRIBER CARD ====================
+function showQuickSubscriber(id){
+  const sub = subscribers.find(s => s.id === id);
+  
+  if(!sub){
+    alert('Abonné non trouvé!');
+    return;
+  }
+  
+  $('quickSubName').textContent = `${sub.first_name} ${sub.last_name}`;
+  $('quickSubDate').textContent = `Abonné depuis le ${new Date(sub.subscription_date).toLocaleDateString('fr-FR')}`;
+  $('quickSubEmail').textContent = sub.email || '—';
+  $('quickSubPhone').textContent = sub.phone || '—';
+  $('quickSubAddr').textContent = sub.address || '—';
+  
+  // Remplir le bouton pour voir la fiche complète
+  const btnView = $('quickSubViewBtn');
+  btnView.onclick = function(){
+    closeModal('quickSubModal');
+    viewSubscriberProfile(id);
+  };
+  
+  openModal('quickSubModal');
 }
 
 // ==================== DATA LOADING ====================
@@ -910,7 +971,7 @@ async function unmarkSentFromProfile(shipId){
   }
 }
 
-let shipmentsFilter = 'all'; // 'all', '2026', '2027', etc.
+let shipmentsFilter = 'all'; // 'all', 'YYYY', 'YYYY-MM'
 
 function renderEnvois(){
   const byMonth = {};
@@ -920,13 +981,28 @@ function renderEnvois(){
     byMonth[key].push(s);
   });
   
-  // Extraire les années uniques
-  const years = [...new Set(Object.keys(byMonth).map(m => m.slice(0, 4)))].sort();
+  // Extraire les années uniques et tous les mois
+  const allMonths = Object.keys(byMonth).sort();
+  const years = [...new Set(allMonths.map(m => m.slice(0, 4)))].sort();
   
-  // Filtrer les mois selon l'année sélectionnée
-  let filteredMonths = Object.keys(byMonth).sort();
+  // Ajouter les années futures jusqu'à 2030
+  for(let y = 2026; y <= 2030; y++){
+    if(!years.includes(y.toString())){
+      years.push(y.toString());
+    }
+  }
+  years.sort();
+  
+  // Filtrer les mois selon le filtre
+  let filteredMonths = allMonths;
   if(shipmentsFilter !== 'all'){
-    filteredMonths = filteredMonths.filter(m => m.startsWith(shipmentsFilter));
+    if(shipmentsFilter.includes('-')){
+      // Filtre par mois spécifique
+      filteredMonths = filteredMonths.filter(m => m === shipmentsFilter);
+    } else {
+      // Filtre par année
+      filteredMonths = filteredMonths.filter(m => m.startsWith(shipmentsFilter));
+    }
   }
   
   let html = `
@@ -938,10 +1014,20 @@ function renderEnvois(){
     
     <div class="glass" style="margin-bottom:16px">
       <div style="font-weight:700;margin-bottom:12px">🗓️ Filtrer par année</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn ${shipmentsFilter === 'all' ? 'pri' : ''}" onclick="shipmentsFilter='all'; renderEnvois()">📅 Tous les envois</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn ${shipmentsFilter === 'all' ? 'pri' : ''}" onclick="shipmentsFilter='all'; renderEnvois()">📅 Tous</button>
         ${years.map(year => `<button class="btn ${shipmentsFilter === year ? 'pri' : ''}" onclick="shipmentsFilter='${year}'; renderEnvois()">${year}</button>`).join('')}
       </div>
+      
+      ${shipmentsFilter !== 'all' && !shipmentsFilter.includes('-') ? `
+      <div style="font-weight:700;margin-bottom:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--stroke)">📆 Filtrer par mois (${shipmentsFilter})</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${allMonths.filter(m => m.startsWith(shipmentsFilter)).map(month => {
+          const mName = new Date(month + '-01').toLocaleDateString('fr-FR', {month: 'short'});
+          return `<button class="btn sm ${shipmentsFilter === month ? 'pri' : ''}" onclick="shipmentsFilter='${month}'; renderEnvois()">${mName}</button>`;
+        }).join('')}
+      </div>
+      ` : ''}
     </div>
   `;
   
@@ -950,23 +1036,26 @@ function renderEnvois(){
   } else {
     filteredMonths.forEach(month => {
       const m = new Date(month + '-01').toLocaleDateString('fr-FR', {month: 'long', year: 'numeric'});
-      html += `<div class="glass" style="margin-bottom:16px">
-        <div style="font-weight:700;margin-bottom:12px">${m}</div>
-        <table class="tbl">
-          <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th style="text-align:right">Action</th></tr></thead>
-          <tbody>${byMonth[month].map(ship => {
-            const sub = subscribers.find(x => x.id === ship.subscriber_id);
-            return `<tr>
-              <td class="nm" onclick="viewSubscriberProfile('${sub.id}')" style="cursor:pointer;text-decoration:underline">${sub.first_name} ${sub.last_name}</td>
-              <td>#${ship.magazine_number}</td>
-              <td>#${ship.poster_number}</td>
-              <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
-              <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
-              <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
-            </tr>`;
-          }).join('')}</tbody>
-        </table>
-      </div>`;
+      const monthData = byMonth[month];
+      if(monthData){
+        html += `<div class="glass" style="margin-bottom:16px">
+          <div style="font-weight:700;margin-bottom:12px">${m}</div>
+          <table class="tbl">
+            <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th style="text-align:right">Action</th></tr></thead>
+            <tbody>${monthData.map(ship => {
+              const sub = subscribers.find(x => x.id === ship.subscriber_id);
+              return `<tr>
+                <td class="nm" onclick="showQuickSubscriber('${sub.id}')" style="cursor:pointer;text-decoration:underline">${sub.first_name} ${sub.last_name}</td>
+                <td>#${ship.magazine_number}</td>
+                <td>#${ship.poster_number}</td>
+                <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+                <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
+                <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>`;
+      }
     });
   }
   
