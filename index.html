@@ -126,6 +126,9 @@ main{display:flex;flex-direction:column;gap:18px;overflow:auto}
 </head>
 <body>
 
+<!-- DEBUG -->
+<div id="debugBar" style="position:fixed;bottom:10px;right:10px;background:rgba(0,0,0,.9);color:#0F0;font-size:10px;padding:8px;border-radius:8px;max-width:300px;max-height:100px;overflow-y:auto;font-family:monospace;z-index:99999;border:1px solid #0F0"></div>
+
 <!-- LOGIN -->
 <div id="authScreen">
   <div style="text-align:center;margin-bottom:20px">
@@ -298,8 +301,29 @@ const esc = t => (t+'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&g
 const uid = () => crypto.getRandomValues(new Uint8Array(16)).reduce((s,c) => s + c.toString(16).padStart(2,'0'),'');
 const toast = msg => { const e=document.createElement('div'); e.className='toast'; e.textContent=msg; document.body.appendChild(e); setTimeout(() => e.remove(), 3000); };
 
+const dbg = (msg) => {
+  console.log('[DBG]', msg);
+  const bar = $('debugBar');
+  if (bar) {
+    bar.textContent = msg + '\n' + bar.textContent;
+    const lines = bar.textContent.split('\n');
+    if (lines.length > 10) bar.textContent = lines.slice(0, 10).join('\n');
+  }
+};
+
 let sb;
-let S = { user: null, db: { subscribers: [], shipments: [] }, view: 'dash', editingId: null, renewingId: null, settings: { accentColor: '#7C5CFF', accentSoft: '#AF52DE', parution_dates: ['2026-09-01', '2026-11-01', '2027-01-01', '2027-03-01', '2027-05-01', '2027-07-01', '2027-09-01', '2027-11-01', '2028-01-01', '2028-03-01', '2028-05-01', '2028-07-01', '2028-09-01', '2028-11-01', '2029-01-01', '2029-03-01', '2029-05-01', '2029-07-01'] } };
+let S = { 
+  user: null, 
+  db: { subscribers: [], shipments: [] }, 
+  view: 'dash', 
+  editingId: null, 
+  renewingId: null, 
+  settings: { 
+    accentColor: '#7C5CFF', 
+    accentSoft: '#AF52DE', 
+    parution_dates: ['2026-09-01', '2026-11-01', '2027-01-01', '2027-03-01', '2027-05-01', '2027-07-01', '2027-09-01', '2027-11-01', '2028-01-01', '2028-03-01', '2028-05-01', '2028-07-01', '2028-09-01', '2028-11-01', '2029-01-01', '2029-03-01', '2029-05-01', '2029-07-01'] 
+  } 
+};
 
 const SCHEDULE = [
   {shipment:1, mag:4, release:'2026-09-01', deadline:'2026-10-15'},
@@ -966,20 +990,39 @@ function switchViewButton(v) {
   });
 }
 
-// STARTUP
-(async () => {
-  const saved = localStorage.getItem('jk_settings');
-  if (saved) S.settings = JSON.parse(saved);
-  
-  initClient();
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) {
-    const ok = await openSession();
-    if (!ok) return;
-  } else {
-    $('#authScreen').classList.remove('hidden');
+// STARTUP - Attendre que le DOM soit prêt!
+function startApp() {
+  try {
+    dbg('🚀 startApp begins');
+    
+    const saved = localStorage.getItem('jk_settings');
+    if (saved) S.settings = JSON.parse(saved);
+    dbg('⚙️ Settings loaded');
+    
+    initClient();
+    dbg('✅ Supabase init OK');
+    
+    if (!sb) {
+      dbg('❌ sb is null!');
+      return;
+    }
+    
+    sb.auth.getSession().then(({ data: { session } }) => {
+      dbg('Session check: ' + (session ? 'YES' : 'NO'));
+      if (session) {
+        openSession().catch(e => dbg('❌ openSession: ' + e.message));
+      }
+    }).catch(e => dbg('❌ getSession: ' + e.message));
+  } catch(e) {
+    dbg('❌ startApp error: ' + e.message);
   }
-})();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}
 </script>
 </body>
 </html>
