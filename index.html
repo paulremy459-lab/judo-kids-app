@@ -497,31 +497,50 @@ async function saveSubscriber(e){
 }
 
 // ==================== UPDATE SUBSCRIBER ====================
-async function editSubscriber(id){
+function editSubscriber(id){
+  console.log('Édition de l\'abonné:', id);
   editingSubId = id;
   const sub = subscribers.find(s => s.id === id);
   
-  $('edit_fname').value = sub.first_name;
-  $('edit_lname').value = sub.last_name;
+  if(!sub){
+    alert('Abonné non trouvé!');
+    return;
+  }
+  
+  $('edit_fname').value = sub.first_name || '';
+  $('edit_lname').value = sub.last_name || '';
   $('edit_email').value = sub.email || '';
   $('edit_phone').value = sub.phone || '';
   $('edit_addr').value = sub.address || '';
-  $('edit_sub_date').value = sub.subscription_date;
-  $('edit_sub_duration').value = sub.subscription_duration;
+  $('edit_sub_date').value = sub.subscription_date || '';
+  $('edit_sub_duration').value = sub.subscription_duration || '1';
   
+  console.log('Modal ouverte avec:', sub);
   openModal('editModal');
 }
 
 async function updateSubscriber(e){
   e.preventDefault();
   
-  const fname = $('edit_fname').value;
-  const lname = $('edit_lname').value;
-  const email = $('edit_email').value || null;
-  const phone = $('edit_phone').value || null;
-  const addr = $('edit_addr').value || '';
+  if(!editingSubId){
+    alert('Erreur: ID abonné manquant');
+    return;
+  }
+  
+  const fname = $('edit_fname').value.trim();
+  const lname = $('edit_lname').value.trim();
+  const email = $('edit_email').value.trim() || null;
+  const phone = $('edit_phone').value.trim() || null;
+  const addr = $('edit_addr').value.trim() || '';
   const subDate = $('edit_sub_date').value;
   const subDuration = parseInt($('edit_sub_duration').value);
+  
+  if(!fname || !lname || !subDate){
+    alert('Veuillez remplir: Prénom, Nom et Date d\'abonnement');
+    return;
+  }
+  
+  console.log('Mise à jour:', { editingSubId, fname, lname, email, phone, addr, subDate, subDuration });
   
   const { error } = await supabaseClient
     .from('subscribers')
@@ -532,15 +551,18 @@ async function updateSubscriber(e){
       phone,
       address: addr,
       subscription_date: subDate,
-      subscription_duration: subDuration
+      subscription_duration: subDuration,
+      updated_at: new Date().toISOString()
     })
     .eq('id', editingSubId);
   
   if(error){
+    console.error('Erreur mise à jour:', error);
     alert('Erreur: ' + error.message);
     return;
   }
   
+  console.log('✅ Mise à jour réussie!');
   closeModal('editModal');
   await loadData();
   renderAbonnes();
@@ -550,18 +572,33 @@ async function updateSubscriber(e){
 async function deleteSubscriber(id){
   if(!confirm('Supprimer cet abonné et tous ses envois?')) return;
   
+  console.log('Suppression de l\'abonné:', id);
+  
   // Supprimer les envois
-  await supabaseClient
+  const { error: shipError } = await supabaseClient
     .from('shipments')
     .delete()
     .eq('subscriber_id', id);
   
+  if(shipError){
+    console.error('Erreur suppression envois:', shipError);
+    alert('Erreur: ' + shipError.message);
+    return;
+  }
+  
   // Supprimer l'abonné
-  await supabaseClient
+  const { error: subError } = await supabaseClient
     .from('subscribers')
     .delete()
     .eq('id', id);
   
+  if(subError){
+    console.error('Erreur suppression abonné:', subError);
+    alert('Erreur: ' + subError.message);
+    return;
+  }
+  
+  console.log('✅ Suppression réussie!');
   await loadData();
   renderAbonnes();
 }
@@ -928,9 +965,54 @@ async function unmarkSent(id){
 function renderSettings(){
   $('content').innerHTML = `
     <div class="head"><h1>⚙️ Paramètres</h1><p>Configuration de l'application</p></div>
+    
     <div class="glass">
-      <div style="font-weight:700;margin-bottom:16px">À venir...</div>
-      <p style="color:var(--ink-3);font-size:13px">Les paramètres de personnalisation seront disponibles bientôt.</p>
+      <div style="font-weight:700;margin-bottom:16px">📱 À propos</div>
+      <div style="font-size:13px;color:var(--ink-3);line-height:1.6">
+        <p style="margin-bottom:8px"><b>Judo Kids — Gestion des envois</b></p>
+        <p>Version: 1.0.0</p>
+        <p>Dernière mise à jour: Septembre 2026</p>
+        <p style="margin-top:12px">Cette application gère les abonnements et envois du magazine L'Esprit du Judo Kids.</p>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:16px">📊 Statistiques</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <div style="color:var(--ink-3);font-size:11px">Abonnés actifs</div>
+          <div style="font-size:24px;font-weight:700;margin-top:4px">${subscribers.length}</div>
+        </div>
+        <div>
+          <div style="color:var(--ink-3);font-size:11px">Envois en attente</div>
+          <div style="font-size:24px;font-weight:700;margin-top:4px">${shipments.filter(s => !s.sent_at).length}</div>
+        </div>
+        <div>
+          <div style="color:var(--ink-3);font-size:11px">Envois envoyés</div>
+          <div style="font-size:24px;font-weight:700;margin-top:4px">${shipments.filter(s => s.sent_at).length}</div>
+        </div>
+        <div>
+          <div style="color:var(--ink-3);font-size:11px">Total envois</div>
+          <div style="font-size:24px;font-weight:700;margin-top:4px">${shipments.length}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:16px">🔐 Sécurité & Données</div>
+      <div style="font-size:13px;color:var(--ink-3);line-height:1.6">
+        <p style="margin-bottom:8px">✅ Vos données sont stockées de manière sécurisée sur Supabase</p>
+        <p style="margin-bottom:8px">✅ Authentification par email/mot de passe</p>
+        <p>✅ Chaque utilisateur voit uniquement ses données</p>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:16px">👤 Compte</div>
+      <div style="font-size:13px;color:var(--ink-3)">
+        <p style="margin-bottom:12px">Connecté en tant que: <b>${currentUserId}</b></p>
+        <button class="btn" onclick="logoutSupabase()" style="background:rgba(255,69,58,.15);color:var(--danger);width:100%">🔓 Déconnexion</button>
+      </div>
     </div>`;
 }
 
