@@ -910,6 +910,8 @@ async function unmarkSentFromProfile(shipId){
   }
 }
 
+let shipmentsFilter = 'all'; // 'all', '2026', '2027', etc.
+
 function renderEnvois(){
   const byMonth = {};
   shipments.forEach(s => {
@@ -918,27 +920,56 @@ function renderEnvois(){
     byMonth[key].push(s);
   });
   
-  let html = `<div class="head"><h1>📦 Envois</h1><p>Historique par mois</p></div>`;
-  Object.keys(byMonth).sort().forEach(month => {
-    const m = new Date(month + '-01').toLocaleDateString('fr-FR', {month: 'long', year: 'numeric'});
-    html += `<div class="glass" style="margin-bottom:16px">
-      <div style="font-weight:700;margin-bottom:12px">${m}</div>
-      <table class="tbl">
-        <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th style="text-align:right">Action</th></tr></thead>
-        <tbody>${byMonth[month].map(ship => {
-          const sub = subscribers.find(x => x.id === ship.subscriber_id);
-          return `<tr>
-            <td class="nm">${sub.first_name} ${sub.last_name}</td>
-            <td>#${ship.magazine_number}</td>
-            <td>#${ship.poster_number}</td>
-            <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
-            <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
-            <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
-          </tr>`;
-        }).join('')}</tbody>
-      </table>
-    </div>`;
-  });
+  // Extraire les années uniques
+  const years = [...new Set(Object.keys(byMonth).map(m => m.slice(0, 4)))].sort();
+  
+  // Filtrer les mois selon l'année sélectionnée
+  let filteredMonths = Object.keys(byMonth).sort();
+  if(shipmentsFilter !== 'all'){
+    filteredMonths = filteredMonths.filter(m => m.startsWith(shipmentsFilter));
+  }
+  
+  let html = `
+    <div class="head">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><h1>📦 Envois</h1><p>Historique par mois</p></div>
+      </div>
+    </div>
+    
+    <div class="glass" style="margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:12px">🗓️ Filtrer par année</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn ${shipmentsFilter === 'all' ? 'pri' : ''}" onclick="shipmentsFilter='all'; renderEnvois()">📅 Tous les envois</button>
+        ${years.map(year => `<button class="btn ${shipmentsFilter === year ? 'pri' : ''}" onclick="shipmentsFilter='${year}'; renderEnvois()">${year}</button>`).join('')}
+      </div>
+    </div>
+  `;
+  
+  if(filteredMonths.length === 0){
+    html += `<div class="glass"><div style="color:var(--ink-3);font-size:13px">Aucun envoi pour cette période</div></div>`;
+  } else {
+    filteredMonths.forEach(month => {
+      const m = new Date(month + '-01').toLocaleDateString('fr-FR', {month: 'long', year: 'numeric'});
+      html += `<div class="glass" style="margin-bottom:16px">
+        <div style="font-weight:700;margin-bottom:12px">${m}</div>
+        <table class="tbl">
+          <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th style="text-align:right">Action</th></tr></thead>
+          <tbody>${byMonth[month].map(ship => {
+            const sub = subscribers.find(x => x.id === ship.subscriber_id);
+            return `<tr>
+              <td class="nm" onclick="viewSubscriberProfile('${sub.id}')" style="cursor:pointer;text-decoration:underline">${sub.first_name} ${sub.last_name}</td>
+              <td>#${ship.magazine_number}</td>
+              <td>#${ship.poster_number}</td>
+              <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+              <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
+              <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+    });
+  }
+  
   $('content').innerHTML = html;
 }
 
