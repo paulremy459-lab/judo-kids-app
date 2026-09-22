@@ -2,336 +2,1520 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Judo Kids</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050B18">
+<title>Judo Kids — Gestion des Envois</title>
 <style>
-:root {
-  --navy: #040A15;
-  --accent: #7C5CFF;
-  --ink: #F2F6FF;
-  --ink-3: rgba(242,246,255,.42);
-  --stroke: rgba(255,255,255,.10);
-  --glass: rgba(255,255,255,.055);
-  --glass-2: rgba(255,255,255,.085);
+:root{
+  --navy-900:#040A15;
+  --navy-700:#0B1B33;
+  --accent:#7C5CFF;
+  --accent-soft:#AF52DE;
+  --accent-deep:#5D3FA6;
+  --bg-1:#1e1547;--bg-2:#141030;--bg-3:#0a0612;
+  --success:#32D74B;
+  --warning:#FFD426;
+  --danger:#FF453A;
+  --ink:#F2F6FF;
+  --ink-2:rgba(242,246,255,.66);
+  --ink-3:rgba(242,246,255,.42);
+  --glass:rgba(255,255,255,.055);
+  --glass-2:rgba(255,255,255,.085);
+  --glass-hi:rgba(255,255,255,.14);
+  --stroke:rgba(255,255,255,.10);
+  --stroke-2:rgba(255,255,255,.18);
+  --g-hi:rgba(255,255,255,.11);
+  --g-mid:rgba(255,255,255,.045);
+  --g-lo:rgba(255,255,255,.018);
+  --g-edge:rgba(255,255,255,.15);
+  --r-sm:14px;--r-md:20px;--r-lg:26px;
+  --shadow-md:0 12px 34px rgba(0,0,0,.38);
+  --blur:42px;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { height: 100%; font-family: system-ui, sans-serif; background: var(--navy); color: var(--ink); }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;font-family:system-ui,sans-serif;background:var(--navy-900);color:var(--ink);overflow:hidden}
+body{-webkit-font-smoothing:antialiased}
 
-#root { display: grid; grid-template-columns: 280px 1fr; gap: 20px; padding: 20px; height: 100%; }
-#loginScreen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; }
+#root{display:grid;grid-template-columns:280px 1fr;gap:20px;padding:20px;height:100%;overflow:hidden}
 
-aside { display: flex; flex-direction: column; gap: 20px; overflow: auto; }
-.logo { display: flex; align-items: center; gap: 12px; padding: 16px; background: var(--glass); border-radius: 14px; }
-.logo .ico { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(145deg, var(--accent), #5D3FA6); display: grid; place-items: center; color: #fff; font-size: 18px; font-weight: 700; }
-.logo h1 { font-size: 16px; font-weight: 700; }
+aside{display:flex;flex-direction:column;gap:20px;overflow:auto}
+.logo{display:flex;align-items:center;gap:12px;padding:16px;background:var(--glass);border-radius:var(--r-md)}
+.logo .ico{width:40px;height:40px;border-radius:var(--r-sm);background:linear-gradient(145deg,var(--accent),var(--accent-deep));display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px}
+.logo h1{font-size:16px;font-weight:700}
 
-.nav-btn { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 10px; background: transparent; color: var(--ink); border: 1px solid transparent; cursor: pointer; width: 100%; text-align: left; }
-.nav-btn:hover { background: var(--glass-2); }
-.nav-btn.on { background: var(--glass); border-color: var(--stroke); }
-.nav-badge { background: var(--accent); color: #fff; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-left: auto; }
+.nav-sec{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink-3);padding:12px 0 4px}
+.nav-btn{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r-sm);background:transparent;color:var(--ink-2);border:1px solid transparent;cursor:pointer;width:100%;text-align:left}
+.nav-btn:hover{background:var(--glass-2)}
+.nav-btn.on{background:var(--glass-hi);border-color:var(--stroke-2);color:var(--ink)}
+.nav-cnt{margin-left:auto;font-size:11px;background:var(--accent);color:#fff;border-radius:999px;padding:2px 8px;font-weight:700}
 
-#content { overflow-y: auto; padding-right: 12px; }
-.head { margin-bottom: 32px; }
-.head h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
-.head p { font-size: 13px; color: var(--ink-3); }
+main{display:flex;flex-direction:column;gap:18px;overflow:auto}
+.head h1{font-size:26px;font-weight:700}
+.head p{font-size:13px;color:var(--ink-3)}
 
-.glass { background: var(--glass); border: 1px solid var(--stroke); border-radius: 20px; padding: 20px; margin-bottom: 24px; }
-.btn { padding: 12px 24px; border: 1px solid var(--stroke); border-radius: 10px; background: var(--glass-2); color: var(--ink); cursor: pointer; font-size: 14px; font-weight: 600; }
-.btn:hover { background: var(--glass); }
-.btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.btn-primary:hover { background: #AF52DE; }
-.btn-danger { background: rgba(255,69,58,.2); border-color: rgba(255,69,58,.4); color: #FF453A; }
+.glass{background:linear-gradient(158deg,var(--g-hi) 0%,var(--g-lo) 42%,var(--g-mid) 100%);backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));border:1px solid var(--g-edge);border-radius:var(--r-lg);box-shadow:var(--shadow-md);padding:20px}
 
-input, select, textarea { padding: 12px; background: var(--glass-2); border: 1px solid var(--stroke); border-radius: 10px; color: var(--ink); font-size: 14px; width: 100%; margin-bottom: 12px; }
-input:focus, select:focus { outline: none; border-color: var(--accent); }
+.grid{display:grid;gap:16px}
+.g-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
 
-.tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
-.tbl th { padding: 12px; text-align: left; border-bottom: 1px solid var(--stroke); color: var(--ink-3); font-weight: 600; }
-.tbl td { padding: 12px; border-bottom: 1px solid var(--stroke); }
-.tbl tr:hover { background: var(--glass-2); }
+.kpi{display:flex;flex-direction:column;gap:10px}
+.kpi .lab{font-size:12px;color:var(--ink-3)}
+.kpi .val{font-size:32px;font-weight:700}
+.kpi .sub{font-size:11px;color:var(--ink-3)}
 
-.modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; z-index: 999; }
-.modal.open { display: flex; }
-.modal-content { background: var(--navy); border: 1px solid var(--stroke); border-radius: 20px; padding: 32px; max-width: 500px; width: 90%; }
-.modal-content h2 { margin-bottom: 24px; font-size: 20px; font-weight: 700; }
-.modal-btns { display: flex; gap: 12px; margin-top: 24px; }
-.modal-btns .btn { flex: 1; }
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.tbl th{text-align:left;font-size:11px;font-weight:620;color:var(--ink-2);padding:10px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--stroke)}
+.tbl td{padding:11px 10px;border-top:1px solid var(--stroke)}
+.tbl tbody tr:hover{background:var(--glass-2)}
+.tbl .nm{font-weight:580}
 
-.pill { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background: var(--glass-2); }
-.pill.g { background: rgba(50,215,75,.15); color: #32D74B; }
+.btn{padding:9px 15px;border-radius:var(--r-sm);border:1px solid var(--stroke);background:var(--glass-2);color:var(--ink);cursor:pointer;font-weight:580}
+.btn:hover{background:var(--glass-hi)}
+.btn.pri{background:linear-gradient(145deg,var(--accent),var(--accent-soft));border:none;color:#fff}
+.btn.sm{padding:6px 11px;font-size:12px}
+
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;background:rgba(50,215,75,.15);color:var(--success);border:1px solid rgba(50,215,75,.25)}
+.pill.o{background:rgba(255,212,38,.15);color:var(--warning);border-color:rgba(255,212,38,.25)}
+
+.search-box{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-md);margin-bottom:16px}
+.search-box input{flex:1;background:transparent;border:none;color:var(--ink);font-size:14px;outline:none}
+.search-box input::placeholder{color:var(--ink-3)}
+
+.action-btn{padding:6px 10px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink-2);cursor:pointer;font-size:12px;font-weight:600;transition:.2s}
+.action-btn:hover{background:var(--glass-hi);color:var(--ink)}
+.action-btn.danger{color:var(--danger)}
+.action-btn.danger:hover{background:rgba(255,69,58,.15)}
+
+input[type="color"]{
+  cursor:pointer;
+}
+
+select {
+  position: relative;
+  z-index: 10;
+}
+
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal.open{opacity:1;pointer-events:auto}
+.modal-box{background:var(--navy-700);border:1px solid var(--stroke-2);border-radius:var(--r-lg);padding:28px;width:90%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:80vh;overflow-y:auto;overflow-x:visible;position:relative;z-index:10000}
+.copy-field{display:flex;align-items:center;gap:10px;padding:12px;background:var(--glass-2);border-radius:var(--r-sm);border:1px solid var(--stroke)}
+.copy-field .label{font-size:12px;color:var(--ink-3);font-weight:600;width:100px;flex-shrink:0}
+.copy-field .value{flex:1;color:var(--ink);font-size:13px;word-break:break-all}
+.copy-field .copy-btn{padding:6px 10px;background:var(--glass-hi);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink-2);cursor:pointer;font-size:12px;transition:.2s;flex-shrink:0}
+.copy-field .copy-btn:hover{background:var(--accent);color:white;border-color:var(--accent)}
+.modal-box h2{font-size:18px;margin-bottom:16px}
+.form-group{margin-bottom:16px;display:flex;flex-direction:column;gap:6px}
+.form-group:last-of-type{margin-bottom:40px}
+.form-group label{font-size:12px;font-weight:600;color:var(--ink-3)}
+.form-group input{padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px}
+.form-group input:focus{outline:none;border-color:var(--accent);background:var(--glass-hi)}
+.form-actions{display:flex;gap:12px;margin-top:24px}
+.form-actions button{flex:1;padding:12px;border-radius:var(--r-sm);border:1px solid var(--stroke);background:var(--glass-2);color:var(--ink);cursor:pointer;font-weight:580}
+.form-actions button.pri{background:linear-gradient(145deg,var(--accent),var(--accent-soft));border:none;color:#fff}
 </style>
-</head>
-<body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://wojlwjplzlxkvqxmehdu.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indvamx3anBsemx4a3ZxeG1laGR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNjUwOTcsImV4cCI6MjEwNTY0MTA5N30.Ik7iEpdpSzCyGgMuPpy0oIokaWIWE9E7aE5t-9ePiMA';
+let sb = null;
+</script>
 
-<div id="loginScreen">
-  <div class="glass" style="width: 100%; max-width: 400px; padding: 40px;">
-    <div class="logo" style="margin-bottom: 32px;">
-      <div class="ico">🥋</div>
-      <h1>Judo Kids</h1>
-    </div>
-    <form onsubmit="doLogin(event)">
-      <h2 style="margin-bottom: 24px; font-size: 18px;">Connexion</h2>
-      <label style="display: block; font-size: 12px; color: var(--ink-3); margin-bottom: 6px;">Email</label>
-      <input type="email" id="loginEmail" required>
-      <label style="display: block; font-size: 12px; color: var(--ink-3); margin-bottom: 6px;">Mot de passe</label>
-      <input type="password" id="loginPassword" required>
-      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 24px;">Se connecter</button>
+<body>
+<div id="loginScreen" style="position:fixed;top:0;left:0;right:0;bottom:0;background:#040A15;display:flex;align-items:center;justify-content:center;z-index:99999">
+  <div style="background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.10);border-radius:26px;padding:40px;width:90%;max-width:400px">
+    <h2 style="font-size:24px;font-weight:700;margin-bottom:10px;color:#F2F6FF">🥋 Judo Kids</h2>
+    <p style="font-size:13px;color:rgba(242,246,255,.66);margin-bottom:30px">Gestion des envois</p>
+    <form onsubmit="doLogin(event)" style="display:flex;flex-direction:column;gap:14px">
+      <input type="email" id="loginEmail" placeholder="Email" required style="padding:12px 14px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.10);border-radius:14px;color:#F2F6FF;font-size:14px;outline:none" />
+      <input type="password" id="loginPassword" placeholder="Mot de passe" required style="padding:12px 14px;background:rgba(255,255,255,.085);border:1px solid rgba(255,255,255,.10);border-radius:14px;color:#F2F6FF;font-size:14px;outline:none" />
+      <button type="submit" style="padding:12px;background:linear-gradient(145deg,#7C5CFF,#AF52DE);border:none;border-radius:14px;color:#fff;font-weight:600;cursor:pointer;margin-top:10px">Connexion</button>
     </form>
+    <div id="loginError" style="color:#FF453A;font-size:12px;margin-top:14px;text-align:center;display:none"></div>
   </div>
 </div>
 
-<div id="root" style="display: none;">
+<div id="root">
   <aside>
     <div class="logo">
       <div class="ico">🥋</div>
-      <h1>Judo Kids</h1>
+      <div><h1>Judo Kids</h1></div>
     </div>
-    <button class="nav-btn on" onclick="goView('dash')">📊 Dashboard</button>
-    <button class="nav-btn" onclick="goView('subscribers')">👥 Abonnés <span class="nav-badge" id="subCount">0</span></button>
-    <button class="nav-btn" onclick="goView('settings')">⚙️ Paramètres</button>
+    
+    <div>
+      <div class="nav-sec">Navigation</div>
+      <button class="nav-btn on" onclick="goView('dashboard')">📊 Dashboard</button>
+      <button class="nav-btn" onclick="goView('abonnes')">👥 Abonnés <span class="nav-cnt" id="cntAbo">6</span></button>
+      <button class="nav-btn" onclick="goView('envois')">📦 Envois <span class="nav-cnt" id="cntEnv">3</span></button>
+      <button class="nav-btn" onclick="goView('settings')">⚙️ Paramètres</button>
+    </div>
   </aside>
-  
-  <div id="content"></div>
+
+  <main id="content"></main>
 </div>
 
-<div id="modalAdd" class="modal">
-  <div class="modal-content">
-    <h2>➕ Ajouter un abonné</h2>
+<div id="addModal" class="modal">
+  <div class="modal-box">
+    <h2>Ajouter un abonné</h2>
     <form onsubmit="saveSubscriber(event)">
-      <label>Prénom *</label>
-      <input type="text" id="fname" required>
-      <label>Nom *</label>
-      <input type="text" id="lname" required>
-      <label>Email</label>
-      <input type="email" id="email">
-      <label>Adresse</label>
-      <textarea id="addr" style="height: 80px;"></textarea>
-      <div class="modal-btns">
-        <button type="button" class="btn" onclick="closeModal('modalAdd')">Annuler</button>
-        <button type="submit" class="btn btn-primary">Créer</button>
+      <div class="form-group">
+        <label>Prénom*</label>
+        <input type="text" id="fname" required>
+      </div>
+      <div class="form-group">
+        <label>Nom*</label>
+        <input type="text" id="lname" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email">
+      </div>
+      <div class="form-group">
+        <label>Adresse</label>
+        <input type="text" id="addr">
+      </div>
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('addModal')">Annuler</button>
+        <button type="submit" class="pri">Créer</button>
       </div>
     </form>
   </div>
 </div>
 
-<div id="modalEdit" class="modal">
-  <div class="modal-content">
-    <h2>✏️ Modifier</h2>
+<div id="editModal" class="modal">
+  <div class="modal-box">
+    <h2>Modifier abonné</h2>
     <form onsubmit="updateSubscriber(event)">
-      <label>Prénom *</label>
-      <input type="text" id="edit_fname" required>
-      <label>Nom *</label>
-      <input type="text" id="edit_lname" required>
-      <label>Email</label>
-      <input type="email" id="edit_email">
-      <label>Adresse</label>
-      <textarea id="edit_addr" style="height: 80px;"></textarea>
-      <div class="modal-btns">
-        <button type="button" class="btn" onclick="closeModal('modalEdit')">Annuler</button>
-        <button type="button" class="btn btn-danger" onclick="deleteSubscriber(editingSubId)">Supprimer</button>
-        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+      <div class="form-group">
+        <label>Prénom*</label>
+        <input type="text" id="edit_fname" required>
+      </div>
+      <div class="form-group">
+        <label>Nom*</label>
+        <input type="text" id="edit_lname" required>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="edit_email">
+      </div>
+      <div class="form-group">
+        <label>Adresse</label>
+        <input type="text" id="edit_addr">
+      </div>
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('editModal')">Annuler</button>
+        <button type="submit" class="pri">Sauvegarder</button>
       </div>
     </form>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<div id="renewModal" class="modal">
+  <div class="modal-box">
+    <h2>Renouveler l'abonnement</h2>
+    <form onsubmit="confirmRenewal(event)">
+      <div class="form-group">
+        <label>Nouvelle date de départ*</label>
+        <input type="date" id="renew_sub_date" required>
+      </div>
+      <div class="form-group">
+        <label>Durée du nouvel abonnement*</label>
+        <select id="renew_sub_duration" required style="padding:10px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px">
+          <option value="">-- Sélectionner --</option>
+          <option value="1">1 an (6 envois)</option>
+          <option value="2">2 ans (12 envois)</option>
+          <option value="3">3 ans (18 envois)</option>
+        </select>
+      </div>
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('renewModal')">Annuler</button>
+        <button type="submit" class="pri">Créer le renouvellement</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
-const SUPABASE_URL = 'https://klbftabestrvyvmqcjca.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsYmZ0YWJlc3Rydnl2bXFjamNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwOTcwOTIsImV4cCI6MjEwNTY3MzA5Mn0.2pcg1B7Nh20HXM6A7uaH3nz6jWCNk9CReP7A_tgVum0';
+// ===== CONFIGURATION GOOGLE SHEETS =====
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzG5ZG2AMlEP64jILIzdtpj3aAEdXdGcYYITFeRMYeVx84ixAynQvlTheprasWW7SMJ/exec';
 
-let sb = null;
-let subscribers = [];
-let editingSubId = null;
-
-const $ = id => document.getElementById(id);
-
-// Init
-(async () => {
-  if(window.supabase) {
-    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const {data: {session}} = await sb.auth.getSession();
-    if(session) {
-      $('loginScreen').style.display = 'none';
-      $('root').style.display = 'grid';
-      await loadData();
-      renderDash();
-    }
+// Fonction pour synchroniser les données avec Google Sheets
+async function syncToGoogleSheets(data) {
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'TON_URL_ICI') {
+    console.log('Google Sheets non configuré');
+    return false;
   }
-})();
-
-async function doLogin(e) {
-  e.preventDefault();
-  const email = $('loginEmail').value;
-  const pwd = $('loginPassword').value;
+  
   try {
-    await sb.auth.signInWithPassword({email, password: pwd});
-    $('loginScreen').style.display = 'none';
-    $('root').style.display = 'grid';
-    await loadData();
-    renderDash();
-  } catch(e) {
-    alert('❌ ' + e.message);
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    console.log('Sync Google Sheets:', result);
+    return result.success;
+  } catch (error) {
+    console.error('Erreur sync Google Sheets:', error);
+    return false;
   }
 }
 
-async function loadData() {
+// DONNÉES LOCALES
+let subscribers = [];
+
+// Calendrier avec dates de SORTIE (le 1er) et DEADLINES (le 15 du mois suivant)
+const SCHEDULE = [
+  {shipment:1, mag_if_sub_before_deadline:4, release_date:'2026-09-01', deadline:'2026-10-15'},
+  {shipment:2, mag_if_sub_before_deadline:5, release_date:'2026-11-01', deadline:'2026-12-15'},
+  {shipment:3, mag_if_sub_before_deadline:6, release_date:'2027-01-01', deadline:'2027-02-15'},
+  {shipment:4, mag_if_sub_before_deadline:7, release_date:'2027-03-01', deadline:'2027-04-15'},
+  {shipment:5, mag_if_sub_before_deadline:8, release_date:'2027-05-01', deadline:'2027-06-15'},
+  {shipment:6, mag_if_sub_before_deadline:9, release_date:'2027-07-01', deadline:'2027-08-15'},
+  {shipment:7, mag_if_sub_before_deadline:10, release_date:'2027-09-01', deadline:'2027-10-15'},
+  {shipment:8, mag_if_sub_before_deadline:11, release_date:'2027-11-01', deadline:'2027-12-15'},
+  {shipment:9, mag_if_sub_before_deadline:12, release_date:'2028-01-01', deadline:'2028-02-15'},
+  {shipment:10, mag_if_sub_before_deadline:13, release_date:'2028-03-01', deadline:'2028-04-15'},
+  {shipment:11, mag_if_sub_before_deadline:14, release_date:'2028-05-01', deadline:'2028-06-15'},
+  {shipment:12, mag_if_sub_before_deadline:15, release_date:'2028-07-01', deadline:'2028-08-15'},
+  {shipment:13, mag_if_sub_before_deadline:16, release_date:'2028-09-01', deadline:'2028-10-15'},
+  {shipment:14, mag_if_sub_before_deadline:17, release_date:'2028-11-01', deadline:'2028-12-15'},
+  {shipment:15, mag_if_sub_before_deadline:18, release_date:'2029-01-01', deadline:'2029-02-15'},
+  {shipment:16, mag_if_sub_before_deadline:19, release_date:'2029-03-01', deadline:'2029-04-15'},
+  {shipment:17, mag_if_sub_before_deadline:20, release_date:'2029-05-01', deadline:'2029-06-15'},
+  {shipment:18, mag_if_sub_before_deadline:21, release_date:'2029-07-01', deadline:'2029-08-15'},
+];
+
+// Fonction: récupérer le magazine de premier envoi selon la date d'abonnement
+// Si date d'abonnement <= 15 du mois suivant la parution = Mag EN COURS
+// Si date d'abonnement > 15 du mois suivant la parution = Mag D'APRÈS
+function getMagazineForSubscription(subDate){
+  const subDateObj = new Date(subDate);
+  
+  // Trouver le premier magazine auquel on a droit selon la deadline
+  for(let i = 0; i < SCHEDULE.length; i++){
+    const deadlineDate = new Date(SCHEDULE[i].deadline);
+    
+    // Si la date d'abonnement est <= deadline, on a droit à ce magazine
+    if(subDateObj <= deadlineDate){
+      return SCHEDULE[i].mag_if_sub_before_deadline;
+    }
+  }
+  
+  // Si après toutes les deadlines
+  return SCHEDULE[SCHEDULE.length - 1].mag_if_sub_before_deadline + 1;
+}
+
+let shipments = [];
+
+let nextSubId = 1;
+let nextShipId = 1;
+let editingSubId = null;
+let theme = {
+  accent: '#7C5CFF',
+  accentSoft: '#AF52DE',
+  accentDeep: '#5D3FA6',
+  fond: 'marine', // marine, noir, navy, gradient
+  verre: 'intense' // leger, moyen, intense
+};
+
+function applyTheme(){
+  const root = document.documentElement;
+  root.style.setProperty('--accent', theme.accent);
+  root.style.setProperty('--accent-soft', theme.accentSoft);
+  root.style.setProperty('--accent-deep', theme.accentDeep);
+  
+  // Appliquer le fond
+  const fondMap = {
+    marine: '#040A15',
+    noir: '#0A0A0A',
+    navy: '#0B1B33',
+    gradient: 'linear-gradient(135deg, #040A15 0%, #0B1B33 100%)'
+  };
+  document.body.style.background = fondMap[theme.fond] || fondMap.marine;
+  
+  // Appliquer le verre (blur et opacity)
+  const verreMap = {
+    leger: { blur: '20px', opacity: 0.03 },
+    moyen: { blur: '42px', opacity: 0.055 },
+    intense: { blur: '60px', opacity: 0.08 }
+  };
+  const v = verreMap[theme.verre] || verreMap.moyen;
+  root.style.setProperty('--blur', v.blur);
+  root.style.setProperty('--glass', `rgba(255,255,255,${v.opacity})`);
+  root.style.setProperty('--glass-2', `rgba(255,255,255,${v.opacity*1.5})`);
+  root.style.setProperty('--glass-hi', `rgba(255,255,255,${v.opacity*2.5})`);
+}
+
+function openModal(id){
+  $('#'+id).classList.add('open');
+}
+
+function closeModal(id){
+  $('#'+id).classList.remove('open');
+}
+
+// Sauvegarder un abonné à Supabase
+async function saveSubscriberToSupabase(subData, shipmentsList) {
+  if(!sb) return;
   try {
-    const {data: subs} = await sb.from('subscribers').select('*');
+    // Insérer l'abonné (Supabase génère l'ID)
+    const {data: insertedSub, error: subError} = await sb
+      .from('subscribers')
+      .insert([subData])
+      .select();
+    
+    if(subError) throw subError;
+    const newId = insertedSub[0].id;
+    
+    // Mettre à jour les envois avec le vrai ID Supabase
+    const shipsToInsert = shipmentsList.map(s => ({
+      ...s,
+      subscriber_id: newId
+    }));
+    
+    const {error: shipError} = await sb
+      .from('shipments')
+      .insert(shipsToInsert);
+    
+    if(shipError) throw shipError;
+    
+    console.log('✅ Abonné sauvegardé à Supabase');
+    return newId;
+  } catch(e) {
+    console.error('❌ Erreur Supabase:', e.message);
+    return null;
+  }
+}
+
+async function saveSubscriber(e){
+  e.preventDefault();
+  const fname = $('#fname').value;
+  const lname = $('#lname').value;
+  const email = $('#email').value || null;
+  const addr = $('#addr').value || '';
+  
+
+  
+  // Créer le sub SANS ID (Supabase va le générer)
+  const subToInsert = {
+    first_name: fname,
+    last_name: lname,
+    email,
+    address: addr
+  };
+  
+  // Insérer à Supabase EN PREMIER pour obtenir l'ID généré
+  let subId;
+  if(sb) {
+    try {
+      const {data: insertedSubs, error} = await sb
+        .from('subscribers')
+        .insert([subToInsert])
+        .select();
+      
+      if(error) throw error;
+      subId = insertedSubs[0].id;
+      console.log('✅ Abonné sauvegardé dans Supabase (ID:', subId, ')');
+    } catch(e) {
+      console.error('❌ Erreur Supabase:', e.message);
+      alert('Erreur de sauvegarde: ' + e.message);
+      return;
+    }
+  } else {
+    subId = nextSubId++;
+  }
+  
+  // Créer l'objet local avec l'ID Supabase
+  const sub = {...subToInsert, id: subId};
+  subscribers.push(sub);
+  
+  $('#fname').value = '';
+  $('#lname').value = '';
+  $('#email').value = '';
+  $('#addr').value = '';
+  closeModal('addModal');
+  
+  const pending = shipments.filter(s=>!s.sent_at).length;
+  $('#cntAbo').textContent = subscribers.length;
+  $('#cntEnv').textContent = pending;
+  renderAbonnes();
+}
+
+function editSubscriber(id){
+  editingSubId = id;
+  const sub = subscribers.find(s=>s.id===id);
+  $('#edit_fname').value = sub.first_name;
+  $('#edit_lname').value = sub.last_name;
+  $('#edit_email').value = sub.email || '';
+  $('#edit_addr').value = sub.address || '';
+  openModal('editModal');
+}
+
+function updateSubscriber(e){
+  e.preventDefault();
+  const sub = subscribers.find(s=>s.id===editingSubId);
+  sub.first_name = $('#edit_fname').value;
+  sub.last_name = $('#edit_lname').value;
+  sub.email = $('#edit_email').value || null;
+  sub.address = $('#edit_addr').value || '';
+  
+  // Sauvegarder les modifications à Supabase en arrière-plan
+  if(sb) {
+    (async () => {
+      try {
+        await sb.from('subscribers').update(sub).eq('id', editingSubId);
+        console.log('✅ Abonné mis à jour');
+      } catch(e) {
+        console.error('❌ Erreur update:', e.message);
+      }
+    })();
+  }
+  
+  const newSubDate = $('#edit_sub_date').value;
+  const newSubDateObj = new Date(newSubDate);
+  const newSubDuration = parseInt($('#edit_sub_duration').value);
+  const firstMag = getMagazineForSubscription(newSubDate);
+  
+  // Supprimer les anciens envois
+  const oldShips = shipments.filter(s=>s.subscriber_id===editingSubId);
+  shipments = shipments.filter(s=>s.subscriber_id!==editingSubId);
+  
+  // Supprimer à Supabase aussi
+  if(sb && oldShips.length > 0) {
+    (async () => {
+      try {
+        const shipIds = oldShips.map(s => s.id);
+        await sb.from('shipments').delete().in('id', shipIds);
+        console.log('✅ Anciens envois supprimés');
+      } catch(e) {
+        console.error('❌ Erreur delete ships:', e.message);
+      }
+    })();
+  }
+  
+  // Trouver le SCHEDULE correspondant au premier magazine
+  let firstScheduleIdx = -1;
+  for(let i = 0; i < SCHEDULE.length; i++){
+    if(SCHEDULE[i].mag_if_sub_before_deadline === firstMag){
+      firstScheduleIdx = i;
+      break;
+    }
+  }
+  
+  // Créer les nouveaux envois
+  const newShips = [];
+  if(firstScheduleIdx >= 0){
+    const endDate = new Date(newSubDateObj);
+    endDate.setFullYear(endDate.getFullYear() + newSubDuration);
+    
+    let shipmentNum = 1;
+    const maxShipments = 6 * newSubDuration;  // 6 envois par an
+    
+    // PREMIER ENVOI: date de sortie du magazine OU date d'abonnement, prendre la plus grande
+    const releaseDate = new Date(SCHEDULE[firstScheduleIdx].release_date);
+    const firstShipmentDate = newSubDateObj >= releaseDate ? newSubDate : SCHEDULE[firstScheduleIdx].release_date;
+    
+    shipments.push({
+      id: nextShipId++,
+      subscriber_id: editingSubId,
+      shipment_number: shipmentNum,
+      magazine_number: SCHEDULE[firstScheduleIdx].mag_if_sub_before_deadline,
+      poster_number: shipmentNum,
+      sticker_pair: shipmentNum,
+      scheduled_date: firstShipmentDate,  // ← Max(date d'abonnement, date de sortie)
+      sent_at: null
+    });
+    shipmentNum++;
+    
+    // ENVOIS SUIVANTS: dates de sortie
+    for(let i = firstScheduleIdx + 1; i < SCHEDULE.length && shipmentNum <= maxShipments; i++){
+      const sendDate = new Date(SCHEDULE[i].release_date);
+      
+      if(sendDate <= endDate){
+        shipments.push({
+          id: nextShipId++,
+          subscriber_id: editingSubId,
+          shipment_number: shipmentNum,
+          magazine_number: SCHEDULE[i].mag_if_sub_before_deadline,
+          poster_number: shipmentNum,
+          sticker_pair: shipmentNum,
+          scheduled_date: SCHEDULE[i].release_date,  // ← Date de sortie
+          sent_at: null
+        });
+        shipmentNum++;
+      }
+    }
+  }
+  
+  // Insérer les nouveaux envois à Supabase
+  const modifiedShipments = shipments.filter(s => s.subscriber_id === editingSubId);
+  if(sb && modifiedShipments.length > 0) {
+    const shipsForSupabase = modifiedShipments.map(s => ({
+      subscriber_id: s.subscriber_id,
+      shipment_number: s.shipment_number,
+      magazine_number: s.magazine_number,
+      poster_number: s.poster_number,
+      sticker_pair: s.sticker_pair,
+      scheduled_date: s.scheduled_date,
+      sent_at: s.sent_at
+    }));
+    
+    (async () => {
+      try {
+        await sb.from('shipments').insert(shipsForSupabase);
+        console.log('✅ Nouveaux envois sauvegardés');
+      } catch(e) {
+        console.error('❌ Erreur insert nouveaux ships:', e.message);
+      }
+    })();
+  }
+  
+  // Synchroniser avec Google Sheets
+  syncToGoogleSheets({
+    action: 'updateSubscriber',
+    id: sub.id,
+    first_name: sub.first_name,
+    last_name: sub.last_name,
+    email: sub.email,
+    address: sub.address
+  });
+  
+  // Synchroniser les envois modifiés
+  const modifiedShipments2 = shipments.filter(s => s.subscriber_id === editingSubId);
+  modifiedShipments2.forEach(ship => {
+    syncToGoogleSheets({
+      action: 'addShipment',
+      id: ship.id,
+      subscriber_id: ship.subscriber_id,
+      shipment_number: ship.shipment_number,
+      magazine_number: ship.magazine_number,
+      poster_number: ship.poster_number,
+      sticker_pair_start: ship.sticker_pair_start,
+      sticker_pair_end: ship.sticker_pair_end,
+      scheduled_date: ship.scheduled_date,
+      sent_at: ship.sent_at
+    });
+  });
+  
+  closeModal('editModal');
+  updateCounts();
+  renderAbonnes();
+}
+
+function deleteSubscriber(id){
+
+  if(!confirm('Supprimer cet abonné et tous ses envois?')) return;
+  
+  const sub = subscribers.find(s=>s.id===id);
+  
+  // Supprimer à Supabase
+  if(sb) {
+    (async () => {
+      try {
+        // Les shipments se suppriment en cascade grâce aux FK
+        await sb.from('subscribers').delete().eq('id', id);
+        console.log('✅ Abonné supprimé');
+      } catch(e) {
+        console.error('❌ Erreur delete:', e.message);
+      }
+    })();
+  }
+  
+  // Synchroniser la suppression avec Google Sheets
+  syncToGoogleSheets({
+    action: 'deleteSubscriber',
+    id: id
+  });
+  
+  subscribers = subscribers.filter(s=>s.id!==id);
+  shipments = shipments.filter(s=>s.subscriber_id!==id);
+  updateCounts();
+  renderAbonnes();
+}
+
+let renewingSubId = null;
+
+function renewSubscription(id){
+
+  renewingSubId = id;
+  const sub = subscribers.find(s=>s.id===id);
+  
+  // Date de départ par défaut = 1 an après la date d'abonnement précédente
+  const prevSubDate = new Date(sub.subscription_date);
+  const renewalDate = new Date(prevSubDate);
+  renewalDate.setFullYear(renewalDate.getFullYear() + sub.subscription_duration);
+  
+  $('#renew_sub_date').value = renewalDate.toISOString().split('T')[0];
+  $('#renew_sub_duration').value = '1';
+  
+  openModal('renewModal');
+}
+
+function confirmRenewal(e){
+  e.preventDefault();
+  const sub = subscribers.find(s=>s.id===renewingSubId);
+  const renewalDate = $('#renew_sub_date').value;
+  const renewalDuration = parseInt($('#renew_sub_duration').value);
+  const renewalDateObj = new Date(renewalDate);
+  
+  // Trouver le dernier envoi de cet abonné pour continuer les numéros
+  const lastShipment = shipments.filter(s=>s.subscriber_id===renewingSubId).sort((a,b)=>b.shipment_number-a.shipment_number)[0];
+  
+  const lastMagazineNum = lastShipment ? lastShipment.magazine_number : sub.subscription_duration * 6 + 3;  // Mag actuel après abonnement
+  const lastPosterNum = lastShipment ? lastShipment.poster_number : 6;
+  const lastStickerPair = lastShipment ? lastShipment.sticker_pair : 6;
+  
+  // Trouver le SCHEDULE pour le nouveau magazine
+  const firstNewMag = lastMagazineNum + 1;
+  let firstNewScheduleIdx = -1;
+  for(let i = 0; i < SCHEDULE.length; i++){
+    if(SCHEDULE[i].mag_if_sub_before_deadline === firstNewMag){
+      firstNewScheduleIdx = i;
+      break;
+    }
+  }
+  
+  if(firstNewScheduleIdx >= 0){
+    const endDate = new Date(renewalDateObj);
+    endDate.setFullYear(endDate.getFullYear() + renewalDuration);
+    
+    let shipmentNum = 1;
+    const maxShipments = 6 * renewalDuration;
+    let magazineNum = firstNewMag;
+    let posterNum = lastPosterNum + 1;
+    let stickerPair = lastStickerPair + 1;
+    
+    // PREMIER ENVOI du renouvellement
+    const releaseDate = new Date(SCHEDULE[firstNewScheduleIdx].release_date);
+    const firstShipmentDate = renewalDateObj >= releaseDate ? renewalDate : SCHEDULE[firstNewScheduleIdx].release_date;
+    
+    shipments.push({
+      id: nextShipId++,
+      subscriber_id: renewingSubId,
+      shipment_number: lastShipment ? lastShipment.shipment_number + 1 : 1,
+      magazine_number: magazineNum,
+      poster_number: posterNum,
+      sticker_pair: stickerPair,
+      scheduled_date: firstShipmentDate,
+      sent_at: null
+    });
+    
+    shipmentNum++;
+    magazineNum++;
+    posterNum++;
+    stickerPair++;
+    
+    // ENVOIS SUIVANTS du renouvellement
+    for(let i = firstNewScheduleIdx + 1; i < SCHEDULE.length && shipmentNum <= maxShipments; i++){
+      const sendDate = new Date(SCHEDULE[i].release_date);
+      
+      if(sendDate <= endDate){
+        shipments.push({
+          id: nextShipId++,
+          subscriber_id: renewingSubId,
+          shipment_number: (lastShipment ? lastShipment.shipment_number : 0) + shipmentNum,
+          magazine_number: magazineNum,
+          poster_number: posterNum,
+          sticker_pair: stickerPair,
+          scheduled_date: SCHEDULE[i].release_date,
+          sent_at: null
+        });
+        shipmentNum++;
+        magazineNum++;
+        posterNum++;
+        stickerPair++;
+      }
+    }
+  }
+  
+  // Synchroniser les nouveaux envois du renouvellement
+  const renewalShipments = shipments.filter(s => 
+    s.subscriber_id === renewingSubId && 
+    s.shipment_number > (lastShipment ? lastShipment.shipment_number : 0)
+  );
+  
+  renewalShipments.forEach(ship => {
+    syncToGoogleSheets({
+      action: 'addShipment',
+      id: ship.id,
+      subscriber_id: ship.subscriber_id,
+      shipment_number: ship.shipment_number,
+      magazine_number: ship.magazine_number,
+      poster_number: ship.poster_number,
+      sticker_pair_start: ship.sticker_pair_start,
+      sticker_pair_end: ship.sticker_pair_end,
+      scheduled_date: ship.scheduled_date,
+      sent_at: ship.sent_at
+    });
+  });
+  
+  closeModal('renewModal');
+  updateCounts();
+  viewSubscriberProfile(renewingSubId);
+}
+
+function goView(v){
+  $$('.nav-btn').forEach(b=>b.classList.remove('on'));
+  event.target.closest('.nav-btn').classList.add('on');
+  if(v==='dashboard') renderDash();
+  else if(v==='abonnes') renderAbonnes();
+  else if(v==='envois') renderEnvois();
+  else if(v==='settings') renderSettings();
+}
+
+function updateCounts(){
+  // Trouver le magazine en cours (le plus récent dont la deadline n'a pas passée, ou le dernier)
+  const today = new Date();
+  let currentMag = SCHEDULE[SCHEDULE.length - 1].mag_if_sub_before_deadline;
+  
+  for(let sched of SCHEDULE){
+    if(new Date(sched.release_date) <= today){
+      currentMag = sched.mag_if_sub_before_deadline;
+    } else {
+      break;
+    }
+  }
+  
+  // Compter les envois du magazine courant qui ne sont pas envoyés
+  const pendingCurrentMag = shipments.filter(s=>
+    s.magazine_number === currentMag && !s.sent_at
+  ).length;
+  
+  $('#cntAbo').textContent = subscribers.length;
+  $('#cntEnv').textContent = pendingCurrentMag;
+}
+
+function renderDash(){
+  updateCounts();
+  
+  // Trouver le magazine et envoi en cours
+  const today = new Date();
+  let currentShipment = null;
+  let currentMagNum = null;
+  
+  for(let sched of SCHEDULE){
+    if(new Date(sched.release_date) <= today){
+      currentShipment = sched.shipment;
+      currentMagNum = sched.mag_if_sub_before_deadline;
+    } else {
+      break;
+    }
+  }
+  
+  const pending = shipments.filter(s=>!s.sent_at).length;
+  const sent = shipments.filter(s=>s.sent_at).length;
+  const prog = sent + pending > 0 ? Math.round((sent/(sent+pending))*100) : 0;
+  
+  const currentPending = shipments.filter(s=>s.magazine_number === currentMagNum && !s.sent_at).length;
+  const currentSent = shipments.filter(s=>s.magazine_number === currentMagNum && s.sent_at).length;
+  
+  $('#content').innerHTML = `
+    <div class="head"><h1>📊 Dashboard</h1><p>Vue d'ensemble de vos envois</p></div>
+    <div class="grid g-4">
+      <div class="glass kpi">
+        <div class="lab">👥 Abonnés</div>
+        <div class="val">${subscribers.length}</div>
+        <div class="sub">Actuellement actifs</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">📦 En attente</div>
+        <div class="val">${currentPending}</div>
+        <div class="sub">Mag #${currentMagNum} à envoyer</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">✅ Envoyés</div>
+        <div class="val">${currentSent}</div>
+        <div class="sub">Mag #${currentMagNum}</div>
+      </div>
+      <div class="glass kpi">
+        <div class="lab">🎯 Total</div>
+        <div class="val">${pending}</div>
+        <div class="sub">Tous les magazines</div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:12px">📚 Magazine #${currentMagNum}</div>
+      <div style="height:10px;background:rgba(255,255,255,.1);border-radius:6px;overflow:hidden">
+        <div style="width:${currentSent + currentPending > 0 ? Math.round((currentSent/(currentSent+currentPending))*100) : 0}%;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));transition:width .4s"></div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-3);margin-top:8px"><b>${currentSent}/${currentSent+currentPending}</b> abonnés livrés</div>
+    </div>`;
+}
+
+function renderAbonnes(){
+  updateCounts();
+  $('#content').innerHTML = `
+    <div class="head">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div><h1>👥 Abonnés</h1><p>${subscribers.length} abonnés enregistrés</p></div>
+        <button class="btn pri" onclick="openModal('addModal')">+ Ajouter</button>
+      </div>
+    </div>
+    <div class="search-box">
+      <span>🔍</span>
+      <input type="text" id="searchInput" placeholder="Rechercher par nom, email..." onkeyup="filterAbonnes()">
+    </div>
+    <div class="glass">
+      <table class="tbl">
+        <thead><tr><th>Nom</th><th>Email</th><th>Adresse</th><th style="text-align:right">Actions</th></tr></thead>
+        <tbody id="aboTable">${renderAbonnesRows()}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderAbonnesRows(){
+  const search = $('#searchInput')?.value.toLowerCase() || '';
+  return subscribers
+    .filter(s => 
+      search === '' || 
+      s.first_name.toLowerCase().includes(search) || 
+      s.last_name.toLowerCase().includes(search) || 
+      (s.email && s.email.toLowerCase().includes(search))
+    )
+    .map(s=>`<tr onclick="viewSubscriberProfile('${s.id}')" style="cursor:pointer">
+      <td class="nm" style="text-decoration:underline">${s.first_name} ${s.last_name}</td>
+      <td style="color:var(--ink-3);font-size:11.5px">${s.email||'—'}</td>
+      <td style="color:var(--ink-3);font-size:11.5px">${s.address||'—'}</td>
+      <td style="text-align:right;display:flex;gap:6px;justify-content:flex-end">
+        <button class="action-btn" onclick="event.stopPropagation(); editSubscriber('${s.id}')">✎ Modifier</button>
+        <button class="action-btn danger" onclick="event.stopPropagation(); deleteSubscriber('${s.id}')">✕ Supprimer</button>
+      </td>
+    </tr>`).join('');
+}
+
+function filterAbonnes(){
+  const tbody = $('#aboTable');
+  if(tbody) tbody.innerHTML = renderAbonnesRows();
+}
+
+function viewSubscriberProfile(id){
+  const sub = subscribers.find(s=>s.id===id);
+  const subs = shipments.filter(s=>s.subscriber_id===id).sort((a,b)=>new Date(a.scheduled_date)-new Date(b.scheduled_date));
+  const sent = subs.filter(s=>s.sent_at).length;
+  
+  updateCounts();
+  $('#content').innerHTML = `
+    <div class="head">
+      <div style="display:flex;align-items:center;gap:16px">
+        <button class="btn" onclick="renderAbonnes()">← Retour</button>
+        <div style="flex:1">
+          <h1>${sub.first_name} ${sub.last_name}</h1>
+          <p>Abonnés et envois en cours</p>
+        </div>
+      </div>
+    </div>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="glass">
+        <div style="font-weight:700;margin-bottom:12px">📋 Informations</div>
+        <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Email</div>
+            <div style="margin-top:4px">${sub.email || '—'}</div>
+          </div>
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Adresse</div>
+            <div style="margin-top:4px">${sub.address || '—'}</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="glass">
+        <div style="font-weight:700;margin-bottom:12px">📊 Progression</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">Envois reçus</div>
+            <div style="font-size:28px;font-weight:700;color:var(--success);margin-top:4px">${sent}/${subs.length}</div>
+          </div>
+          <div>
+            <div style="color:var(--ink-3);font-size:11px">En attente</div>
+            <div style="font-size:28px;font-weight:700;color:var(--warning);margin-top:4px">${subs.length - sent}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-weight:700;margin-bottom:12px">📦 Historique des envois</div>
+      <table class="tbl" style="font-size:12px">
+        <thead><tr>
+          <th>#</th>
+          <th>Magazine</th>
+          <th>Poster</th>
+          <th>Stickers</th>
+          <th>Date prévue</th>
+          <th>Statut</th>
+          <th style="text-align:right">Action</th>
+        </tr></thead>
+        <tbody>${subs.map((ship,idx)=>`<tr>
+          <td>${ship.shipment_number}</td>
+          <td>#${ship.magazine_number}</td>
+          <td>#${ship.poster_number}</td>
+          <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+          <td>${new Date(ship.scheduled_date).toLocaleDateString('fr-FR')}</td>
+          <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at ? '✅ Envoyé '+new Date(ship.sent_at).toLocaleDateString('fr-FR') : '⏳ En attente'}</span></td>
+          <td style="text-align:right">${ship.sent_at?`<button class="action-btn" style="color:var(--warning)" onclick="unmarkSentFromProfile('${ship.id}')">✕</button>`:`<button class="action-btn" onclick="markSentFromProfile('${ship.id}')">✓</button>`}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+    
+    <div style="display:flex;gap:12px">
+      <button class="btn pri" onclick="editSubscriber(${id})">✎ Modifier les infos</button>
+      <button class="btn" style="background:rgba(255,69,58,.15);color:var(--danger)" onclick="if(confirm('Supprimer cet abonné et tous ses envois?')){deleteSubscriber(${id});renderAbonnes()}">✕ Supprimer l'abonné</button>
+    </div>`;
+}
+
+function markSentFromProfile(shipId){
+
+  if(!confirm('Marquer cet envoi comme envoyé?')) return;
+  const ship = shipments.find(s=>s.id===shipId);
+  ship.sent_at = new Date().toISOString();
+  const subId = ship.subscriber_id;
+  
+  // Sauvegarder à Supabase
+  if(sb) {
+    (async () => {
+      try {
+        await sb.from('shipments').update({sent_at: ship.sent_at}).eq('id', shipId);
+      } catch(e) {
+        console.error('❌ Erreur update:', e.message);
+      }
+    })();
+  }
+  
+  syncToGoogleSheets({
+    action: 'updateShipment',
+    id: ship.id,
+    sent_at: ship.sent_at
+  });
+  
+  updateCounts();
+  viewSubscriberProfile(subId);
+}
+
+function unmarkSentFromProfile(shipId){
+
+  if(!confirm('Annuler le statut "envoyé" pour cet envoi?')) return;
+  const ship = shipments.find(s=>s.id===shipId);
+  ship.sent_at = null;
+  const subId = ship.subscriber_id;
+  
+  // Sauvegarder à Supabase
+  if(sb) {
+    (async () => {
+      try {
+        await sb.from('shipments').update({sent_at: null}).eq('id', shipId);
+      } catch(e) {
+        console.error('❌ Erreur update:', e.message);
+      }
+    })();
+  }
+  
+  syncToGoogleSheets({
+    action: 'updateShipment',
+    id: ship.id,
+    sent_at: null
+  });
+  
+  updateCounts();
+  viewSubscriberProfile(subId);
+}
+
+function getDefaultEnvoisMonth(){
+  const now = new Date();
+  const currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  
+  // Si on est passé le 5e jour du mois suivant, afficher le mois suivant
+  const dayOfMonth = now.getDate();
+  if(dayOfMonth > 5){
+    return currentMonth;
+  } else {
+    // Sinon afficher le mois précédent
+    const prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    return `${prev.getFullYear()}-${String(prev.getMonth()+1).padStart(2,'0')}`;
+  }
+}
+
+function renderEnvois(){
+  updateCounts();
+  const byMonth = {};
+  shipments.forEach(s=>{
+    const key = s.scheduled_date.slice(0,7);
+    if(!byMonth[key]) byMonth[key] = [];
+    byMonth[key].push(s);
+  });
+  
+  // Déterminer le mois par défaut (avec suppression auto 5j après)
+  const selectedMonth = window.selectedEnvoisMonth || getDefaultEnvoisMonth();
+  
+  // Créer la liste de mois disponibles
+  const monthKeys = Object.keys(byMonth).sort();
+  const monthOptions = monthKeys.map(m=>{
+    const d = new Date(m+'-01');
+    const label = d.toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+    return {key:m, label};
+  });
+  
+  let html = `<div class="head">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <h1>📦 Envois</h1>
+        <p>Historique par mois</p>
+      </div>
+      <select id="monthFilter" onchange="window.selectedEnvoisMonth = this.value; renderEnvois()" style="padding:10px 14px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:14px">
+        <option value="all" ${selectedMonth==='all'?'selected':''}>📋 Tous les envois</option>
+        ${monthOptions.map(m=>`<option value="${m.key}" ${m.key===selectedMonth?'selected':''}>${m.label}</option>`).join('')}
+      </select>
+    </div>
+  </div>
+  
+  <div class="search-box" style="margin-bottom:16px">
+    <span>🔍</span>
+    <input type="text" id="shipmentsSearch" placeholder="Chercher un abonné..." onkeyup="filterShipments()">
+  </div>`;
+  
+  if(selectedMonth === 'all'){
+    // Afficher tous les mois
+    Object.keys(byMonth).sort().forEach(month=>{
+      const m = new Date(month+'-01').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+      html += `<div class="glass" style="margin-bottom:16px">
+        <div style="font-weight:700;margin-bottom:12px">${m}</div>
+        <table class="tbl">
+          <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th style="text-align:right">Action</th></tr></thead>
+          <tbody>${byMonth[month].map(ship=>{
+            const sub = subscribers.find(x=>x.id===ship.subscriber_id);
+            return `<tr class="shipment-row" data-subscriber="${(sub.first_name + ' ' + sub.last_name).toLowerCase()}">
+              <td class="nm" style="cursor:pointer;color:var(--accent)" onclick="openProfileModal('${sub.id}')">${sub.first_name} ${sub.last_name}</td>
+              <td>#${ship.magazine_number}</td>
+              <td>#${ship.poster_number}</td>
+              <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+              <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
+              <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>`;
+    });
+  } else if(byMonth[selectedMonth]){
+    const m = new Date(selectedMonth+'-01').toLocaleDateString('fr-FR',{month:'long',year:'numeric'});
+    html += `<div class="glass" style="margin-bottom:16px">
+      <div style="font-weight:700;margin-bottom:12px">${m}</div>
+      <table class="tbl">
+        <thead><tr><th>Abonné</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Statut</th><th style="text-align:right">Action</th></tr></thead>
+        <tbody id="shipmentsTable">${byMonth[selectedMonth].map(ship=>{
+          const sub = subscribers.find(x=>x.id===ship.subscriber_id);
+          return `<tr class="shipment-row" data-subscriber="${(sub.first_name + ' ' + sub.last_name).toLowerCase()}">
+            <td class="nm" style="cursor:pointer;color:var(--accent)" onclick="openProfileModal('${sub.id}')">${sub.first_name} ${sub.last_name}</td>
+            <td>#${ship.magazine_number}</td>
+            <td>#${ship.poster_number}</td>
+            <td>${ship.sticker_pair_start}-${ship.sticker_pair_end}</td>
+            <td><span class="pill ${ship.sent_at?'':'o'}">${ship.sent_at?'✅ Envoyé':'⏳ Attente'}</span></td>
+            <td style="text-align:right">${ship.sent_at?`<button class="btn sm" onclick="unmarkSent('${ship.id}')" style="color:var(--warning)">✕</button>`:`<button class="btn sm" onclick="markSent('${ship.id}')">✓</button>`}</td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+  } else {
+    html += `<div class="glass"><p style="color:var(--ink-3);text-align:center;padding:40px 0">Aucun envoi pour ce mois</p></div>`;
+  }
+  
+  $('#content').innerHTML = html;
+}
+
+function filterShipments(){
+  const query = $('#shipmentsSearch').value.toLowerCase();
+  const rows = document.querySelectorAll('.shipment-row');
+  rows.forEach(row=>{
+    const subscriber = row.dataset.subscriber;
+    row.style.display = subscriber.includes(query) ? '' : 'none';
+  });
+}
+
+function markSent(id){
+
+  if(!confirm('Marquer cet envoi comme envoyé?')) return;
+  const ship = shipments.find(s=>s.id===id);
+  ship.sent_at = new Date().toISOString();
+  
+  // Sauvegarder à Supabase
+  if(sb) {
+    (async () => {
+      try {
+        await sb.from('shipments').update({sent_at: ship.sent_at}).eq('id', id);
+        console.log('✅ Envoi marqué comme envoyé');
+      } catch(e) {
+        console.error('❌ Erreur update:', e.message);
+      }
+    })();
+  }
+  
+  syncToGoogleSheets({
+    action: 'updateShipment',
+    id: ship.id,
+    sent_at: ship.sent_at
+  });
+  
+  updateCounts();
+  renderEnvois();
+}
+
+function unmarkSent(id){
+
+  if(!confirm('Annuler le statut "envoyé" pour cet envoi?')) return;
+  const ship = shipments.find(s=>s.id===id);
+  ship.sent_at = null;
+  
+  // Sauvegarder à Supabase
+  if(sb) {
+    (async () => {
+      try {
+        await sb.from('shipments').update({sent_at: null}).eq('id', id);
+        console.log('✅ Statut annulé');
+      } catch(e) {
+        console.error('❌ Erreur update:', e.message);
+      }
+    })();
+  }
+  
+  syncToGoogleSheets({
+    action: 'updateShipment',
+    id: ship.id,
+    sent_at: null
+  });
+  
+  updateCounts();
+  renderEnvois();
+}
+
+function openProfileModal(subId){
+
+  const sub = subscribers.find(s=>s.id===subId);
+  if(!sub) return;
+  
+  const subShipments = shipments.filter(s=>s.subscriber_id===sub.id).sort((a,b)=>new Date(a.scheduled_date)-new Date(b.scheduled_date));
+  const totalShipments = subShipments.length;
+  const sentShipments = subShipments.filter(s=>s.sent_at).length;
+  
+  const html = `
+    <div class="modal open" id="profileModal" onclick="if(event.target.id==='profileModal') closeProfileModal()">
+      <div class="modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+          <h2>${sub.first_name} ${sub.last_name}</h2>
+          <button class="btn sm" onclick="closeProfileModal()">✕</button>
+        </div>
+        
+        <div style="display:grid;gap:12px;margin-bottom:20px">
+          <div class="copy-field">
+            <span class="label">Prénom</span>
+            <span class="value">${sub.first_name}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${sub.first_name}')">📋</button>
+          </div>
+          <div class="copy-field">
+            <span class="label">Nom</span>
+            <span class="value">${sub.last_name}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${sub.last_name}')">📋</button>
+          </div>
+          <div class="copy-field">
+            <span class="label">Email</span>
+            <span class="value">${sub.email || '-'}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${sub.email || ''}')">📋</button>
+          </div>
+          <div class="copy-field">
+            <span class="label">Téléphone</span>
+            <span class="value">${sub.phone || '-'}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${sub.phone || ''}')">📋</button>
+          </div>
+          <div class="copy-field">
+            <span class="label">Adresse</span>
+            <span class="value">${sub.address || '-'}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${(sub.address || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')}')">📋</button>
+          </div>
+          <div class="copy-field">
+            <span class="label">Date d'abo</span>
+            <span class="value">${new Date(sub.subscription_date).toLocaleDateString('fr-FR')}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${new Date(sub.subscription_date).toLocaleDateString('fr-FR')}')">📋</button>
+          </div>
+          <div class="copy-field">
+            <span class="label">Durée</span>
+            <span class="value">${sub.duration} an${sub.duration>1?'s':''}</span>
+            <button class="copy-btn" onclick="copyToClipboard('${sub.duration}')">📋</button>
+          </div>
+        </div>
+        
+        <div style="border-top:1px solid var(--stroke);padding-top:16px;margin-top:16px">
+          <div style="font-weight:700;margin-bottom:12px">📦 Progression des envois</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">
+            <div class="glass" style="padding:16px">
+              <div style="font-size:12px;color:var(--ink-3);margin-bottom:8px">Envoyés</div>
+              <div style="font-size:24px;font-weight:700">${sentShipments}/${totalShipments}</div>
+            </div>
+            <div class="glass" style="padding:16px">
+              <div style="font-size:12px;color:var(--ink-3);margin-bottom:8px">En attente</div>
+              <div style="font-size:24px;font-weight:700">${totalShipments - sentShipments}</div>
+            </div>
+          </div>
+          
+          <div style="font-size:12px;color:var(--ink-3);margin-bottom:8px;font-weight:600">Historique</div>
+          <table class="tbl" style="font-size:12px">
+            <thead><tr><th>Envoi</th><th>Mag</th><th>Date</th><th>Statut</th></tr></thead>
+            <tbody>${subShipments.map(s=>`<tr><td>#${s.shipment_number}</td><td>Mag #${s.magazine_number}</td><td>${new Date(s.scheduled_date).toLocaleDateString('fr-FR')}</td><td><span class="pill ${s.sent_at?'':'o'}" style="font-size:10px">${s.sent_at?'✅':'⏳'}</span></td></tr>`).join('')}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Injecter la modale
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeProfileModal(){
+  const modal = document.getElementById('profileModal');
+  if(modal) modal.remove();
+}
+
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text).then(()=>{
+    alert('✓ Copié !');
+  }).catch(()=>{
+    // Fallback pour les anciens navigateurs
+    const input = document.createElement('textarea');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    alert('✓ Copié !');
+  });
+}
+
+function renderSettings(){
+  updateCounts();
+  $('#content').innerHTML = `
+    <div class="head"><h1>⚙️ Paramètres</h1><p>Configuration de l'application</p></div>
+    
+    <div class="glass" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:13px;font-weight:700">👤 Compte</div>
+          <div style="font-size:12px;color:var(--ink-3);margin-top:4px">paul@sen-no-sen.com</div>
+        </div>
+        <button class="btn" style="background:rgba(255,69,58,.2);border:1px solid rgba(255,69,58,.4);color:#FF453A" onclick="doLogout()">📴 Déconnexion</button>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="margin-bottom:24px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:16px">🎨 Thème</div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          
+          <div>
+            <div style="font-size:12px;color:var(--ink-3);margin-bottom:8px;font-weight:600">Couleur accent</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="color" id="accentColor" value="${theme.accent}" onchange="changeAccentColor(this.value)" style="width:60px;height:40px;border:1px solid var(--stroke);border-radius:var(--r-sm);cursor:pointer">
+              <input type="text" id="accentHex" value="${theme.accent}" style="flex:1;padding:8px 12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm);color:var(--ink);font-size:13px;font-family:monospace" onchange="changeAccentColor(this.value)">
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px">
+              <button class="btn" style="background:#7C5CFF;color:white;padding:12px;font-size:12px" onclick="setTheme('#7C5CFF','#AF52DE','#5D3FA6')">Violet</button>
+              <button class="btn" style="background:#2E8BFF;color:white;padding:12px;font-size:12px" onclick="setTheme('#2E8BFF','#5BA5FF','#1A5FCC')">Bleu</button>
+              <button class="btn" style="background:#FF453A;color:white;padding:12px;font-size:12px" onclick="setTheme('#FF453A','#FF6B5A','#E62F2F')">Rouge</button>
+              <button class="btn" style="background:#32D74B;color:white;padding:12px;font-size:12px" onclick="setTheme('#32D74B','#51E162','#28B43A')">Vert</button>
+            </div>
+          </div>
+          
+          <div style="border-top:1px solid var(--stroke);padding-top:16px">
+            <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;font-weight:600">Fond de l'application</div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+              <button class="btn" style="background:linear-gradient(135deg,#040A15 0%,#0B1333 100%);color:white;padding:12px;text-align:left;border:${theme.fond==='marine'?'2px solid var(--accent)':'1px solid var(--stroke)'}" onclick="changeFond('marine')">🌊 Marine</button>
+              <button class="btn" style="background:#0A0A0A;color:white;padding:12px;text-align:left;border:${theme.fond==='noir'?'2px solid var(--accent)':'1px solid var(--stroke)'}" onclick="changeFond('noir')">⚫ Noir</button>
+              <button class="btn" style="background:#0B1B33;color:white;padding:12px;text-align:left;border:${theme.fond==='navy'?'2px solid var(--accent)':'1px solid var(--stroke)'}" onclick="changeFond('navy')">🔵 Navy</button>
+              <button class="btn" style="background:linear-gradient(135deg,#0A0A0A 0%,#1a1a3e 100%);color:white;padding:12px;text-align:left;border:${theme.fond==='gradient'?'2px solid var(--accent)':'1px solid var(--stroke)'}" onclick="changeFond('gradient')">✨ Gradient</button>
+            </div>
+          </div>
+          
+          <div style="border-top:1px solid var(--stroke);padding-top:16px">
+            <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px;font-weight:600">Intensité du verre (frosted glass)</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+              <button class="btn" style="padding:12px;border:${theme.verre==='leger'?'2px solid var(--accent)':'1px solid var(--stroke)'}" onclick="changeVerre('leger')">Léger (20px)</button>
+              <button class="btn" style="padding:12px;border:${theme.verre==='moyen'?'2px solid var(--accent)':'1px solid var(--stroke)'}" onclick="changeVerre('moyen')">Moyen (42px)</button>
+              <button class="btn" style="padding:12px;border:${theme.verre==='intense'?'2px solid var(--accent)':'1px solid var(--stroke)'}" onclick="changeVerre('intense')">Intense (60px)</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="margin-bottom:24px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px">📊 Calendrier des envois</div>
+        <table class="tbl" style="font-size:12px">
+          <thead><tr><th>Envoi</th><th>Mag</th><th>Poster</th><th>Stickers</th><th>Sortie</th><th>Deadline d'abonnement</th></tr></thead>
+          <tbody>${SCHEDULE.map(s=>`<tr>
+            <td>#${s.shipment}</td>
+            <td>#${s.mag_if_sub_before_deadline}</td>
+            <td>#${s.shipment}</td>
+            <td>${(s.shipment*2-1)}-${s.shipment*2}</td>
+            <td>${new Date(s.release_date).toLocaleDateString('fr-FR')}</td>
+            <td><span class="pill o">Avant ${new Date(s.deadline).toLocaleDateString('fr-FR')}</span></td>
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">📈 Statistiques</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        <div>
+          <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">Total abonnés</div>
+          <div style="font-size:24px;font-weight:700">${subscribers.length}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">Total envois</div>
+          <div style="font-size:24px;font-weight:700">${shipments.length}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--ink-3);margin-bottom:6px">Envoyés</div>
+          <div style="font-size:24px;font-weight:700;color:var(--success)">${shipments.filter(s=>s.sent_at).length}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">💾 Données</div>
+      <button class="btn" onclick="exportData()" style="width:100%">📥 Exporter en JSON</button>
+      <div style="font-size:11px;color:var(--ink-3);margin-top:8px">Sauvegarde complète de vos abonnés et envois</div>
+    </div>`;
+}
+
+function changeAccentColor(hex){
+  if(/^#[0-9A-F]{6}$/i.test(hex)){
+    theme.accent = hex;
+    $('#accentColor').value = hex;
+    $('#accentHex').value = hex;
+    applyTheme();
+  }
+}
+
+function setTheme(accent, soft, deep){
+  theme.accent = accent;
+  theme.accentSoft = soft;
+  theme.accentDeep = deep;
+  $('#accentColor').value = accent;
+  $('#accentHex').value = accent;
+  applyTheme();
+}
+
+function changeFond(fond){
+  theme.fond = fond;
+  applyTheme();
+  renderSettings(); // Refresh pour voir la bordure active
+}
+
+function changeVerre(verre){
+  theme.verre = verre;
+  applyTheme();
+  renderSettings(); // Refresh pour voir la bordure active
+}
+
+function exportData(){
+  const data = {
+    subscribers,
+    shipments,
+    exported_at: new Date().toISOString()
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'judo-kids-backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+// ==== FONCTIONS AUTH SUPABASE ====
+async function doLogin(e) {
+  e.preventDefault();
+  const email = $('#loginEmail').value;
+  const pwd = $('#loginPassword').value;
+  const errDiv = $('#loginError');
+  
+  if(!sb) {
+    errDiv.textContent = 'Erreur Supabase';
+    errDiv.style.display = 'block';
+    return;
+  }
+  
+  try {
+    const {data, error} = await sb.auth.signInWithPassword({email, password: pwd});
+    if(error) throw error;
+    
+    $('#loginScreen').style.display = 'none';
+    await loadDataFromSupabase();
+    renderDash();
+    applyTheme();
+  } catch(e) {
+    errDiv.textContent = e.message || 'Erreur de connexion';
+    errDiv.style.display = 'block';
+  }
+}
+
+async function doLogout() {
+  if(!confirm('Déconnecter?')) return;
+  await sb.auth.signOut();
+  subscribers = [];
+  shipments = [];
+  $('#loginScreen').style.display = 'flex';
+  $('#loginEmail').value = '';
+  $('#loginPassword').value = '';
+  $('#loginError').style.display = 'none';
+  $('#loginEmail').focus();
+}
+
+async function loadDataFromSupabase() {
+  try {
+    const { data: subs, error: subErr } = await sb.from('subscribers').select('*');
+    if(subErr) throw subErr;
     subscribers = subs || [];
-    updateCounts();
-    console.log('✅ ' + subscribers.length + ' abonnés chargés');
+    
+    const { data: ships, error: shipErr } = await sb.from('shipments').select('*');
+    if(shipErr) throw shipErr;
+    shipments = ships || [];
+    
+    console.log(`✅ ${subscribers.length} abonnés, ${shipments.length} envois chargés`);
   } catch(e) {
     console.error('❌ Erreur chargement:', e.message);
   }
 }
 
-async function saveSubscriber(e) {
-  e.preventDefault();
-  const fname = $('fname').value.trim();
-  const lname = $('lname').value.trim();
-  const email = $('email').value.trim();
-  const addr = $('addr').value.trim();
-  
-  try {
-    const {data, error} = await sb.from('subscribers').insert([{
-      first_name: fname,
-      last_name: lname,
-      email: email || null,
-      address: addr || null
-    }]).select();
+// Initialisation au démarrage
+(async () => {
+  if(window.supabase) {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    console.log('✅ Supabase chargé');
     
-    if(error) throw error;
-    subscribers.push(data[0]);
-    closeModal('modalAdd');
-    $('fname').value = '';
-    $('lname').value = '';
-    $('email').value = '';
-    $('addr').value = '';
-    updateCounts();
-    renderSubscribers();
-  } catch(e) {
-    alert('❌ ' + e.message);
+    const {data: {session}} = await sb.auth.getSession();
+    if(session) {
+      console.log('✅ Session trouvée');
+      $('#loginScreen').style.display = 'none';
+      await loadDataFromSupabase();
+      renderDash();
+      applyTheme();
+    } else {
+      console.log('⚠️ Pas de session - affichage login');
+      $('#loginScreen').style.display = 'flex';
+      $('#loginEmail').focus();
+    }
+  } else {
+    console.error('❌ Supabase CDN pas chargé');
   }
-}
-
-function openEdit(id) {
-  editingSubId = id;
-  const sub = subscribers.find(s => s.id === id);
-  $('edit_fname').value = sub.first_name || '';
-  $('edit_lname').value = sub.last_name || '';
-  $('edit_email').value = sub.email || '';
-  $('edit_addr').value = sub.address || '';
-  $('modalEdit').classList.add('open');
-}
-
-async function updateSubscriber(e) {
-  e.preventDefault();
-  const fname = $('edit_fname').value.trim();
-  const lname = $('edit_lname').value.trim();
-  const email = $('edit_email').value.trim();
-  const addr = $('edit_addr').value.trim();
-  
-  try {
-    await sb.from('subscribers').update({
-      first_name: fname,
-      last_name: lname,
-      email: email || null,
-      address: addr || null
-    }).eq('id', editingSubId);
-    
-    const sub = subscribers.find(s => s.id === editingSubId);
-    sub.first_name = fname;
-    sub.last_name = lname;
-    sub.email = email || null;
-    sub.address = addr || null;
-    
-    closeModal('modalEdit');
-    renderSubscribers();
-  } catch(e) {
-    alert('❌ ' + e.message);
-  }
-}
-
-async function deleteSubscriber(id) {
-  if(!confirm('Êtes-vous sûr?')) return;
-  try {
-    await sb.from('subscribers').delete().eq('id', id);
-    subscribers = subscribers.filter(s => s.id !== id);
-    closeModal('modalEdit');
-    updateCounts();
-    renderSubscribers();
-  } catch(e) {
-    alert('❌ ' + e.message);
-  }
-}
-
-function updateCounts() {
-  $('subCount').textContent = subscribers.length;
-}
-
-function goView(v) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
-  event.target.classList.add('on');
-  if(v === 'dash') renderDash();
-  else if(v === 'subscribers') renderSubscribers();
-  else if(v === 'settings') renderSettings();
-}
-
-function renderDash() {
-  $('content').innerHTML = `
-    <div class="head"><h1>📊 Dashboard</h1><p>Vue d'ensemble</p></div>
-    <div class="glass" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
-      <div><div style="font-size: 12px; color: var(--ink-3);">Total abonnés</div><div style="font-size: 28px; font-weight: 700; margin-top: 8px;">${subscribers.length}</div></div>
-      <div><div style="font-size: 12px; color: var(--ink-3);">Status</div><div style="font-size: 28px; font-weight: 700; margin-top: 8px;">✅ OK</div></div>
-    </div>
-  `;
-}
-
-function renderSubscribers() {
-  $('content').innerHTML = `
-    <div class="head"><h1>👥 Abonnés</h1><p>${subscribers.length} abonné(s)</p></div>
-    <button class="btn btn-primary" onclick="$('modalAdd').classList.add('open')" style="margin-bottom: 24px;">➕ Ajouter</button>
-    <div class="glass">
-      <table class="tbl">
-        <thead><tr><th>Nom</th><th>Email</th><th>Adresse</th><th>Actions</th></tr></thead>
-        <tbody>
-          ${subscribers.map(s => `
-            <tr>
-              <td><strong>${s.first_name} ${s.last_name}</strong></td>
-              <td style="font-size: 12px; color: var(--ink-3);">${s.email || '—'}</td>
-              <td style="font-size: 12px; color: var(--ink-3);">${s.address ? s.address.substring(0, 30) : '—'}</td>
-              <td><button class="btn" style="font-size: 12px; padding: 6px 12px;" onclick="openEdit('${s.id}')">✏️ Modifier</button></td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-  `;
-}
-
-function renderSettings() {
-  $('content').innerHTML = `
-    <div class="head"><h1>⚙️ Paramètres</h1><p>Configuration</p></div>
-    <div class="glass" style="display: flex; justify-content: space-between; align-items: center;">
-      <div><div style="font-size: 13px; font-weight: 700;">👤 Compte</div><div style="font-size: 12px; color: var(--ink-3); margin-top: 4px;">paul@sen-no-sen.com</div></div>
-      <button class="btn btn-danger" onclick="sb.auth.signOut(); location.reload();">📴 Déconnexion</button>
-    </div>
-  `;
-}
-
-function closeModal(id) {
-  $(id).classList.remove('open');
-}
-
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape') {
-    $('modalAdd').classList.remove('open');
-    $('modalEdit').classList.remove('open');
-  }
-});
+})();
 </script>
-
 </body>
 </html>
