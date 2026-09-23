@@ -799,7 +799,15 @@ async function updateSubscriber(e){
     const newEndDate = new Date(subDate);
     newEndDate.setFullYear(newEndDate.getFullYear() + subDuration);
     
-    // Supprimer TOUS les anciens envois de cet abonné
+    // Récupérer les anciens envois pour garder les sent_at
+    const { data: oldShipments } = await supabaseClient
+      .from('shipments')
+      .select('*')
+      .eq('subscriber_id', editingSubId);
+    
+    const sentShipments = (oldShipments || []).filter(s => s.sent_at !== null);
+    
+    // Supprimer TOUS les anciens envois
     const { error: deleteError } = await supabaseClient
       .from('shipments')
       .delete()
@@ -807,7 +815,6 @@ async function updateSubscriber(e){
     
     if(deleteError){
       console.error('Erreur suppression anciens envois:', deleteError);
-      // Continuer quand même
     }
     
     // Recréer les envois pour la nouvelle durée
@@ -830,7 +837,7 @@ async function updateSubscriber(e){
       for(let i = firstScheduleIdx; i < SCHEDULE.length && shipmentNum <= subDuration * 6; i++){
         const schedDate = new Date(SCHEDULE[i].release);
         if(schedDate < newEndDate){
-          shipsToInsert.push({
+          const newShip = {
             user_id: currentUserId,
             subscriber_id: editingSubId,
             shipment_number: shipmentNum,
@@ -840,7 +847,17 @@ async function updateSubscriber(e){
             sticker_pair_end: stickerStart + 1,
             scheduled_date: SCHEDULE[i].release,
             sent_at: null
-          });
+          };
+          
+          // Vérifier si cet envoi existait et avait sent_at
+          const oldShip = sentShipments.find(s => 
+            s.scheduled_date === SCHEDULE[i].release
+          );
+          if(oldShip){
+            newShip.sent_at = oldShip.sent_at;
+          }
+          
+          shipsToInsert.push(newShip);
           
           shipmentNum++;
           posterNum++;
