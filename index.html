@@ -683,7 +683,7 @@ async function saveSubscriber(e){
       
       for(let i = firstScheduleIdx; i < SCHEDULE.length && shipmentNum <= subDuration * 6; i++){
         const schedDate = new Date(SCHEDULE[i].release);
-        if(schedDate <= endDate){
+        if(schedDate < endDate){
           shipsToInsert.push({
             user_id: currentUserId,
             subscriber_id: sub.id,
@@ -998,7 +998,7 @@ async function confirmRenewal(e){
       
       for(let i = firstNewScheduleIdx; i < SCHEDULE.length && shipmentNum <= renewalDuration * 6; i++){
         const schedDate = new Date(SCHEDULE[i].release);
-        if(schedDate <= endDate){
+        if(schedDate < endDate){
           shipsToInsert.push({
             user_id: currentUserId,
             subscriber_id: renewingSubId,
