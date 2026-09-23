@@ -344,6 +344,8 @@ const SCHEDULE = [
   {shipment:16, mag:19, release:'2029-03-01', deadline:'2029-04-15'},
   {shipment:17, mag:20, release:'2029-05-01', deadline:'2029-06-15'},
   {shipment:18, mag:21, release:'2029-07-01', deadline:'2029-08-15'},
+  {shipment:19, mag:22, release:'2029-09-01', deadline:'2029-10-15'},
+  {shipment:20, mag:23, release:'2029-11-01', deadline:'2029-12-15'},
 ];
 
 function getMagazineForSubscription(subDate){
@@ -408,8 +410,7 @@ function downloadJSON(){
       address: s.address,
       subscription_date: s.subscription_date,
       subscription_duration: s.subscription_duration,
-      created_at: s.created_at,
-      updated_at: s.updated_at
+      created_at: s.created_at
     }))
   };
   
@@ -803,8 +804,7 @@ async function updateSubscriber(e){
         phone,
         address: addr,
         subscription_date: subDate,
-        subscription_duration: subDuration,
-        updated_at: new Date().toISOString()
+        subscription_duration: subDuration
       })
       .eq('id', editingSubId);
     
@@ -827,8 +827,7 @@ async function updateSubscriber(e){
         phone,
         address: addr,
         subscription_date: subDate,
-        subscription_duration: subDuration,
-        updated_at: new Date().toISOString()
+        subscription_duration: subDuration
       };
     }
     
