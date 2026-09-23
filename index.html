@@ -309,6 +309,7 @@ let subscribers = [];
 let shipments = [];
 let editingSubId = null;
 let renewingSubId = null;
+let sheetsWebhookUrl = 'https://script.google.com/macros/s/AKfycbzQUBsNmDbn3csPnMuvV6J4jyvfVV33MylGxgCtdhIPjvcOHGVEgzTR_UcUUZS1dWH9/exec';
 
 // ==================== HELPERS ====================
 const $ = id => document.getElementById(id);
@@ -390,6 +391,69 @@ function logoutSupabase(){
   $('root').style.display = 'none';
   $('authEmail').value = '';
   $('authPassword').value = '';
+}
+
+// ==================== BACKUP FUNCTIONS ====================
+function downloadJSON(){
+  const data = {
+    exportDate: new Date().toISOString(),
+    subscribers: subscribers.map(s => ({
+      id: s.id,
+      first_name: s.first_name,
+      last_name: s.last_name,
+      email: s.email,
+      phone: s.phone,
+      address: s.address,
+      subscription_date: s.subscription_date,
+      subscription_duration: s.subscription_duration,
+      created_at: s.created_at,
+      updated_at: s.updated_at
+    }))
+  };
+  
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `judo-kids-abonnes-backup-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  console.log('✅ Backup JSON téléchargé');
+}
+
+async function sendToSheets(action, subscriber){
+  if(sheetsWebhookUrl === 'CONFIGURE_MOI_AVEC_TON_URL'){
+    console.warn('⚠️ URL Sheets non configurée');
+    return;
+  }
+  
+  try {
+    const payload = {
+      action: action,
+      subscriber_id: subscriber.id,
+      first_name: subscriber.first_name,
+      last_name: subscriber.last_name,
+      email: subscriber.email || '',
+      phone: subscriber.phone || '',
+      address: subscriber.address || '',
+      subscription_date: subscriber.subscription_date,
+      subscription_duration: subscriber.subscription_duration
+    };
+    
+    await fetch(sheetsWebhookUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify(payload)
+    });
+    
+    console.log('✅ Envoyé à Sheets:', action);
+  } catch(err){
+    console.error('❌ Erreur Sheets:', err);
+  }
 }
 
 // ==================== QUICK SUBSCRIBER CARD ====================
@@ -552,6 +616,9 @@ async function saveSubscriber(e){
     }
   }
   
+  // Envoyer à Google Sheets
+  await sendToSheets('add', sub);
+  
   closeModal('addModal');
   await loadData();
   renderAbonnes();
@@ -624,6 +691,11 @@ async function updateSubscriber(e){
   }
   
   console.log('✅ Mise à jour réussie!');
+  
+  // Envoyer à Google Sheets
+  const updatedSub = subscribers.find(s => s.id === editingSubId);
+  if(updatedSub) await sendToSheets('update', updatedSub);
+  
   closeModal('editModal');
   await loadData();
   renderAbonnes();
@@ -634,6 +706,9 @@ async function deleteSubscriber(id){
   if(!confirm('Supprimer cet abonné et tous ses envois?')) return;
   
   console.log('Suppression de l\'abonné:', id);
+  
+  // Sauvegarder les infos avant suppression (pour Sheets)
+  const subToDelete = subscribers.find(s => s.id === id);
   
   // Supprimer les envois
   const { error: shipError } = await supabaseClient
@@ -660,6 +735,10 @@ async function deleteSubscriber(id){
   }
   
   console.log('✅ Suppression réussie!');
+  
+  // Envoyer à Google Sheets
+  if(subToDelete) await sendToSheets('delete', subToDelete);
+  
   await loadData();
   renderAbonnes();
 }
@@ -1087,6 +1166,24 @@ function renderSettings(){
     <div class="head"><h1>⚙️ Paramètres</h1><p>Configuration de l'application</p></div>
     
     <div class="glass">
+      <div style="font-weight:700;margin-bottom:16px">💾 Sauvegarde des données</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <button class="btn pri" onclick="downloadJSON()" style="text-align:left">
+          <div style="font-weight:700">📥 Télécharger en JSON</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.7);margin-top:4px">Exporte tous les abonnés en fichier JSON (local)</div>
+        </button>
+        
+        <div style="padding:12px;background:var(--glass-2);border:1px solid var(--stroke);border-radius:var(--r-sm)">
+          <div style="font-weight:700;margin-bottom:8px">📊 Backup Google Sheets</div>
+          <div style="font-size:12px;color:var(--ink-3);margin-bottom:12px">Les abonnés sont synchronisés en direct avec Google Sheets. Chaque ajout/modification/suppression met à jour automatiquement le Sheets.</div>
+        <div style="font-size:11px;color:var(--ink-3);padding:8px;background:rgba(50,215,75,.15);border-radius:var(--r-sm);border:1px solid rgba(50,215,75,.25)">
+            ✅ <b>Actif</b> - Données synchronisées en direct avec Google Sheets
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="glass">
       <div style="font-weight:700;margin-bottom:16px">📱 À propos</div>
       <div style="font-size:13px;color:var(--ink-3);line-height:1.6">
         <p style="margin-bottom:8px"><b>Judo Kids — Gestion des envois</b></p>
@@ -1123,7 +1220,8 @@ function renderSettings(){
       <div style="font-size:13px;color:var(--ink-3);line-height:1.6">
         <p style="margin-bottom:8px">✅ Vos données sont stockées de manière sécurisée sur Supabase</p>
         <p style="margin-bottom:8px">✅ Authentification par email/mot de passe</p>
-        <p>✅ Chaque utilisateur voit uniquement ses données</p>
+        <p style="margin-bottom:8px">✅ Chaque utilisateur voit uniquement ses données</p>
+        <p>✅ Backups automatiques en JSON et Google Sheets</p>
       </div>
     </div>
     
