@@ -668,6 +668,7 @@ async function saveSubscriber(e){
     let stickerStart = 1;
     let magazineNum = firstMag;
     
+    // Trouver le premier envoi
     let firstScheduleIdx = -1;
     for(let i = 0; i < SCHEDULE.length; i++){
       if(SCHEDULE[i].mag === firstMag){
@@ -713,13 +714,19 @@ async function saveSubscriber(e){
       }
     }
     
-    // Envoyer à Google Sheets et Discord
-    await sendToSheets('add', sub);
-    await sendToDiscord('add', sub);
+    // Envoyer à Google Sheets et Discord (en arrière-plan, sans attendre)
+    sendToSheets('add', sub).catch(err => console.error('Sheets error:', err));
+    sendToDiscord('add', sub).catch(err => console.error('Discord error:', err));
     
+    // Mise à jour optimiste: ajouter immédiatement à la liste
+    subscribers.push(sub);
+    
+    // Fermer le modal et rafraîchir l'affichage IMMÉDIATEMENT
     closeModal('addModal');
-    await loadData();
     renderAbonnes();
+    
+    // Charger les données complètes en arrière-plan
+    loadData().catch(err => console.error('Load error:', err));
   } finally {
     // Réactiver le bouton
     isSubmitting = false;
@@ -809,16 +816,34 @@ async function updateSubscriber(e){
     
     console.log('✅ Mise à jour réussie!');
     
-    // Envoyer à Google Sheets et Discord
+    // Mise à jour optimiste: mettre à jour dans la liste en mémoire
+    const subIndex = subscribers.findIndex(s => s.id === editingSubId);
+    if(subIndex >= 0) {
+      subscribers[subIndex] = {
+        ...subscribers[subIndex],
+        first_name: fname,
+        last_name: lname,
+        email,
+        phone,
+        address: addr,
+        subscription_date: subDate,
+        subscription_duration: subDuration,
+        updated_at: new Date().toISOString()
+      };
+    }
+    
+    // Envoyer à Google Sheets et Discord (en arrière-plan)
     const updatedSub = subscribers.find(s => s.id === editingSubId);
     if(updatedSub) {
-      await sendToSheets('update', updatedSub);
-      await sendToDiscord('update', updatedSub);
+      sendToSheets('update', updatedSub).catch(err => console.error('Sheets error:', err));
+      sendToDiscord('update', updatedSub).catch(err => console.error('Discord error:', err));
     }
     
     closeModal('editModal');
-    await loadData();
     renderAbonnes();
+    
+    // Charger les données en arrière-plan pour resync
+    loadData().catch(err => console.error('Load error:', err));
   } finally {
     // Réactiver le bouton
     isSubmitting = false;
@@ -843,6 +868,12 @@ async function deleteSubscriber(id){
     // Sauvegarder les infos avant suppression (pour Sheets)
     const subToDelete = subscribers.find(s => s.id === id);
     
+    // Mise à jour optimiste: retirer immédiatement de la liste affichée
+    const initialLength = subscribers.length;
+    subscribers = subscribers.filter(s => s.id !== id);
+    shipments = shipments.filter(s => s.subscriber_id !== id);
+    renderAbonnes();
+    
     // Supprimer les envois
     const { error: shipError } = await supabaseClient
       .from('shipments')
@@ -851,6 +882,9 @@ async function deleteSubscriber(id){
     
     if(shipError){
       console.error('Erreur suppression envois:', shipError);
+      // Restaurer l'UI en cas d'erreur
+      await loadData();
+      renderAbonnes();
       alert('Erreur: ' + shipError.message);
       return;
     }
@@ -863,20 +897,23 @@ async function deleteSubscriber(id){
     
     if(subError){
       console.error('Erreur suppression abonné:', subError);
+      // Restaurer l'UI en cas d'erreur
+      await loadData();
+      renderAbonnes();
       alert('Erreur: ' + subError.message);
       return;
     }
     
     console.log('✅ Suppression réussie!');
     
-    // Envoyer à Google Sheets et Discord
+    // Envoyer à Google Sheets et Discord (en arrière-plan)
     if(subToDelete) {
-      await sendToSheets('delete', subToDelete);
-      await sendToDiscord('delete', subToDelete);
+      sendToSheets('delete', subToDelete).catch(err => console.error('Sheets error:', err));
+      sendToDiscord('delete', subToDelete).catch(err => console.error('Discord error:', err));
     }
     
-    await loadData();
-    renderAbonnes();
+    // Charger les données en arrière-plan pour resync
+    loadData().catch(err => console.error('Load error:', err));
   } finally {
     // Réactiver les interactions
     isSubmitting = false;
@@ -967,6 +1004,9 @@ async function confirmRenewal(e){
       }
       
       if(shipsToInsert.length > 0){
+        // Mise à jour optimiste: ajouter les envois à la liste en mémoire
+        shipments.push(...shipsToInsert);
+        
         await supabaseClient
           .from('shipments')
           .insert(shipsToInsert);
@@ -974,7 +1014,11 @@ async function confirmRenewal(e){
     }
     
     closeModal('renewModal');
-    await loadData();
+    
+    // Charger les données en arrière-plan pour resync
+    loadData().catch(err => console.error('Load error:', err));
+    
+    // Afficher le profil avec les nouveaux envois
     viewSubscriberProfile(renewingSubId);
   } finally {
     // Réactiver le bouton
