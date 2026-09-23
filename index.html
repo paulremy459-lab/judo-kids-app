@@ -309,6 +309,7 @@ let subscribers = [];
 let shipments = [];
 let editingSubId = null;
 let renewingSubId = null;
+let isSubmitting = false; // Flag pour éviter les soumissions multiples
 let sheetsWebhookUrl = 'https://script.google.com/macros/s/AKfycbzQUBsNmDbn3csPnMuvV6J4jyvfVV33MylGxgCtdhIPjvcOHGVEgzTR_UcUUZS1dWH9/exec';
 let discordWebhookUrl = 'https://discord.com/api/webhooks/1552233532410302494/IuT9WrdRKHf5blowpRDlndH_kjJG1Sco9-Frgtxe84zqGQDdsb1zAOzF5VPPmHakjlOn';
 
@@ -611,99 +612,122 @@ async function updateCounts(){
 async function saveSubscriber(e){
   e.preventDefault();
   
-  const fname = $('fname').value;
-  const lname = $('lname').value;
-  const email = $('email').value || null;
-  const phone = $('phone').value || null;
-  const addr = $('addr').value || '';
-  const subDate = $('sub_date').value;
-  const subDuration = parseInt($('sub_duration').value);
+  // Éviter les soumissions multiples
+  if(isSubmitting) return;
+  isSubmitting = true;
   
-  const firstMag = getMagazineForSubscription(subDate);
-  
-  // Insérer l'abonné
-  const { data: sub, error: subError } = await supabaseClient
-    .from('subscribers')
-    .insert({
-      user_id: currentUserId,
-      first_name: fname,
-      last_name: lname,
-      email,
-      phone,
-      address: addr,
-      subscription_date: subDate,
-      subscription_duration: subDuration
-    })
-    .select()
-    .single();
-  
-  if(subError){
-    alert('Erreur: ' + subError.message);
-    return;
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  if(submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Création...';
   }
   
-  // Créer les envois
-  const endDate = new Date(subDate);
-  endDate.setFullYear(endDate.getFullYear() + subDuration);
-  
-  let shipmentNum = 1;
-  let posterNum = 1;
-  let stickerStart = 1;
-  let magazineNum = firstMag;
-  
-  // Trouver le premier envoi
-  let firstScheduleIdx = -1;
-  for(let i = 0; i < SCHEDULE.length; i++){
-    if(SCHEDULE[i].mag === firstMag){
-      firstScheduleIdx = i;
-      break;
-    }
-  }
-  
-  if(firstScheduleIdx >= 0){
-    const shipsToInsert = [];
+  try {
+    const fname = $('fname').value.trim();
+    const lname = $('lname').value.trim();
+    const email = $('email').value.trim() || null;
+    const phone = $('phone').value.trim() || null;
+    const addr = $('addr').value.trim() || '';
+    const subDate = $('sub_date').value;
+    const subDuration = parseInt($('sub_duration').value);
     
-    for(let i = firstScheduleIdx; i < SCHEDULE.length && shipmentNum <= subDuration * 6; i++){
-      const schedDate = new Date(SCHEDULE[i].release);
-      if(schedDate <= endDate){
-        shipsToInsert.push({
-          user_id: currentUserId,
-          subscriber_id: sub.id,
-          shipment_number: shipmentNum,
-          magazine_number: magazineNum,
-          poster_number: posterNum,
-          sticker_pair_start: stickerStart,
-          sticker_pair_end: stickerStart + 1,
-          scheduled_date: SCHEDULE[i].release,
-          sent_at: null
-        });
-        
-        shipmentNum++;
-        posterNum++;
-        stickerStart += 2;
-        magazineNum++;
+    if(!fname || !lname || !subDate){
+      alert('Veuillez remplir: Prénom, Nom et Date d\'abonnement');
+      return;
+    }
+    
+    const firstMag = getMagazineForSubscription(subDate);
+    
+    // Insérer l'abonné
+    const { data: sub, error: subError } = await supabaseClient
+      .from('subscribers')
+      .insert({
+        user_id: currentUserId,
+        first_name: fname,
+        last_name: lname,
+        email,
+        phone,
+        address: addr,
+        subscription_date: subDate,
+        subscription_duration: subDuration
+      })
+      .select()
+      .single();
+    
+    if(subError){
+      alert('Erreur: ' + subError.message);
+      return;
+    }
+    
+    // Créer les envois
+    const endDate = new Date(subDate);
+    endDate.setFullYear(endDate.getFullYear() + subDuration);
+    
+    let shipmentNum = 1;
+    let posterNum = 1;
+    let stickerStart = 1;
+    let magazineNum = firstMag;
+    
+    let firstScheduleIdx = -1;
+    for(let i = 0; i < SCHEDULE.length; i++){
+      if(SCHEDULE[i].mag === firstMag){
+        firstScheduleIdx = i;
+        break;
       }
     }
     
-    if(shipsToInsert.length > 0){
-      const { error: shipError } = await supabaseClient
-        .from('shipments')
-        .insert(shipsToInsert);
+    if(firstScheduleIdx >= 0){
+      const shipsToInsert = [];
       
-      if(shipError){
-        alert('Erreur envois: ' + shipError.message);
-        return;
+      for(let i = firstScheduleIdx; i < SCHEDULE.length && shipmentNum <= subDuration * 6; i++){
+        const schedDate = new Date(SCHEDULE[i].release);
+        if(schedDate <= endDate){
+          shipsToInsert.push({
+            user_id: currentUserId,
+            subscriber_id: sub.id,
+            shipment_number: shipmentNum,
+            magazine_number: magazineNum,
+            poster_number: posterNum,
+            sticker_pair_start: stickerStart,
+            sticker_pair_end: stickerStart + 1,
+            scheduled_date: SCHEDULE[i].release,
+            sent_at: null
+          });
+          
+          shipmentNum++;
+          posterNum++;
+          stickerStart += 2;
+          magazineNum++;
+        }
+      }
+      
+      if(shipsToInsert.length > 0){
+        const { error: shipError } = await supabaseClient
+          .from('shipments')
+          .insert(shipsToInsert);
+        
+        if(shipError){
+          alert('Erreur envois: ' + shipError.message);
+          return;
+        }
       }
     }
+    
+    // Envoyer à Google Sheets et Discord
+    await sendToSheets('add', sub);
+    await sendToDiscord('add', sub);
+    
+    closeModal('addModal');
+    await loadData();
+    renderAbonnes();
+  } finally {
+    // Réactiver le bouton
+    isSubmitting = false;
+    if(submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Créer';
+    }
   }
-  
-  // Envoyer à Google Sheets et Discord
-  await sendToSheets('add', sub);
-  await sendToDiscord('add', sub);
-  
-  closeModal('addModal');
-  await loadData();
-  renderAbonnes();
 }
 
 // ==================== UPDATE SUBSCRIBER ====================
@@ -732,103 +756,131 @@ function editSubscriber(id){
 async function updateSubscriber(e){
   e.preventDefault();
   
-  if(!editingSubId){
-    alert('Erreur: ID abonné manquant');
-    return;
+  // Éviter les soumissions multiples
+  if(isSubmitting) return;
+  isSubmitting = true;
+  
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  if(submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Mise à jour...';
   }
   
-  const fname = $('edit_fname').value.trim();
-  const lname = $('edit_lname').value.trim();
-  const email = $('edit_email').value.trim() || null;
-  const phone = $('edit_phone').value.trim() || null;
-  const addr = $('edit_addr').value.trim() || '';
-  const subDate = $('edit_sub_date').value;
-  const subDuration = parseInt($('edit_sub_duration').value);
-  
-  if(!fname || !lname || !subDate){
-    alert('Veuillez remplir: Prénom, Nom et Date d\'abonnement');
-    return;
+  try {
+    if(!editingSubId){
+      alert('Erreur: ID abonné manquant');
+      return;
+    }
+    
+    const fname = $('edit_fname').value.trim();
+    const lname = $('edit_lname').value.trim();
+    const email = $('edit_email').value.trim() || null;
+    const phone = $('edit_phone').value.trim() || null;
+    const addr = $('edit_addr').value.trim() || '';
+    const subDate = $('edit_sub_date').value;
+    const subDuration = parseInt($('edit_sub_duration').value);
+    
+    if(!fname || !lname || !subDate){
+      alert('Veuillez remplir: Prénom, Nom et Date d\'abonnement');
+      return;
+    }
+    
+    console.log('Mise à jour:', { editingSubId, fname, lname, email, phone, addr, subDate, subDuration });
+    
+    const { error } = await supabaseClient
+      .from('subscribers')
+      .update({
+        first_name: fname,
+        last_name: lname,
+        email,
+        phone,
+        address: addr,
+        subscription_date: subDate,
+        subscription_duration: subDuration,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', editingSubId);
+    
+    if(error){
+      console.error('Erreur mise à jour:', error);
+      alert('Erreur: ' + error.message);
+      return;
+    }
+    
+    console.log('✅ Mise à jour réussie!');
+    
+    // Envoyer à Google Sheets et Discord
+    const updatedSub = subscribers.find(s => s.id === editingSubId);
+    if(updatedSub) {
+      await sendToSheets('update', updatedSub);
+      await sendToDiscord('update', updatedSub);
+    }
+    
+    closeModal('editModal');
+    await loadData();
+    renderAbonnes();
+  } finally {
+    // Réactiver le bouton
+    isSubmitting = false;
+    if(submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Mettre à jour';
+    }
   }
-  
-  console.log('Mise à jour:', { editingSubId, fname, lname, email, phone, addr, subDate, subDuration });
-  
-  const { error } = await supabaseClient
-    .from('subscribers')
-    .update({
-      first_name: fname,
-      last_name: lname,
-      email,
-      phone,
-      address: addr,
-      subscription_date: subDate,
-      subscription_duration: subDuration,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', editingSubId);
-  
-  if(error){
-    console.error('Erreur mise à jour:', error);
-    alert('Erreur: ' + error.message);
-    return;
-  }
-  
-  console.log('✅ Mise à jour réussie!');
-  
-  // Envoyer à Google Sheets et Discord
-  const updatedSub = subscribers.find(s => s.id === editingSubId);
-  if(updatedSub) {
-    await sendToSheets('update', updatedSub);
-    await sendToDiscord('update', updatedSub);
-  }
-  
-  closeModal('editModal');
-  await loadData();
-  renderAbonnes();
 }
 
 // ==================== DELETE SUBSCRIBER ====================
 async function deleteSubscriber(id){
   if(!confirm('Supprimer cet abonné et tous ses envois?')) return;
   
-  console.log('Suppression de l\'abonné:', id);
+  // Éviter les soumissions multiples
+  if(isSubmitting) return;
+  isSubmitting = true;
   
-  // Sauvegarder les infos avant suppression (pour Sheets)
-  const subToDelete = subscribers.find(s => s.id === id);
-  
-  // Supprimer les envois
-  const { error: shipError } = await supabaseClient
-    .from('shipments')
-    .delete()
-    .eq('subscriber_id', id);
-  
-  if(shipError){
-    console.error('Erreur suppression envois:', shipError);
-    alert('Erreur: ' + shipError.message);
-    return;
+  try {
+    console.log('Suppression de l\'abonné:', id);
+    
+    // Sauvegarder les infos avant suppression (pour Sheets)
+    const subToDelete = subscribers.find(s => s.id === id);
+    
+    // Supprimer les envois
+    const { error: shipError } = await supabaseClient
+      .from('shipments')
+      .delete()
+      .eq('subscriber_id', id);
+    
+    if(shipError){
+      console.error('Erreur suppression envois:', shipError);
+      alert('Erreur: ' + shipError.message);
+      return;
+    }
+    
+    // Supprimer l'abonné
+    const { error: subError } = await supabaseClient
+      .from('subscribers')
+      .delete()
+      .eq('id', id);
+    
+    if(subError){
+      console.error('Erreur suppression abonné:', subError);
+      alert('Erreur: ' + subError.message);
+      return;
+    }
+    
+    console.log('✅ Suppression réussie!');
+    
+    // Envoyer à Google Sheets et Discord
+    if(subToDelete) {
+      await sendToSheets('delete', subToDelete);
+      await sendToDiscord('delete', subToDelete);
+    }
+    
+    await loadData();
+    renderAbonnes();
+  } finally {
+    // Réactiver les interactions
+    isSubmitting = false;
   }
-  
-  // Supprimer l'abonné
-  const { error: subError } = await supabaseClient
-    .from('subscribers')
-    .delete()
-    .eq('id', id);
-  
-  if(subError){
-    console.error('Erreur suppression abonné:', subError);
-    alert('Erreur: ' + subError.message);
-    return;
-  }
-  
-  console.log('✅ Suppression réussie!');
-  
-  // Envoyer à Google Sheets et Discord
-  if(subToDelete) {
-    await sendToSheets('delete', subToDelete);
-    await sendToDiscord('delete', subToDelete);
-  }
-  
-  await loadData();
-  renderAbonnes();
 }
 
 // ==================== RENEWAL ====================
@@ -849,70 +901,89 @@ function renewSubscription(id){
 async function confirmRenewal(e){
   e.preventDefault();
   
-  const renewalDate = $('renew_sub_date').value;
-  const renewalDuration = parseInt($('renew_sub_duration').value);
+  // Éviter les soumissions multiples
+  if(isSubmitting) return;
+  isSubmitting = true;
   
-  const lastShipment = shipments
-    .filter(s => s.subscriber_id === renewingSubId)
-    .sort((a, b) => b.shipment_number - a.shipment_number)[0];
-  
-  const lastMagNum = lastShipment ? lastShipment.magazine_number : 9;
-  const lastPosterNum = lastShipment ? lastShipment.poster_number : 6;
-  const lastStickerEnd = lastShipment ? lastShipment.sticker_pair_end : 12;
-  
-  const firstNewMag = lastMagNum + 1;
-  let firstNewScheduleIdx = -1;
-  
-  for(let i = 0; i < SCHEDULE.length; i++){
-    if(SCHEDULE[i].mag === firstNewMag){
-      firstNewScheduleIdx = i;
-      break;
-    }
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  if(submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Renouvellement...';
   }
   
-  if(firstNewScheduleIdx >= 0){
-    const endDate = new Date(renewalDate);
-    endDate.setFullYear(endDate.getFullYear() + renewalDuration);
+  try {
+    const renewalDate = $('renew_sub_date').value;
+    const renewalDuration = parseInt($('renew_sub_duration').value);
     
-    let shipmentNum = 1;
-    let posterNum = lastPosterNum + 1;
-    let stickerStart = lastStickerEnd + 1;
-    let magazineNum = firstNewMag;
+    const lastShipment = shipments
+      .filter(s => s.subscriber_id === renewingSubId)
+      .sort((a, b) => b.shipment_number - a.shipment_number)[0];
     
-    const shipsToInsert = [];
+    const lastMagNum = lastShipment ? lastShipment.magazine_number : 9;
+    const lastPosterNum = lastShipment ? lastShipment.poster_number : 6;
+    const lastStickerEnd = lastShipment ? lastShipment.sticker_pair_end : 12;
     
-    for(let i = firstNewScheduleIdx; i < SCHEDULE.length && shipmentNum <= renewalDuration * 6; i++){
-      const schedDate = new Date(SCHEDULE[i].release);
-      if(schedDate <= endDate){
-        shipsToInsert.push({
-          user_id: currentUserId,
-          subscriber_id: renewingSubId,
-          shipment_number: (lastShipment ? lastShipment.shipment_number : 0) + shipmentNum,
-          magazine_number: magazineNum,
-          poster_number: posterNum,
-          sticker_pair_start: stickerStart,
-          sticker_pair_end: stickerStart + 1,
-          scheduled_date: SCHEDULE[i].release,
-          sent_at: null
-        });
-        
-        shipmentNum++;
-        posterNum++;
-        stickerStart += 2;
-        magazineNum++;
+    const firstNewMag = lastMagNum + 1;
+    let firstNewScheduleIdx = -1;
+    
+    for(let i = 0; i < SCHEDULE.length; i++){
+      if(SCHEDULE[i].mag === firstNewMag){
+        firstNewScheduleIdx = i;
+        break;
       }
     }
     
-    if(shipsToInsert.length > 0){
-      await supabaseClient
-        .from('shipments')
-        .insert(shipsToInsert);
+    if(firstNewScheduleIdx >= 0){
+      const endDate = new Date(renewalDate);
+      endDate.setFullYear(endDate.getFullYear() + renewalDuration);
+      
+      let shipmentNum = 1;
+      let posterNum = lastPosterNum + 1;
+      let stickerStart = lastStickerEnd + 1;
+      let magazineNum = firstNewMag;
+      
+      const shipsToInsert = [];
+      
+      for(let i = firstNewScheduleIdx; i < SCHEDULE.length && shipmentNum <= renewalDuration * 6; i++){
+        const schedDate = new Date(SCHEDULE[i].release);
+        if(schedDate <= endDate){
+          shipsToInsert.push({
+            user_id: currentUserId,
+            subscriber_id: renewingSubId,
+            shipment_number: (lastShipment ? lastShipment.shipment_number : 0) + shipmentNum,
+            magazine_number: magazineNum,
+            poster_number: posterNum,
+            sticker_pair_start: stickerStart,
+            sticker_pair_end: stickerStart + 1,
+            scheduled_date: SCHEDULE[i].release,
+            sent_at: null
+          });
+          
+          shipmentNum++;
+          posterNum++;
+          stickerStart += 2;
+          magazineNum++;
+        }
+      }
+      
+      if(shipsToInsert.length > 0){
+        await supabaseClient
+          .from('shipments')
+          .insert(shipsToInsert);
+      }
+    }
+    
+    closeModal('renewModal');
+    await loadData();
+    viewSubscriberProfile(renewingSubId);
+  } finally {
+    // Réactiver le bouton
+    isSubmitting = false;
+    if(submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Renouveler';
     }
   }
-  
-  closeModal('renewModal');
-  await loadData();
-  viewSubscriberProfile(renewingSubId);
 }
 
 // ==================== VIEWS ====================
