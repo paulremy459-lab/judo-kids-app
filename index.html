@@ -310,6 +310,7 @@ let shipments = [];
 let editingSubId = null;
 let renewingSubId = null;
 let sheetsWebhookUrl = 'https://script.google.com/macros/s/AKfycbzQUBsNmDbn3csPnMuvV6J4jyvfVV33MylGxgCtdhIPjvcOHGVEgzTR_UcUUZS1dWH9/exec';
+let discordWebhookUrl = 'https://discord.com/api/webhooks/1552233532410302494/IuT9WrdRKHf5blowpRDlndH_kjJG1Sco9-Frgtxe84zqGQDdsb1zAOzF5VPPmHakjlOn';
 
 // ==================== HELPERS ====================
 const $ = id => document.getElementById(id);
@@ -453,6 +454,86 @@ async function sendToSheets(action, subscriber){
     console.log('✅ Envoyé à Sheets:', action);
   } catch(err){
     console.error('❌ Erreur Sheets:', err);
+  }
+}
+
+async function sendToDiscord(action, subscriber){
+  if(!discordWebhookUrl){
+    console.warn('⚠️ Discord webhook non configuré');
+    return;
+  }
+  
+  try {
+    let title = '';
+    let color = 0x7C5CFF; // Mauve par défaut
+    
+    if(action === 'add'){
+      title = '🎯 NOUVEL ABONNÉ!';
+      color = 0x32D74B; // Vert
+    } else if(action === 'update'){
+      title = '✏️ ABONNÉ MODIFIÉ';
+      color = 0xFFD426; // Jaune
+    } else if(action === 'delete'){
+      title = '🗑️ ABONNÉ SUPPRIMÉ';
+      color = 0xFF453A; // Rouge
+    }
+    
+    const embed = {
+      title: title,
+      color: color,
+      fields: [
+        {
+          name: '👤 Nom',
+          value: `${subscriber.first_name} ${subscriber.last_name}`,
+          inline: false
+        },
+        {
+          name: '📧 Email',
+          value: subscriber.email || '—',
+          inline: true
+        },
+        {
+          name: '📞 Téléphone',
+          value: subscriber.phone || '—',
+          inline: true
+        },
+        {
+          name: '📍 Adresse',
+          value: subscriber.address || '—',
+          inline: false
+        },
+        {
+          name: '📅 Abonnement',
+          value: `Depuis le ${new Date(subscriber.subscription_date).toLocaleDateString('fr-FR')}`,
+          inline: true
+        },
+        {
+          name: '⏱️ Durée',
+          value: `${subscriber.subscription_duration} an(s)`,
+          inline: true
+        }
+      ],
+      timestamp: new Date().toISOString(),
+      footer: {
+        text: 'Judo Kids — Gestion des envois'
+      }
+    };
+    
+    const payload = {
+      embeds: [embed]
+    };
+    
+    await fetch(discordWebhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    console.log('✅ Notification Discord envoyée:', action);
+  } catch(err){
+    console.error('❌ Erreur Discord:', err);
   }
 }
 
@@ -616,8 +697,9 @@ async function saveSubscriber(e){
     }
   }
   
-  // Envoyer à Google Sheets
+  // Envoyer à Google Sheets et Discord
   await sendToSheets('add', sub);
+  await sendToDiscord('add', sub);
   
   closeModal('addModal');
   await loadData();
@@ -692,9 +774,12 @@ async function updateSubscriber(e){
   
   console.log('✅ Mise à jour réussie!');
   
-  // Envoyer à Google Sheets
+  // Envoyer à Google Sheets et Discord
   const updatedSub = subscribers.find(s => s.id === editingSubId);
-  if(updatedSub) await sendToSheets('update', updatedSub);
+  if(updatedSub) {
+    await sendToSheets('update', updatedSub);
+    await sendToDiscord('update', updatedSub);
+  }
   
   closeModal('editModal');
   await loadData();
@@ -736,8 +821,11 @@ async function deleteSubscriber(id){
   
   console.log('✅ Suppression réussie!');
   
-  // Envoyer à Google Sheets
-  if(subToDelete) await sendToSheets('delete', subToDelete);
+  // Envoyer à Google Sheets et Discord
+  if(subToDelete) {
+    await sendToSheets('delete', subToDelete);
+    await sendToDiscord('delete', subToDelete);
+  }
   
   await loadData();
   renderAbonnes();
