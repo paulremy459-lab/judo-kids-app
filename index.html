@@ -799,16 +799,65 @@ async function updateSubscriber(e){
     const newEndDate = new Date(subDate);
     newEndDate.setFullYear(newEndDate.getFullYear() + subDuration);
     
-    // Supprimer les envois qui dépassent la nouvelle date de fin
+    // Supprimer TOUS les anciens envois de cet abonné
     const { error: deleteError } = await supabaseClient
       .from('shipments')
       .delete()
-      .eq('subscriber_id', editingSubId)
-      .gt('scheduled_date', newEndDate.toISOString().split('T')[0]);
+      .eq('subscriber_id', editingSubId);
     
     if(deleteError){
-      console.error('Erreur suppression envois dépassant la durée:', deleteError);
-      // Continuer quand même, ce n'est pas critique
+      console.error('Erreur suppression anciens envois:', deleteError);
+      // Continuer quand même
+    }
+    
+    // Recréer les envois pour la nouvelle durée
+    const firstMag = getMagazineForSubscription(subDate);
+    let firstScheduleIdx = -1;
+    for(let i = 0; i < SCHEDULE.length; i++){
+      if(SCHEDULE[i].mag === firstMag){
+        firstScheduleIdx = i;
+        break;
+      }
+    }
+    
+    if(firstScheduleIdx >= 0){
+      const shipsToInsert = [];
+      let shipmentNum = 1;
+      let posterNum = 1;
+      let stickerStart = 1;
+      let magazineNum = firstMag;
+      
+      for(let i = firstScheduleIdx; i < SCHEDULE.length && shipmentNum <= subDuration * 6; i++){
+        const schedDate = new Date(SCHEDULE[i].release);
+        if(schedDate < newEndDate){
+          shipsToInsert.push({
+            user_id: currentUserId,
+            subscriber_id: editingSubId,
+            shipment_number: shipmentNum,
+            magazine_number: magazineNum,
+            poster_number: posterNum,
+            sticker_pair_start: stickerStart,
+            sticker_pair_end: stickerStart + 1,
+            scheduled_date: SCHEDULE[i].release,
+            sent_at: null
+          });
+          
+          shipmentNum++;
+          posterNum++;
+          stickerStart += 2;
+          magazineNum++;
+        }
+      }
+      
+      if(shipsToInsert.length > 0){
+        const { error: shipError } = await supabaseClient
+          .from('shipments')
+          .insert(shipsToInsert);
+        
+        if(shipError){
+          console.error('Erreur création nouvel envois:', shipError);
+        }
+      }
     }
     
     const { error } = await supabaseClient
