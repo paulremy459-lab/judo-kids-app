@@ -795,6 +795,22 @@ async function updateSubscriber(e){
     
     console.log('Mise à jour:', { editingSubId, fname, lname, email, phone, addr, subDate, subDuration });
     
+    // Calculer la nouvelle endDate
+    const newEndDate = new Date(subDate);
+    newEndDate.setFullYear(newEndDate.getFullYear() + subDuration);
+    
+    // Supprimer les envois qui dépassent la nouvelle date de fin
+    const { error: deleteError } = await supabaseClient
+      .from('shipments')
+      .delete()
+      .eq('subscriber_id', editingSubId)
+      .gt('scheduled_date', newEndDate.toISOString().split('T')[0]);
+    
+    if(deleteError){
+      console.error('Erreur suppression envois dépassant la durée:', deleteError);
+      // Continuer quand même, ce n'est pas critique
+    }
+    
     const { error } = await supabaseClient
       .from('subscribers')
       .update({
